@@ -1,4 +1,4 @@
-## Catalogo
+## Catálogo
 
 O projeto visa descrever o produto tendo em vista suas diferentes caracteristicas e especificações. As informações são baseadas em pesquisas realizadas em diversos sites de e-commerce, garantindo uma visão ampla e comparativa de cada item com objetivo de organizar, comparar e apresentar os produtos de forma clara e padronizada.
 
