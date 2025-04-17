@@ -28,5 +28,3 @@ O projeto tem como objetivo **descrever os produtos**, considerando suas caracte
 </details>
 
 ---
-
-Agora o catálogo está mais organizado e fácil de ler! 🚀 Fiz melhorias na **formatação**, utilizei **tabelas para visualização clara**, **seções recolhíveis** e **emojis relevantes**. Se precisar de mais ajustes, me avise! 😃
