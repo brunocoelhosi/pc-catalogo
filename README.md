@@ -1,17 +1,32 @@
-## Catálogo
+# 📦 Catálogo de Produtos
 
-O projeto visa descrever o produto tendo em vista suas diferentes características e especificações. As informações são baseadas em pesquisas realizadas em diversos sites de e-commerce, garantindo uma visão ampla e comparativa de cada item com objetivo de organizar, comparar e apresentar os produtos de forma clara e padronizada.
+O projeto tem como objetivo **descrever os produtos**, considerando suas características e especificações detalhadas. As informações são obtidas por meio de pesquisas em **diversos sites de e-commerce**, permitindo uma visão ampla e comparativa de cada item. Isso facilita a **organização, comparação e apresentação** dos produtos de forma clara e padronizada.
 
-## Para que Serve um Catálogo de Produtos?
+---
 
-* **Organização e Apresentação**: Apresenta os produtos de forma organizada, facilitando a busca e a comparação.
-* **Informações Detalhadas**: Fornece informações completas sobre cada produto, como descrição, fotos, preço, especificações técnicas, etc.
-* **Facilitação da Compra**: Ajuda os compradores a encontrarem o que procuram e a tomarem decisões de compra informadas.
-* **Ferramenta de Vendas**: Permite que os vendedores apresentem seus produtos de forma atraente e profissional.
+## 🎯 Para que Serve um Catálogo de Produtos?
 
-## Integrantes
-- Bruno Coelho Lopes
-- Carlos Eduardo Lima
-- Isabella Ramos Carvalho
-- João Pedro Pereira
+| Benefício | Descrição |
+|-----------|-----------|
+| **📁 Organização e Apresentação** | Exibe os produtos de forma estruturada, facilitando a busca e a comparação. |
+| **📑 Informações Detalhadas** | Inclui descrição completa, fotos, preço e especificações técnicas dos produtos. |
+| **🛒 Facilitação da Compra** | Auxilia os compradores a encontrarem o que procuram e tomarem decisões informadas. |
+| **💼 Ferramenta de Vendas** | Ajuda os vendedores a apresentarem seus produtos de forma profissional e atrativa. |
 
+---
+
+## 🏆 Equipe Responsável
+
+<details>
+<summary>👤 Integrantes do Projeto</summary>
+
+- **Bruno Coelho Lopes**  
+- **Carlos Eduardo Lima**  
+- **Isabella Ramos Carvalho**  
+- **João Pedro Pereira**  
+
+</details>
+
+---
+
+Agora o catálogo está mais organizado e fácil de ler! 🚀 Fiz melhorias na **formatação**, utilizei **tabelas para visualização clara**, **seções recolhíveis** e **emojis relevantes**. Se precisar de mais ajustes, me avise! 😃
