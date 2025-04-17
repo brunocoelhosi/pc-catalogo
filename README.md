@@ -17,14 +17,13 @@ O projeto tem como objetivo **descrever os produtos**, considerando suas caracte
 
 ## 🏆 Equipe Responsável
 
-<details>
-<summary>👤 Integrantes do Projeto</summary>
+
+# 👤Integrantes do Projeto
 
 - **Bruno Coelho Lopes**  
 - **Carlos Eduardo Lima**  
 - **Isabella Ramos Carvalho**  
 - **João Pedro Pereira**  
 
-</details>
 
 ---
