@@ -12,5 +12,6 @@ O projeto visa descrever o produto tendo em vista suas diferentes característic
 ## Integrantes
 - Bruno Coelho Lopes
 - Carlos Eduardo Lima
-- João Pedro Pereira
 - Isabella Ramos Carvalho
+- João Pedro Pereira
+
