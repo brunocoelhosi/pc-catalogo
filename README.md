@@ -23,7 +23,7 @@ O projeto tem como objetivo **descrever os produtos**, considerando suas caracte
 - **Bruno Coelho Lopes**  
 - **Carlos Eduardo Lima**  
 - **Isabella Ramos Carvalho**  
-- **João Pedro Pereira**  
+- **João Pedro Pereira Porfírio**  
 
 
 ---
