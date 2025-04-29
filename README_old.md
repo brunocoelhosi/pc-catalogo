@@ -1,35 +1,22 @@
 <div align="center">
-  <h1>📦 Catálogo de Produtos📦 </h1>
-  
+  <h1>🐍 Boilerplate Projeto Carreira 🐍</h1>
+  <!-- Substituir a descrição abaixo. Insira uma breve descrição do propósito do seu front. -->
+   Template de uma aplicação API Python com FastAPI.
 </div>
 
 ## Introdução
+<!-- Este tópico pode ser removido na documentação do seu app. -->
 
-O projeto tem como objetivo **descrever os produtos**, considerando suas características e especificações detalhadas. As informações são obtidas por meio de pesquisas em **diversos sites de e-commerce**, permitindo uma visão ampla e comparativa de cada item. Isso facilita a **organização, comparação e apresentação** dos produtos de forma clara e padronizada.
+Este repositório contém um código boilerplate desenvolvido pelos desenvolvedores da plataforma seller. O objetivo deste boilerplate é servir como uma fundação sólida e padronizada para os diversos projetos que serão desenvolvidos a partir dele. Este código base facilita a consistência e a eficiência no desenvolvimento, assegurando que todos os projetos iniciem com uma estrutura comprovada e otimizada.
 
----
+Lembre-se de seguir os padrões definidos para nosso projetos nos docs: Padrões - [Plataforma do Seller](https://magazine.atlassian.net/wiki/spaces/Maganets/pages/3495559495/Padr+es+-+Plataforma+do+Seller)
 
-## 🎯 Para que Serve um Catálogo de Produtos?
+### Uso
+O código boilerplate é projetado para ser facilmente replicado e modificado. O processo padrão de uso envolve:
 
-| Benefício                         | Descrição                                                                          |
-| --------------------------------- | ---------------------------------------------------------------------------------- |
-| **📁 Organização e Apresentação** | Exibe os produtos de forma estruturada, facilitando a busca e a comparação.        |
-| **📑 Informações Detalhadas**     | Inclui descrição completa, fotos, preço e especificações técnicas dos produtos.    |
-| **🛒 Facilitação da Compra**      | Auxilia os compradores a encontrarem o que procuram e tomarem decisões informadas. |
-| **💼 Ferramenta de Vendas**       | Ajuda os vendedores a apresentarem seus produtos de forma profissional e atrativa. |
-
----
-
-## 🏆 Equipe Responsável
-
-### 👤Integrantes do Projeto
-
-- **Bruno Coelho Lopes**
-- **Carlos Eduardo Lima**
-- **Isabella Ramos Carvalho**
-- **João Pedro Pereira Porfírio**
-
-##
+* **Fork do Projeto**: Os desenvolvedores devem fazer um fork deste repositório para criar uma nova instância do boilerplate, que pode ser personalizada conforme necessário.
+* **Customização**: Após o fork, o código pode ser adaptado para as necessidades específicas do novo projeto.
+* **Integração**: O novo projeto integrará as ferramentas e bibliotecas especificadas, mantendo a estrutura base fornecida pelo boilerplate.
 
 ## 📄 Documentação
 
@@ -37,12 +24,13 @@ O projeto tem como objetivo **descrever os produtos**, considerando suas caracte
 
 Você pode encontrar a documentação completa referente a este projeto neste [design docs](substituir com o link do seu design doc)
 
-## 💻 Tecnologias
 
+## 💻 Tecnologias
 Este projeto foi construído usando várias tecnologias chaves para garantir performance, segurança e facilidade de uso:
 
-- **Python 3.12**: Escolhido por sua simplicidade e poderosas capacidades de programação. A versão 3.13 é a mais recente, oferecendo melhorias significativas em eficiência e recursos linguísticos.
-- **FastAPI**: Uma moderna e rápida (altas performances) web framework para Python, que é ideal para a construção de APIs.
+* **Python 3.12**: Escolhido por sua simplicidade e poderosas capacidades de programação. A versão 3.13 é a mais recente, oferecendo melhorias significativas em eficiência e recursos linguísticos.
+* **FastAPI**: Uma moderna e rápida (altas performances) web framework para Python, que é ideal para a construção de APIs.
+
 
 ## ✨ Configuração do ambiente local
 
@@ -92,57 +80,53 @@ make requirements-dev
 make install-pre-commit
 ```
 
-### 🐳 Para instalar o Docker
+### 🐳 Para instalar o Docker 
 
 Instalação do [Docker](https://docs.docker.com/engine/install/ubuntu/)
 
-## ⭐ Formatação de lint e código
+## ⭐  Formatação de lint e código
 
 O aplicativo usa [black](https://black.readthedocs.io/en/stable/) para formatação de código com [isort](https://pycqa.github.io/isort/) para classificação de importação, [flake8](https://flake8.pycqa.org/en/latest/) para aplicação de guia de estilo e, por último, o mypy para verificação de tipo estático.
 
 Para executar a validação do lint, execute:
-
 ```bash
 $ make lint
 ```
 
 Para se gerar novos commits, favor seguir o padrão do https://commitlint.io/
 
+
 ## ▶️ Execução
 
 Após a configuração dos pacotes e docker compose, se você deseja executar seu projeto localmente, configure o arquivo de env:
-
 ```bash
 $ make load-test-env
 ```
 
 Use o comando para criar os tópicos localmente:
-
 ```bash
 $ make pubsub-create-topics
 ```
 
 Use o comando para subir a api:
-
 ```bash
 $ make run-dev
 ```
-
 Acesse a doc da API em: [localhost:8000/api/docs](http://0.0.0.0:8000/api/docs) ou em [localhost:8000/redoc](http://0.0.0.0:8000/redoc)
 
 Para rodar os workers configurados no .env:
-
 ```bash
 $ make run-workers
 ```
 
 ## Contribuições e Atualizações
-
 O projeto está aberto a contribuições e atualizações da comunidade. O processo para contribuições é o seguinte:
 
-- **Pull Requests**: Contribuições devem ser submetidas como pull requests.
-- **Code Review**: Cada pull request passará por um code review detalhado pela equipe. Isso garante que o código esteja alinhado com os padrões de qualidade e funcionamento do projeto.
-- **Incorporação de Mudanças**: Após a aprovação no code review, as mudanças serão integradas ao código principal.
+* **Pull Requests**: Contribuições devem ser submetidas como pull requests.
+* **Code Review**: Cada pull request passará por um code review detalhado pela equipe. Isso garante que o código esteja alinhado com os padrões de qualidade e funcionamento do projeto.
+* **Incorporação de Mudanças**: Após a aprovação no code review, as mudanças serão integradas ao código principal.
+
+
 
 ## 📖 Recursos úteis
 
