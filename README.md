@@ -46,7 +46,7 @@ Este projeto foi construído usando várias tecnologias chaves para garantir per
 
 ## ✨ Configuração do ambiente local
 
-Este projeto foi desenvolvivo utilizando o [Python 3.12](https://docs.python.org/3.12/), confirme se o mesmo está instalado em sua máquina.
+Confirme se o [Python 3.12](https://docs.python.org/3.12/) está instalado em sua máquina.
 
 Comandos via Linux 🐧.
 
@@ -73,19 +73,11 @@ Uma vez criado o ambiente virtual do Python, você precisa ativá-lo
 Quaisquer comandos daqui para frente, iremos considerar que você está dentro
 do ambiente virtual `(venv)`.
 
-Instale as bibliotecas necessárias para o seu projeto, veja com a equipe qual é a URL do [pypi](https://pypi.org/) do Magalu e defina o seu valor para `PIP_LUIZALABS_URL`. Execute os comandos:
+Instale as bibliotecas necessárias para o seu projeto. Execute os comandos:
 
 ```sh
-# Definindo a PIP do Magalu
-export PIP_LUIZALABS_URL=<pega com alguém 😉>
-# Verifique se sua PIP foi gerada
-echo $PIP_LUIZALABS_URL
 # Instala os pacotes.
 make requirements-dev
-# OU instale sem o makefile:
-# pip install -i $PIP_URL -r requirements/develop.txt
-# Instala configurações do pre-commit
-make install-pre-commit
 ```
 
 Comandos via Windows 🗔.
@@ -115,7 +107,7 @@ source ./venv/bin/activate
 Quaisquer comandos daqui para frente, iremos considerar que você está dentro
 do ambiente virtual `(venv)`.
 
-Instale as bibliotecas necessárias para o seu projeto, veja com a equipe qual é a URL do [pypi](https://pypi.org/) do Magalu e defina o seu valor para `PIP_LUIZALABS_URL`. Execute os comandos:
+Instale as bibliotecas necessárias para o seu projeto. Execute os comandos:
 
 ```sh
 # Instala os pacotes.
