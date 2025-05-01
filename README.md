@@ -46,14 +46,14 @@ Este projeto foi construído usando várias tecnologias chaves para garantir per
 
 ## ✨ Configuração do ambiente local
 
-Todos os comandos serão via terminal (Linux 🐧).
+Este projeto foi desenvolvivo utilizando o [Python 3.12](https://docs.python.org/3.12/), confirme se o mesmo está instalado em sua máquina.
 
-Este _seed_ trabalha com o [Python 3.12](https://docs.python.org/3.12/), confirme se o mesmo está instalado em sua máquina.
+Comandos via Linux 🐧.
 
-Depois de clonar o projeto, acesse o diretório:
+Clone o projeto, acesse o diretório:
 
 ```sh
-cd ps-boilerparte
+cd pc-catalogo
 ```
 
 Crie o [ambiente virtual](https://docs.python.org/3.12/tutorial/venv.html)
@@ -61,17 +61,13 @@ para instalar as bibliotecas e trabalharmos com o projeto:
 
 ```sh
 make build-venv
-# Ou:
-# python3.12 -m venv venv
 ```
 
 Uma vez criado o ambiente virtual do Python, você precisa ativá-lo
 (estou supondo que você está no Linux 🐧):
 
 ```sh
-. ./venv/bin/activate
-# ou
-# source ./venv/bin/activate
+./venv/bin/activate
 ```
 
 Quaisquer comandos daqui para frente, iremos considerar que você está dentro
@@ -92,49 +88,59 @@ make requirements-dev
 make install-pre-commit
 ```
 
-### 🐳 Para instalar o Docker
+Comandos via Windows 🗔.
 
-Instalação do [Docker](https://docs.docker.com/engine/install/ubuntu/)
+Este projeto foi desenvolvivo utilizando o [Python 3.12](https://docs.python.org/3.12/), confirme se o mesmo está instalado em sua máquina.
 
-## ⭐ Formatação de lint e código
+Clone o projeto, acesse o diretório:
 
-O aplicativo usa [black](https://black.readthedocs.io/en/stable/) para formatação de código com [isort](https://pycqa.github.io/isort/) para classificação de importação, [flake8](https://flake8.pycqa.org/en/latest/) para aplicação de guia de estilo e, por último, o mypy para verificação de tipo estático.
+```sh
+cd pc-catalogo
+```
 
-Para executar a validação do lint, execute:
+Crie o [ambiente virtual](https://docs.python.org/3.12/tutorial/venv.html)
+para instalar as bibliotecas e trabalharmos com o projeto:
 
-```bash
-$ make lint
+```sh
+python3.12 -m venv venv
+```
+
+Uma vez criado o ambiente virtual do Python, você precisa ativá-lo
+(estou supondo que você está no Linux 🐧):
+
+```sh
+source ./venv/bin/activate
+```
+
+Quaisquer comandos daqui para frente, iremos considerar que você está dentro
+do ambiente virtual `(venv)`.
+
+Instale as bibliotecas necessárias para o seu projeto, veja com a equipe qual é a URL do [pypi](https://pypi.org/) do Magalu e defina o seu valor para `PIP_LUIZALABS_URL`. Execute os comandos:
+
+```sh
+# Instala os pacotes.
+pip install -r requirementes.txt
 ```
 
 Para se gerar novos commits, favor seguir o padrão do https://commitlint.io/
 
 ## ▶️ Execução
 
-Após a configuração dos pacotes e docker compose, se você deseja executar seu projeto localmente, configure o arquivo de env:
+Configure o arquivo de env, execute o script no bash:
 
 ```bash
-$ make load-test-env
-```
-
-Use o comando para criar os tópicos localmente:
-
-```bash
-$ make pubsub-create-topics
+./devtools/scripts/push-env devtools/dotenv.dev
 ```
 
 Use o comando para subir a api:
 
 ```bash
-$ make run-dev
+uvicorn app.api_main:app --reload
 ```
 
 Acesse a doc da API em: [localhost:8000/api/docs](http://0.0.0.0:8000/api/docs) ou em [localhost:8000/redoc](http://0.0.0.0:8000/redoc)
 
 Para rodar os workers configurados no .env:
-
-```bash
-$ make run-workers
-```
 
 ## Contribuições e Atualizações
 
