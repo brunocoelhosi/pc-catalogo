@@ -52,8 +52,7 @@ para instalar as bibliotecas e trabalharmos com o projeto:
 make build-venv
 ```
 
-Uma vez criado o ambiente virtual do Python, você precisa ativá-lo
-(estou supondo que você está no Linux 🐧):
+Uma vez criado o ambiente virtual do Python, você precisa ativá-lo:
 
 ```sh
 ./venv/bin/activate
@@ -90,8 +89,7 @@ para instalar as bibliotecas e trabalharmos com o projeto:
 python3.12 -m venv venv
 ```
 
-Uma vez criado o ambiente virtual do Python, você precisa ativá-lo
-(estou supondo que você está no Linux 🐧):
+Uma vez criado o ambiente virtual do Python, você precisa ativá-lo:
 
 ```sh
 # Ativa o ambiente virtual.
