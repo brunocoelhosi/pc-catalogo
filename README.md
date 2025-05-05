@@ -72,7 +72,7 @@ make requirements-dev
 
 Comandos via Windows 🗔.
 
-Este projeto foi desenvolvivo utilizando o [Python 3.12](https://docs.python.org/3.12/), confirme se o mesmo está instalado em sua máquina.
+Este projeto foi desenvolvido utilizando o [Python 3.12](https://docs.python.org/3.12/), confirme se o mesmo está instalado em sua máquina.
 
 Clone o projeto, acesse o diretório:
 
@@ -93,7 +93,8 @@ Uma vez criado o ambiente virtual do Python, você precisa ativá-lo:
 
 ```sh
 # Ativa o ambiente virtual.
-source ./venv/bin/activate
+venv\Scripts\activate
+
 ```
 
 Quaisquer comandos daqui para frente, iremos considerar que você está dentro
@@ -103,10 +104,10 @@ Instale as bibliotecas necessárias para o seu projeto. Execute os comandos:
 
 ```sh
 # Instala os pacotes.
-pip install -r requirementes.txt
+pip install -r requirements.txt
 ```
 
-Para se gerar novos commits, favor seguir o padrão do https://commitlint.io/
+Para novos commits, siga o padrão do https://commitlint.io/
 
 ## ▶️ Execução
 
