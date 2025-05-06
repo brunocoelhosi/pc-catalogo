@@ -36,8 +36,8 @@ def add_health_check_router(app: FastAPI, prefix: str = "/api") -> None:
         summary="Health Check",
         include_in_schema=True,
         operation_id="get_health",
-        name="Verificar saúde da aplicação",
-        description="Verifica se a aplicação está operante bem como seus recursos",
+        name="Verificar saúde da aplicação catálogo",
+        description="Verifica se a aplicação catálogo está operante bem como seus recursos",
         status_code=200,
     )
     @inject

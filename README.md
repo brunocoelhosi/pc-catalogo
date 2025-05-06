@@ -37,7 +37,7 @@ Confirme se o [Python 3.12](https://docs.python.org/3.12/) está instalado em su
 
 #
 
-Comandos via Linux 🐧.
+### Comandos via Linux 🐧.
 
 Clone o projeto, acesse o diretório:
 
@@ -70,7 +70,7 @@ make requirements-dev
 
 #
 
-Comandos via Windows 🗔.
+### Comandos via Windows 🗔.
 
 Este projeto foi desenvolvido utilizando o [Python 3.12](https://docs.python.org/3.12/), confirme se o mesmo está instalado em sua máquina.
 
@@ -113,7 +113,7 @@ Para novos commits, siga o padrão do https://commitlint.io/
 
 Configure o arquivo de env:
 
-Crie o arquivo .env na pasta raiz do projeto com o seguinte conteúdo:
+Crie o arquivo `.env` na pasta raiz do projeto com o seguinte conteúdo:
 
 ```bash
 ENV=dev
