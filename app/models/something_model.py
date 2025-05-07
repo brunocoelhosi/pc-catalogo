@@ -2,6 +2,6 @@ from . import PersistableEntity
 
 
 class Something(PersistableEntity):
-    identify: int
-    name: str
-    value: int
+    seller_id: str
+    sku: str
+    product_name: str

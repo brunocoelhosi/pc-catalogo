@@ -2,9 +2,9 @@ from app.api.common.schemas import ResponseEntity, SchemaType
 
 
 class SomethingSchema(SchemaType):
-    identity: int
-    name: str
-    value: int
+    seller_id: str
+    sku: str
+    product_name: str
 
 
 class SomethingResponse(SomethingSchema, ResponseEntity):
@@ -12,11 +12,12 @@ class SomethingResponse(SomethingSchema, ResponseEntity):
 
 
 class SomethingCreate(SomethingSchema):
-    """Schema para criação Somethings"""
+    seller_id: str
+    sku: str
+    product_name: str
 
 
 class SomethingUpdate(SchemaType):
     """Permite apenas a atualização do nome e do valor"""
-
-    name: str
-    value: int
+    sku: str
+    product_name: str

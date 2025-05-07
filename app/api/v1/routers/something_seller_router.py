@@ -13,7 +13,7 @@ if TYPE_CHECKING:
     from app.services import SomethingService
 
 
-router = APIRouter(prefix=SOMETHING_PREFIX, tags=["Algumas Coisas"])
+router = APIRouter(prefix=SOMETHING_PREFIX, tags=["CRUD Catálogo"])
 
 
 @router.get(
@@ -32,16 +32,16 @@ async def get(
 
 
 @router.get(
-    "/{something_id}",
+    "/{seller_id}",
     response_model=SomethingResponse,
     status_code=status.HTTP_200_OK,
 )
 @inject
 async def get_by_id(
-    something_id: int,
+    seller_id: str,
     something_service: "SomethingService" = Depends(Provide[Container.something_service]),
 ):
-    return await something_service.find_by_id(something_id)
+    return await something_service.find_by_id(seller_id)
 
 
 @router.post(

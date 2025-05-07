@@ -27,9 +27,9 @@ class AsyncMemoryRepository(AsyncCrudRepository[T, ID], Generic[T, ID]):
         return entity_dict
 
     async def find_by_id(self, entity_id: ID) -> Optional[T]:
-        # XXX Aqui eu sei que something tem o id como o campo identity
+        #Busca pelo ID do seller
 
-        result = next((r for r in self.memory if r.identity == entity_id), None)
+        result = next((r for r in self.memory if r.seller_id == entity_id), None)
         if result:
             return result
 
@@ -40,13 +40,14 @@ class AsyncMemoryRepository(AsyncCrudRepository[T, ID], Generic[T, ID]):
         filtered_list = [
             data
             for data in self.memory
+                
             # TODO Criar filtro
         ]
 
-        # XXX TODO Falta ordenar
+        # XXX TODO Falta ordenar    
 
         entities = []
-        async for document in filtered_list:
+        for document in filtered_list:
             entities.append(document)
         return entities
 
