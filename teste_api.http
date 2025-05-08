@@ -1,0 +1,18 @@
+@url=http://127.0.0.1:8000
+
+## Listar todos os produtos do catálogo
+GET {{url}}/seller/v1/catalogo?_limit=50&_offset=0
+
+###
+
+
+#Cadastrar um produto no catalogo
+@api_catalogo={{url}}/seller/v1/catalogo
+
+POST {{api_catalogo}}
+
+{
+  "seller_id": "stri11ng",
+  "sku": "string",
+  "product_name": "string"
+}

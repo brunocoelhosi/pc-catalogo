@@ -19,8 +19,7 @@ if TYPE_CHECKING:
 router = APIRouter(prefix=SOMETHING_PREFIX, tags=["CRUD Catálogo"])
 
 ##Busca todos os produtos
-@router.get(
-    "",
+@router.get("",
     response_model=ListResponse[SomethingResponse],
     status_code=status.HTTP_200_OK,
 )
@@ -81,7 +80,7 @@ async def create(
 
     # Se o produto já existir, lança uma exceção
     if product_exist:
-        raise HTTPException(status_code=400, detail="Produto já cadastrado.")
+        raise HTTPException(status.HTTP_409_CONFLICT,"Produto já cadastrado.")
 
     # Cria o produto
     return await something_service.create(something)
