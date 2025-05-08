@@ -73,21 +73,16 @@ async def create(
     something: SomethingCreate, something_service: "SomethingService" = Depends(Provide[Container.something_service])
 ):
     try:
-        # Verifica se o produto existe pelo seller_id
-        product_by_id = await something_service.find_by_id(something.seller_id)
+        # Tenta encontrar o produto pelo seller_id e SKU
+        product_exist = await something_service.find_product(something.seller_id, something.sku)
     except HTTPException:
-        product_by_id = None
+        # Se o produto não for encontrado, continua o fluxo normalmente
+        product_exist = None
 
-    try:
-        # Verifica se o produto existe pelo SKU
-        product_by_sku = await something_service.find_by_sku(something.sku)
-    except HTTPException:
-        product_by_sku = None
+    # Se o produto já existir, lança uma exceção
+    if product_exist:
+        raise HTTPException(status_code=400, detail="Produto já cadastrado.")
 
-    # Lança a exceção apenas se ambos existirem
-    if product_by_id and product_by_sku:
-        raise HTTPException(status_code=400, detail="Produto deste seller já cadastrado.")
-    
     # Cria o produto
     return await something_service.create(something)
 
