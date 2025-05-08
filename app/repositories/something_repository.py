@@ -19,3 +19,4 @@ class SomethingRepository(AsyncMemoryRepository[Something, UUID]):
 
 
 __all__ = ["SomethingRepository"]
+    

@@ -5,6 +5,7 @@ T = TypeVar("T")
 ID = TypeVar("ID")
 
 
+
 class AsyncCrudRepository(ABC, Generic[T, ID]):
     """
     Interface genérica para operações de repositório CRUD.
@@ -20,6 +21,17 @@ class AsyncCrudRepository(ABC, Generic[T, ID]):
     async def find_by_id(self, entity_id: ID) -> T | None:
         """
         Busca uma entidade pelo seu identificador único.
+        """
+    @abstractmethod
+    async def find_by_sku(self, sku: str) -> T | None:
+        """
+        Busca uma entidade pelo seu sku.
+        """
+
+    @abstractmethod
+    async def find_product(self, id: str ,sku: str) -> T | None:
+        """
+        Busca uma entidade pelo seu id+sku.
         """
 
     @abstractmethod

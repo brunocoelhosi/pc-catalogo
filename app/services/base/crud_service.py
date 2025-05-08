@@ -8,6 +8,7 @@ T = TypeVar("T", bound=PersistableEntity)
 ID = TypeVar("ID")
 
 
+
 class CrudService(Generic[T, ID]):
     def __init__(self, repository: AsyncCrudRepository[T, ID]):
         self.repository = repository
@@ -26,6 +27,13 @@ class CrudService(Generic[T, ID]):
 
     async def find_by_id(self, entity_id: ID) -> T | None:
         return await self.repository.find_by_id(entity_id)
+    
+    async def find_by_sku(self, sku: str) -> T | None:
+        return await self.repository.find_by_sku(sku)
+    
+    async def find_product(self, seller_id: str,sku: str) -> T | None:
+        return await self.repository.find_product(seller_id, sku)
+    
 
     async def find(self, paginator: Paginator, filters: dict) -> list[T]:
         return await self.repository.find(
