@@ -32,20 +32,6 @@ async def get_all_products(
 
     return paginator.paginate(results=results)
 
-
-#Busca o produto pelo ID
-@router.get(
-    "/{seller_id}",
-    response_model=SomethingResponse,
-    status_code=status.HTTP_200_OK,
-)
-@inject
-async def get_by_id(
-    seller_id: str,
-    something_service: "SomethingService" = Depends(Provide[Container.something_service]),
-):
-    return await something_service.find_by_id(seller_id)
-
 #Busca o produto pelo ID + SKU
 @router.get(
     "/{seller_id}/{sku}",
@@ -71,20 +57,26 @@ async def get_product(
 async def create(
     something: SomethingCreate, something_service: "SomethingService" = Depends(Provide[Container.something_service])
 ):
-    try:
-        # Tenta encontrar o produto pelo seller_id e SKU
-        product_exist = await something_service.find_product(something.seller_id, something.sku)
-    except HTTPException:
-        # Se o produto não for encontrado, continua o fluxo normalmente
-        product_exist = None
-
-    # Se o produto já existir, lança uma exceção
-    if product_exist:
-        raise HTTPException(status.HTTP_409_CONFLICT,"Produto já cadastrado.")
+    # Valida se o produto pode ser criado
+    await something_service.validate_product_creation(something.seller_id, something.sku)
 
     # Cria o produto
     return await something_service.create(something)
 
+#DELETA UM PRODUTO
+@router.delete("/{seller_id}/{sku}", status_code=status.HTTP_204_NO_CONTENT)
+@inject
+async def delete(
+    seller_id: str,
+    sku: str,
+    something_service: "SomethingService" = Depends(Provide[Container.something_service]),
+):
+    product = await something_service.find_product(seller_id, sku)
+ 
+    await something_service.delete_product(product)
+
+
+"""nao utilizadas"""
 
 @router.patch(
     "/{seller_id}",
@@ -99,10 +91,15 @@ async def update_by_id(
 ):
     return await something_service.update(seller_id, something)
 
-
-@router.delete("/{seller_id}", status_code=status.HTTP_204_NO_CONTENT)
+#Busca o produto pelo ID
+@router.get(
+    "/{seller_id}",
+    response_model=SomethingResponse,
+    status_code=status.HTTP_200_OK,
+)
 @inject
-async def delete(
-    seller_id: UuidType, something_service: "SomethingService" = Depends(Provide[Container.something_service])
+async def get_by_id(
+    seller_id: str,
+    something_service: "SomethingService" = Depends(Provide[Container.something_service]),
 ):
-    await something_service.delete_by_id(seller_id)
+    return await something_service.find_by_id(seller_id)

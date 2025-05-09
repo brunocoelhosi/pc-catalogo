@@ -12,7 +12,22 @@ GET {{url}}/seller/v1/catalogo?_limit=50&_offset=0
 POST {{api_catalogo}}
 
 {
-  "seller_id": "stri11ng",
-  "sku": "string",
-  "product_name": "string"
+  "seller_id": "mag22az1",
+  "sku": "cadeir222a112",
+  "product_name": "cadeira11"
 }
+
+###
+
+POST {{api_catalogo}}
+
+{
+  "seller_id": "1111",
+  "sku": "11111",
+  "product_name": "11111"
+}
+
+###
+
+# Remove produto
+DELETE {{api_catalogo}}/mag22az1/cadeir222a112

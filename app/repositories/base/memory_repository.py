@@ -47,6 +47,14 @@ class AsyncMemoryRepository(AsyncCrudRepository[T, ID], Generic[T, ID]):
         result = next((r for r in self.memory if r.sku == sku and r.seller_id == id), None)
         if result:
             return result
+        raise NotFoundException("Produto não encontrado.")
+    
+    async def delete_product(self, product) -> None:
+
+        if product in self.memory:
+            self.memory.remove(product)
+            return {"message": "Product deleted successfully"}
+        
         raise NotFoundException()
     
     async def find(self, filters: dict, limit: int = 10, offset: int = 0, sort: Optional[dict] = None) -> List[T]:
@@ -82,3 +90,7 @@ class AsyncMemoryRepository(AsyncCrudRepository[T, ID], Generic[T, ID]):
         current_document = await self.find_by_id(entity_id)
         if not current_document:
             raise NotFoundException()
+        
+
+        
+        

@@ -45,3 +45,6 @@ class CrudService(Generic[T, ID]):
 
     async def delete_by_id(self, entity_id: ID) -> None:
         await self.repository.delete_by_id(entity_id)
+
+    async def delete_product(self, product) -> None:
+        await self.repository.delete_product(product)

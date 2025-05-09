@@ -77,12 +77,15 @@ def add_error_handlers(app: FastAPI):
                 # Pydantic não trata direito erros como ValueError, retornando um padrão
                 # diferente do FastAPI.
                 ctx["error"] = str(ctx["error"])
+            valid_locations = {"query", "path", "body", "header"}
+            location = error["loc"][0] if error["loc"] and error["loc"][0] in valid_locations else "body"
 
             details.append(
                 ErrorDetail(
                     **{
                         "message": error["msg"],
-                        "location": error["loc"][0] if error["loc"] else "body",
+                        #"location": error["loc"][0] if error["loc"] else "body",
+                        "location": location,
                         "slug": error["type"],
                         "field": ", ".join(map(str, error["loc"][1:])) if error["loc"] else "",
                         "ctx": ctx,
