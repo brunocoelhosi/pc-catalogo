@@ -18,7 +18,7 @@ if TYPE_CHECKING:
 
 router = APIRouter(prefix=SOMETHING_PREFIX, tags=["CRUD Catálogo"])
 
-##Busca todos os produtos
+##BUSCAR TODOS OS PRODUTOS
 @router.get("",
     response_model=ListResponse[SomethingResponse],
     status_code=status.HTTP_200_OK,
@@ -32,7 +32,7 @@ async def get_all_products(
 
     return paginator.paginate(results=results)
 
-#Busca o produto pelo ID + SKU
+#BUSCAR PRODUTO POR SELLER_ID + SKU
 @router.get(
     "/{seller_id}/{sku}",
     response_model=SomethingResponse,

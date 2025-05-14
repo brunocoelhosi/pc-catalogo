@@ -2,13 +2,13 @@ from uuid import UUID
 
 from app.common.exceptions import NotFoundException
 
-from ..models import Something
+from ..models import Catalogo
 from .base import AsyncMemoryRepository
 
 
-class SomethingRepository(AsyncMemoryRepository[Something, UUID]):
+class SomethingRepository(AsyncMemoryRepository[Catalogo, UUID]):
 
-    async def find_by_name(self, name: str) -> Something:
+    async def find_by_name(self, name: str) -> Catalogo:
         """
         Busca um alguma coisa pelo nome.
         """

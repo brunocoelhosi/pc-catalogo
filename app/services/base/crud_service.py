@@ -34,7 +34,6 @@ class CrudService(Generic[T, ID]):
     async def find_product(self, seller_id: str,sku: str) -> T | None:
         return await self.repository.find_product(seller_id, sku)
     
-
     async def find(self, paginator: Paginator, filters: dict) -> list[T]:
         return await self.repository.find(
             filters=filters, limit=paginator.limit, offset=paginator.offset, sort=paginator.get_sort_order()

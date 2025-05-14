@@ -1,10 +1,10 @@
-from ..models import Something
-from ..repositories import SomethingRepository
-from .base import CrudService
+from ...models import Catalogo
+from ...repositories import SomethingRepository
+from ..base import CrudService
 from fastapi import HTTPException
+from .something_exceptions import SomethingAlreadyExistsException
 
-
-class SomethingService(CrudService[Something, int]):
+class CatalogoService(CrudService[Catalogo, int]):
     def __init__(self, repository: SomethingRepository):
         super().__init__(repository)
 
@@ -26,4 +26,4 @@ class SomethingService(CrudService[Something, int]):
 
         # Se o produto já existir, lança uma exceção
         if product_exist:
-            raise HTTPException(status_code=409, detail="Produto já cadastrado.")
+            raise SomethingAlreadyExistsException()
