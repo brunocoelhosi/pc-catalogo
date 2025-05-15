@@ -18,6 +18,8 @@ router = APIRouter(prefix=SOMETHING_PREFIX, tags=["CRUD Catálogo"])
 @router.get("",
     response_model=ListResponse[SomethingResponse],
     status_code=status.HTTP_200_OK,
+    summary="Buscar todos os produtos",
+    description="Retorna todos os produtos cadastrados no catálogo.",
 )
 @inject
 async def get_all_products(
@@ -33,6 +35,8 @@ async def get_all_products(
     "/{seller_id}/{sku}",
     response_model=SomethingResponse,
     status_code=status.HTTP_200_OK,
+    summary="Buscar produto por Seller_id e SKU",
+    description="Retorna um produto específico do catálogo com base no seller_id e SKU.",
 )
 @inject
 async def get_product(
@@ -48,6 +52,8 @@ async def get_product(
     "",
     response_model=SomethingResponse,
     status_code=status.HTTP_201_CREATED,
+    summary="Cadastrar um novo produto",
+    description="Cria um novo produto no catálogo com base nos dados fornecidos.",
 )
 @inject
 async def create(
@@ -56,7 +62,6 @@ async def create(
     return await something_service.create(something)
 
 #ATUALIZA O NOME DE UM PRODUTO
-#@router.put(
 @router.patch(
     "/{seller_id}/{sku}",
     response_model=SomethingResponse,
@@ -73,14 +78,17 @@ async def update_by_id(
 
 
 #DELETA UM PRODUTO
-@router.delete("/{seller_id}/{sku}", status_code=status.HTTP_204_NO_CONTENT)
+@router.delete(
+        "/{seller_id}/{sku}",
+        status_code=status.HTTP_204_NO_CONTENT,
+        summary="Deletar produto",
+        description="Deleta um produto do catálogo com base no seller_id e SKU.")
 @inject
 async def delete(
     seller_id: str,
     sku: str,
     something_service: "SomethingService" = Depends(Provide[Container.something_service]),
 ):
-     
     await something_service.delete_product(seller_id, sku)
 
 

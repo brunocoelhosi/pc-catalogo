@@ -31,3 +31,13 @@ class ProductNameLengthException(NotFoundException):
             }
         ]
         super().__init__(details)
+
+class SellerIDException(NotFoundException):
+    def __init__(self):
+        details = [
+            {
+                "message": "Seller ID Inválido",
+                "slug": "404-seller-id-invalido",
+            }
+        ]
+        super().__init__(details)

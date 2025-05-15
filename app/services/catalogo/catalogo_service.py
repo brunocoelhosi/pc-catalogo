@@ -2,7 +2,7 @@ from ...models import Catalogo
 from ...repositories import SomethingRepository
 from ..base import CrudService
 from fastapi import HTTPException
-from .something_exceptions import SomethingAlreadyExistsException, ProductNotExistException,ProductNameLengthException
+from .something_exceptions import SomethingAlreadyExistsException, ProductNotExistException,ProductNameLengthException,SellerIDException
 
 class CatalogoService(CrudService[Catalogo, int]):
     def __init__(self, repository: SomethingRepository):
@@ -14,12 +14,19 @@ class CatalogoService(CrudService[Catalogo, int]):
         """
         Cria um novo produto no catálogo.
         """
+        
+        #Valida o seller_id
+        await self.validade_seller_id(catalogo.seller_id)
+
         # Verifica se o produto já existe
-        await self.validate_product_creation(catalogo.seller_id, catalogo.sku)
+        await self.validate_product_exist(catalogo.seller_id, catalogo.sku)
         
         # Valida o tamanho do nome do produto
         await self.validate_len_product_name(catalogo.product_name)
-
+        
+        # Converte o seller_id para minúsculas
+        catalogo.seller_id = catalogo.seller_id.lower()
+        
         # Cria o produto
         resp = await super().create(catalogo)
         return resp
@@ -40,7 +47,7 @@ class CatalogoService(CrudService[Catalogo, int]):
         # Deleta o produto
         await self.repository.delete_product(product)
 
-    async def validate_product_creation(self, seller_id: str, sku: str) -> None:
+    async def validate_product_exist(self, seller_id: str, sku: str) -> None:
         """
         Valida se um produto pode ser criado verificando se já existe um produto com o mesmo seller_id e SKU.
         """
@@ -60,3 +67,13 @@ class CatalogoService(CrudService[Catalogo, int]):
         """
         if len(product_name) < 2 or len(product_name) > 15 or product_name == "":
             raise ProductNameLengthException()
+        
+    async def validade_seller_id(self, seller_id: str) -> None:
+        """
+        Valida o seller_id.
+        """
+
+        if len(seller_id) < 2 or seller_id == "":
+            raise SellerIDException()
+        
+        

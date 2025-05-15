@@ -22,9 +22,9 @@ POST {{api_catalogo}}
 POST {{api_catalogo}}
 
 {
-  "seller_id": "1111",
+  "seller_id": "M1",
   "sku": "11111",
-  "product_name": ""
+  "product_name": "12"
 }
 
 ###
