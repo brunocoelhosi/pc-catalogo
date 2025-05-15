@@ -1,4 +1,5 @@
-from app.common.exceptions import ConflictException
+from app.common.exceptions import ConflictException, NotFoundException
+
 
 
 class SomethingAlreadyExistsException(ConflictException):
@@ -7,6 +8,26 @@ class SomethingAlreadyExistsException(ConflictException):
             {
                 "message": "Este Produto já existe",
                 "slug": "409-produto-ja-existe",
+            }
+        ]
+        super().__init__(details)
+
+class ProductNotExistException(NotFoundException):
+    def __init__(self):
+        details = [
+            {
+                "message": "Este Produto não existe",
+                "slug": "404-produto-não-existe",
+            }
+        ]
+        super().__init__(details)
+
+class ProductNameLengthException(NotFoundException):
+    def __init__(self):
+        details = [
+            {
+                "message": "Nome do Produto fora do tamanho permitido",
+                "slug": "404-tamanho-nome-produto-não-permitido",
             }
         ]
         super().__init__(details)

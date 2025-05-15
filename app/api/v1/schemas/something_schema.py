@@ -19,5 +19,4 @@ class SomethingCreate(SomethingSchema):
 
 class SomethingUpdate(SchemaType):
     """Permite apenas a atualização do nome do produto e do SKU"""
-    sku: str
     product_name: str
