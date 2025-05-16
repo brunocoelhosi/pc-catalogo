@@ -41,3 +41,12 @@ class SellerIDException(NotFoundException):
             }
         ]
         super().__init__(details)
+class NoFieldsToUpdateException(NotFoundException):
+    def __init__(self):
+        details = [
+            {
+                "message": "Nenhum campo válido para atualizar",
+                "slug": "400-nenhum-campo-para-atualizar",
+            }
+        ]
+        super().__init__(details)

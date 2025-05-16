@@ -1,3 +1,4 @@
+from typing import Optional
 from app.api.common.schemas import ResponseEntity, SchemaType
 
 
@@ -18,5 +19,5 @@ class SomethingCreate(SomethingSchema):
 
 
 class SomethingUpdate(SchemaType):
-    """Permite apenas a atualização do nome do produto e do SKU"""
-    product_name: str
+    """Permite apenas a atualização do nome do produto"""
+    product_name: Optional[str] = None

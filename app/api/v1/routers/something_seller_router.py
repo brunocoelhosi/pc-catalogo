@@ -4,7 +4,6 @@ from dependency_injector.wiring import Provide, inject
 from fastapi import APIRouter, Depends, HTTPException, status
 
 from app.api.common.schemas import ListResponse, Paginator, UuidType, get_request_pagination
-from app.container import Container
 
 from ..schemas.something_schema import SomethingCreate, SomethingResponse, SomethingUpdate
 from . import SOMETHING_PREFIX
@@ -24,7 +23,7 @@ router = APIRouter(prefix=SOMETHING_PREFIX, tags=["CRUD Catálogo"])
 @inject
 async def get_all_products(
     paginator: Paginator = Depends(get_request_pagination),
-    something_service: "SomethingService" = Depends(Provide[Container.something_service]),
+    something_service: "SomethingService" = Depends(Provide["something_service"]),
 ):
     results = await something_service.find(paginator=paginator, filters={})
 
@@ -42,7 +41,7 @@ async def get_all_products(
 async def get_product(
     seller_id: str,
     sku: str,
-    something_service: "SomethingService" = Depends(Provide[Container.something_service]),
+    something_service: "SomethingService" = Depends(Provide["something_service"]),
 ):
     return await something_service.find_product(seller_id, sku)
 
@@ -57,7 +56,7 @@ async def get_product(
 )
 @inject
 async def create(
-    something: SomethingCreate, something_service: "SomethingService" = Depends(Provide[Container.something_service])
+    something: SomethingCreate, something_service: "SomethingService" = Depends(Provide["something_service"])
 ):
     return await something_service.create(something)
 
@@ -66,15 +65,16 @@ async def create(
     "/{seller_id}/{sku}",
     response_model=SomethingResponse,
     status_code=status.HTTP_200_OK,
+    summary="Atualizar produto",
 )
 @inject
 async def update_by_id(
     seller_id: str,
     sku: str,
     something: SomethingUpdate,
-    something_service: "SomethingService" = Depends(Provide[Container.something_service]),
+    something_service: "SomethingService" = Depends(Provide["something_service"]),
 ):
-    return await something_service.update(seller_id, something)
+    return await something_service.update_product_partial(seller_id, sku, something)
 
 
 #DELETA UM PRODUTO
@@ -87,7 +87,7 @@ async def update_by_id(
 async def delete(
     seller_id: str,
     sku: str,
-    something_service: "SomethingService" = Depends(Provide[Container.something_service]),
+    something_service: "SomethingService" = Depends(Provide["something_service"]),
 ):
     await something_service.delete_product(seller_id, sku)
 
@@ -104,6 +104,6 @@ async def delete(
 @inject
 async def get_by_id(
     seller_id: str,
-    something_service: "SomethingService" = Depends(Provide[Container.something_service]),
+    something_service: "SomethingService" = Depends(Provide["something_service"]),
 ):
     return await something_service.find_by_id(seller_id)
