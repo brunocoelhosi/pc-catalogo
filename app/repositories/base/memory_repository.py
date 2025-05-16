@@ -26,10 +26,10 @@ class AsyncMemoryRepository(AsyncCrudRepository[T, ID], Generic[T, ID]):
 
         return entity_dict
 
+    #Busca pelo ID do seller
     async def find_by_id(self, entity_id: ID) -> Optional[T]:
-        #Busca pelo ID do seller
 
-        result = next((r for r in self.memory if r.seller_id == entity_id), None)
+        result = next((r for r in self.memory if r.seller == entity_id), None)
         if result:
             return result
 
@@ -44,6 +44,9 @@ class AsyncMemoryRepository(AsyncCrudRepository[T, ID], Generic[T, ID]):
 
     async def find_product(self, id: str, sku: str) -> Optional[T]:
         # Busca por um produto unico seller + sku
+        
+        id = id.lower()
+
         result = next((r for r in self.memory if r.sku == sku and r.seller_id == id), None)
         if result:
             return result
@@ -57,24 +60,8 @@ class AsyncMemoryRepository(AsyncCrudRepository[T, ID], Generic[T, ID]):
         
         raise NotFoundException()
     
-    async def find(self, filters: dict, limit: int = 10, offset: int = 0, sort: Optional[dict] = None) -> List[T]:
-
-        filtered_list = [
-            data
-            for data in self.memory
-                
-            # TODO Criar filtro
-        ]
-
-        # XXX TODO Falta ordenar    
-
-        entities = []
-        for document in filtered_list:
-            entities.append(document)
-        return entities
 
     async def update(self, entity_id: ID, entity_update_payload) -> T:
-        # XXX Chave fixada por somehting, ajustar depois.
         index_toupdate = -1
         found_entity = None
         for i, item in enumerate(self.memory):
@@ -109,6 +96,20 @@ class AsyncMemoryRepository(AsyncCrudRepository[T, ID], Generic[T, ID]):
         if not current_document:
             raise NotFoundException()
         
+    async def find(self, filters: dict, limit: int = 10, offset: int = 0, sort: Optional[dict] = None) -> List[T]:
 
-        
+        filtered_list = [
+            data
+            for data in self.memory
+                
+            # TODO Criar filtro
+        ]
+
+        # XXX TODO Falta ordenar    
+
+        entities = []
+        for document in filtered_list:
+            entities.append(document)
+        return entities
+       
         

@@ -19,12 +19,10 @@ POST {{api_catalogo}}
 
 ###
 
-POST {{api_catalogo}}
+PATCH {{api_catalogo}}/MagAlu1/cadeira1
 
 {
-  "seller_id": "M1",
-  "sku": "11111",
-  "product_name": "12"
+  "product_name": "12223"
 }
 
 ###

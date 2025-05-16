@@ -15,19 +15,18 @@ class CatalogoService(CrudService[Catalogo, int]):
         """
         Cria um novo produto no catálogo.
         """
-        
         #Valida o seller_id
         await self.validade_seller_id(catalogo.seller_id)
+
+        # Converte o seller_id para minúsculas
+        catalogo.seller_id = catalogo.seller_id.lower()
 
         # Verifica se o produto já existe
         await self.validate_product_exist(catalogo.seller_id, catalogo.sku)
         
         # Valida o tamanho do nome do produto
         await self.validate_len_product_name(catalogo.product_name)
-        
-        # Converte o seller_id para minúsculas
-        catalogo.seller_id = catalogo.seller_id.lower()
-        
+
         # Cria o produto
         resp = await super().create(catalogo)
         return resp
@@ -36,6 +35,7 @@ class CatalogoService(CrudService[Catalogo, int]):
         """
         Deleta um produto do catálogo.
         """
+        seller_id = seller_id.lower()
         try:
             # Tenta encontrar o produto pelo seller_id e SKU
             product = await self.find_product(seller_id, sku)
@@ -77,27 +77,34 @@ class CatalogoService(CrudService[Catalogo, int]):
         if len(seller_id) < 2 or seller_id == "":
             raise SellerIDException()
         
-    async def update_product_partial(
-        self,
-        seller_id: str,
-        sku: str,
-        update_payload: SomethingUpdate
-    ) -> Catalogo:
+    async def update_product_partial(self, seller_id: str, sku: str, update_payload: SomethingUpdate) -> Catalogo:
         """
         Atualiza parcialmente um produto no catálogo com base no seller_id e sku.
         """
-        
+        seller_id = seller_id.lower()
+        # Busca o produto atual
         product_to_update = await self.find_product(seller_id, sku)
-        
+
+        #exclude_unset=True: somente os campos que foram enviados no payload serão atualizados
         update_data_for_service = update_payload.model_dump(exclude_unset=True)
-        
+
         if not update_data_for_service:
             raise NoFieldsToUpdateException()
+
+        # Verifica se os dados enviados são iguais aos já existentes
+        is_same = True
+        for key, value in update_data_for_service.items():
+            if getattr(product_to_update, key, None) != value:
+                is_same = False
+                break
+
+        if is_same:
+            #raise HTTPException(status_code=400, detail="Os dados enviados são iguais aos já cadastrados.")
+            raise NoFieldsToUpdateException()
+
         if "product_name" in update_data_for_service and update_data_for_service["product_name"] is not None:
             await self.validate_len_product_name(update_data_for_service["product_name"])
-            
+
         updated_product = await super().update(seller_id, update_payload)
-        
         return updated_product
-            
-        
+
