@@ -35,6 +35,13 @@ class AsyncMemoryRepository(AsyncCrudRepository[T, ID], Generic[T, ID]):
 
         raise NotFoundException()
     
+    async def find_by_seller_id(self, seller_id: str) -> Optional[T]:
+        # Busca pelo seller_id no repositório em memória
+        result = [r for r in self.memory if r.seller_id == seller_id]
+        if result:
+            return result
+        raise NotFoundException()
+    
     async def find_by_sku(self, sku: str) -> Optional[T]:
         # Busca pelo SKU no repositório em memória
         result = next((r for r in self.memory if r.sku == sku), None)

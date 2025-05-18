@@ -2,7 +2,7 @@ from ...models import Catalogo
 from ...repositories import SomethingRepository
 from ..base import CrudService
 from fastapi import HTTPException
-from .something_exceptions import NoFieldsToUpdateException, SomethingAlreadyExistsException, ProductNotExistException,ProductNameLengthException,SellerIDException
+from .something_exceptions import NoFieldsToUpdateException, SomethingAlreadyExistsException, ProductNotExistException,ProductNameLengthException,SellerIDException, SKULengthException, SellerIDNotExistException
 from app.api.v1.schemas.something_schema import SomethingUpdate
 
 class CatalogoService(CrudService[Catalogo, int]):
@@ -16,7 +16,10 @@ class CatalogoService(CrudService[Catalogo, int]):
         Cria um novo produto no catálogo.
         """
         #Valida o seller_id
-        await self.validade_seller_id(catalogo.seller_id)
+        await self.validade_len_seller_id(catalogo.seller_id)
+
+        # Valida o SKU
+        await self.validade_len_sku(catalogo.sku)
 
         # Converte o seller_id para minúsculas
         catalogo.seller_id = catalogo.seller_id.lower()
@@ -48,6 +51,18 @@ class CatalogoService(CrudService[Catalogo, int]):
         # Deleta o produto
         await self.repository.delete_product(product)
 
+    async def find_by_seller_id(self, seller_id):
+        """
+        Busca todos os produtos no catálogo com base no seller_id.
+        """
+        seller_id = seller_id.lower()
+        try:
+            result = await super().find_by_seller_id(seller_id)
+        except Exception:
+            raise SellerIDNotExistException()
+        return result
+
+
     async def validate_product_exist(self, seller_id: str, sku: str) -> None:
         """
         Valida se um produto pode ser criado verificando se já existe um produto com o mesmo seller_id e SKU.
@@ -69,7 +84,14 @@ class CatalogoService(CrudService[Catalogo, int]):
         if len(product_name) < 2 or len(product_name) > 15 or product_name == "":
             raise ProductNameLengthException()
         
-    async def validade_seller_id(self, seller_id: str) -> None:
+    async def validade_len_sku(self, sku: str) -> None:
+        """
+        Valida o SKU.
+        """
+        if len(sku) < 2 or sku == "":
+            raise SKULengthException()
+        
+    async def validade_len_seller_id(self, seller_id: str) -> None:
         """
         Valida o seller_id.
         """

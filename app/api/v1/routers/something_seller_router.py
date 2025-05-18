@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, List
 
 from dependency_injector.wiring import Provide, inject
 from fastapi import APIRouter, Depends, HTTPException, status
@@ -137,21 +137,31 @@ async def delete(
     sku: str,
     something_service: "SomethingService" = Depends(Provide["something_service"]),
 ):
-    await something_service.delete_product(seller_id, sku)
+    return await something_service.delete_product(seller_id, sku)
 
-
-
-"""nao utilizadas"""
-
-#Busca o produto pelo ID
+#BUSCA TODOS OS PRODUTOS CADASTRADOS POR UM SELLER_ID
 @router.get(
     "/{seller_id}",
-    response_model=SomethingResponse,
+    response_model=List[SomethingResponse],
     status_code=status.HTTP_200_OK,
+    summary="Buscar todos os produtos de um seller",
+    description=
+    """
+        Retorna todos os produtos cadastrados no catálogo com base no seller_id.
+
+        Parâmetros:
+            seller_id: ID do seller.
+
+        Retorna:
+            Uma lista de produtos associados ao seller_id fornecido.
+
+        Erros:
+            404 - SellerID não encontrado.
+    """,
 )
 @inject
-async def get_by_id(
+async def get_by_seller_id(
     seller_id: str,
     something_service: "SomethingService" = Depends(Provide["something_service"]),
 ):
-    return await something_service.find_by_id(seller_id)
+    return await something_service.find_by_seller_id(seller_id)

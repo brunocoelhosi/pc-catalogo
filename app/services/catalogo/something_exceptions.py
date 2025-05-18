@@ -1,7 +1,5 @@
 from app.common.exceptions import ConflictException, NotFoundException
 
-
-
 class SomethingAlreadyExistsException(ConflictException):
     def __init__(self):
         details = [
@@ -32,6 +30,16 @@ class ProductNameLengthException(NotFoundException):
         ]
         super().__init__(details)
 
+class SKULengthException(NotFoundException):
+    def __init__(self):
+        details = [
+            {
+                "message": "SKU fora do tamanho permitido",
+                "slug": "404-tamanho-sku-não-permitido",
+            }
+        ]
+        super().__init__(details)
+
 class SellerIDException(NotFoundException):
     def __init__(self):
         details = [
@@ -41,6 +49,7 @@ class SellerIDException(NotFoundException):
             }
         ]
         super().__init__(details)
+
 class NoFieldsToUpdateException(NotFoundException):
     def __init__(self):
         details = [
@@ -50,3 +59,14 @@ class NoFieldsToUpdateException(NotFoundException):
             }
         ]
         super().__init__(details)
+
+class SellerIDNotExistException(NotFoundException):
+    def __init__(self):
+        details = [
+            {
+                "message": "SellerID não encontrado",
+                "slug": "400-seller_id-não-encontrado",
+            }
+        ]
+        super().__init__(details)
+
