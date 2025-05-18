@@ -8,9 +8,12 @@ if TYPE_CHECKING:
     from app.api.common.schemas.response import ErrorDetail
 
 
-class UnauthorizedException(ApplicationException):
+class ConflictException(ApplicationException):
     def __init__(
         self,
         details: list["ErrorDetail"] | None = None,
     ):
-        super().__init__(error_info=ErrorCodes.UNAUTHORIZED.value, details=details)
+        super().__init__(
+            error_info=ErrorCodes.CONFLICT.value,
+            details=details,
+        )

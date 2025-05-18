@@ -5,7 +5,6 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.requests import Request
 from fastapi.responses import JSONResponse
 from pydantic_core import ValidationError
-from starlette.status import HTTP_500_INTERNAL_SERVER_ERROR
 
 from app.common.error_codes import ErrorCodes
 from app.common.exceptions import ApplicationException
@@ -18,7 +17,7 @@ async def _get_request_body(request: Request) -> dict | None:
         return json.loads(await request.body())
     except Exception as ex:
         # XXX Informar que deu erro
-        ...
+        print(":-( ", ex)
     return None
 
 
@@ -78,12 +77,16 @@ def add_error_handlers(app: FastAPI):
                 # Pydantic não trata direito erros como ValueError, retornando um padrão
                 # diferente do FastAPI.
                 ctx["error"] = str(ctx["error"])
+                
+            valid_locations = {"query", "path", "body", "header"}
+            location = error["loc"][0] if error["loc"] and error["loc"][0] in valid_locations else "body"
 
             details.append(
                 ErrorDetail(
                     **{
                         "message": error["msg"],
-                        "location": error["loc"][0] if error["loc"] else "body",
+                        #"location": error["loc"][0] if error["loc"] else "body",
+                        "location": location,
                         "slug": error["type"],
                         "field": ", ".join(map(str, error["loc"][1:])) if error["loc"] else "",
                         "ctx": ctx,
