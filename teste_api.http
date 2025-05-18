@@ -25,7 +25,7 @@ POST {{api_catalogo}}
 
 {
   "seller_id": "magalu1",
-  "sku": "cadeira2",
+  "sku": "cadeira22",
   "product_name": "cadeira2"
 }
 

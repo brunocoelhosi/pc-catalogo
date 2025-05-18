@@ -9,8 +9,6 @@ class CatalogoService(CrudService[Catalogo, int]):
     def __init__(self, repository: SomethingRepository):
         super().__init__(repository)
 
-
-    
     async def create(self, catalogo: Catalogo) -> Catalogo:
         """
         Cria um novo produto no catálogo.
@@ -23,6 +21,11 @@ class CatalogoService(CrudService[Catalogo, int]):
 
         # Converte o seller_id para minúsculas
         catalogo.seller_id = catalogo.seller_id.lower()
+
+        #remove espaço em branco do product_name, sku e seller_id
+        catalogo.product_name = catalogo.product_name.strip()
+        catalogo.sku = catalogo.sku.strip()
+        catalogo.seller_id = catalogo.seller_id.strip()
 
         # Verifica se o produto já existe
         await self.validate_product_exist(catalogo.seller_id, catalogo.sku)
@@ -81,22 +84,27 @@ class CatalogoService(CrudService[Catalogo, int]):
         """
         Valida o tamanho do nome do produto.
         """
-        if len(product_name) < 2 or len(product_name) > 15 or product_name == "":
+        is_only_whitespace = lambda s: not s or s.isspace()
+
+        if len(product_name) < 2 or len(product_name) > 200 or product_name == "" or is_only_whitespace(product_name):
             raise ProductNameLengthException()
         
     async def validade_len_sku(self, sku: str) -> None:
         """
         Valida o SKU.
         """
-        if len(sku) < 2 or sku == "":
+        is_only_whitespace = lambda s: not s or s.isspace()
+
+        if len(sku) < 2 or sku == "" or is_only_whitespace(sku):
             raise SKULengthException()
         
     async def validade_len_seller_id(self, seller_id: str) -> None:
         """
         Valida o seller_id.
         """
+        is_only_whitespace = lambda s: not s or s.isspace()
 
-        if len(seller_id) < 2 or seller_id == "":
+        if len(seller_id) < 2 or seller_id == "" or is_only_whitespace(seller_id):
             raise SellerIDException()
         
     async def update_product_partial(self, seller_id: str, sku: str, update_payload: SomethingUpdate) -> Catalogo:
