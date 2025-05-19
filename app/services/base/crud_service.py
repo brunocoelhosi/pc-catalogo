@@ -7,8 +7,6 @@ from app.repositories import AsyncCrudRepository
 T = TypeVar("T", bound=PersistableEntity)
 ID = TypeVar("ID")
 
-
-
 class CrudService(Generic[T, ID]):
     def __init__(self, repository: AsyncCrudRepository[T, ID]):
         self.repository = repository
@@ -36,9 +34,8 @@ class CrudService(Generic[T, ID]):
     
     async def find(self, paginator: Paginator, filters: dict) -> list[T]:
         return await self.repository.find(
-            filters=filters, limit=paginator.limit, offset=paginator.offset, sort=paginator.get_sort_order()
-        )
-    
+            filters=filters, limit=paginator.limit, offset=paginator.offset, sort=paginator.get_sort_order())
+        
     async def find_by_seller_id(self, seller_id: str) -> T | None:
         return await self.repository.find_by_seller_id(seller_id)
 

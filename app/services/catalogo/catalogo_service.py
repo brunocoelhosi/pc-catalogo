@@ -9,49 +9,41 @@ class CatalogoService(CrudService[Catalogo, int]):
     def __init__(self, repository: SomethingRepository):
         super().__init__(repository)
 
+
     async def create(self, catalogo: Catalogo) -> Catalogo:
         """
         Cria um novo produto no catálogo.
         """
-        #Valida o seller_id
+        await self.validate(catalogo)
+        await self.review(catalogo)
+        return await self.save(catalogo)
+
+    async def validate(self, catalogo: Catalogo) -> None:
+
         await self.validade_len_seller_id(catalogo.seller_id)
-
-        # Valida o SKU
         await self.validade_len_sku(catalogo.sku)
-
-        # Converte o seller_id para minúsculas
-        catalogo.seller_id = catalogo.seller_id.lower()
-
-        #remove espaço em branco do product_name, sku e seller_id
-        catalogo.product_name = catalogo.product_name.strip()
-        catalogo.sku = catalogo.sku.strip()
-        catalogo.seller_id = catalogo.seller_id.strip()
-
-        # Verifica se o produto já existe
-        await self.validate_product_exist(catalogo.seller_id, catalogo.sku)
-        
-        # Valida o tamanho do nome do produto
         await self.validate_len_product_name(catalogo.product_name)
 
-        # Cria o produto
-        resp = await super().create(catalogo)
-        return resp
+    async def review(self, catalogo: Catalogo) -> None:
+        # Converte e limpa campos
+        catalogo.seller_id = catalogo.seller_id.lower().strip()
+        catalogo.sku = catalogo.sku.strip()
+        catalogo.product_name = catalogo.product_name.strip()
+        # Verifica se o produto já existe
+        await self.validate_product_exist(catalogo.seller_id, catalogo.sku)
+
+    async def save(self, catalogo: Catalogo) -> Catalogo:
+        return await super().create(catalogo)
     
     async def delete_product(self, seller_id: str, sku: str) -> None:
         """
         Deleta um produto do catálogo.
         """
         seller_id = seller_id.lower()
-        try:
-            # Tenta encontrar o produto pelo seller_id e SKU
-            product = await self.find_product(seller_id, sku)
-        except Exception:  # Captura NotFoundException ou equivalente
-            product = None
-
+        product = await self.find_product(seller_id, sku)
         if product is None:
             raise ProductNotExistException()
-        
-        # Deleta o produto
+
         await self.repository.delete_product(product)
 
     async def find_by_seller_id(self, seller_id):
@@ -59,12 +51,10 @@ class CatalogoService(CrudService[Catalogo, int]):
         Busca todos os produtos no catálogo com base no seller_id.
         """
         seller_id = seller_id.lower()
-        try:
-            result = await super().find_by_seller_id(seller_id)
-        except Exception:
+        result = await super().find_by_seller_id(seller_id)
+        if not result:
             raise SellerIDNotExistException()
         return result
-
 
     async def validate_product_exist(self, seller_id: str, sku: str) -> None:
         """
@@ -112,8 +102,12 @@ class CatalogoService(CrudService[Catalogo, int]):
         Atualiza parcialmente um produto no catálogo com base no seller_id e sku.
         """
         seller_id = seller_id.lower()
+
         # Busca o produto atual
         product_to_update = await self.find_product(seller_id, sku)
+
+        if not product_to_update:
+            raise ProductNotExistException()
 
         #exclude_unset=True: somente os campos que foram enviados no payload serão atualizados
         update_data_for_service = update_payload.model_dump(exclude_unset=True)
@@ -129,7 +123,6 @@ class CatalogoService(CrudService[Catalogo, int]):
                 break
 
         if is_same:
-            #raise HTTPException(status_code=400, detail="Os dados enviados são iguais aos já cadastrados.")
             raise NoFieldsToUpdateException()
 
         if "product_name" in update_data_for_service and update_data_for_service["product_name"] is not None:
