@@ -23,50 +23,36 @@ class AsyncMemoryRepository(AsyncCrudRepository[T, ID], Generic[T, ID]):
         entity_dict["created_at"] = utcnow()
 
         self.memory.append(entity)
-
         return entity_dict
 
-    #Busca pelo ID do seller
+#Busca pelo ID do seller
     async def find_by_id(self, entity_id: ID) -> Optional[T]:
-
         result = next((r for r in self.memory if r.seller == entity_id), None)
-        if result:
-            return result
-
-        raise NotFoundException()
+        return result
     
+# Busca pelo seller_id no repositório em memória
     async def find_by_seller_id(self, seller_id: str) -> Optional[T]:
-        # Busca pelo seller_id no repositório em memória
         result = [r for r in self.memory if r.seller_id == seller_id]
-        if result:
-            return result
-        raise NotFoundException()
-    
+        return result
+
+# Busca pelo SKU no repositório em memória
     async def find_by_sku(self, sku: str) -> Optional[T]:
-        # Busca pelo SKU no repositório em memória
         result = next((r for r in self.memory if r.sku == sku), None)
-        if result:
-            return result
-        raise NotFoundException()
-
+        return result
+    
+# Busca por um produto unico seller + sku
     async def find_product(self, id: str, sku: str) -> Optional[T]:
-        # Busca por um produto unico seller + sku
-        
         id = id.lower()
-
         result = next((r for r in self.memory if r.sku == sku and r.seller_id == id), None)
-        if result:
-            return result
-        raise NotFoundException("Produto não encontrado.")
-    
-    async def delete_product(self, product) -> None:
+        return result
 
+#Deleta um produto do repositório em memória
+    async def delete_product(self, product) -> None:
         if product in self.memory:
-            self.memory.remove(product)
-            return {"message": "Product deleted successfully"}
-        
-        raise NotFoundException()
-    
+            result = self.memory.remove(product)
+            return result
+        else:
+            return None
 
     async def update(self, entity_id: ID, entity_update_payload) -> T:
         index_toupdate = -1
@@ -81,7 +67,7 @@ class AsyncMemoryRepository(AsyncCrudRepository[T, ID], Generic[T, ID]):
                 found_entity = item
                 break
         if found_entity is None:
-            raise NotFoundException(f"Entidade com ID {entity_id} não encontrada.")
+            return None
         
         update_data = entity_update_payload.model_dump(exclude_unset=True)
         
