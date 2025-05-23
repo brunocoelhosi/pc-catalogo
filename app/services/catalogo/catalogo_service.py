@@ -1,12 +1,12 @@
 from ...models import Catalogo
-from ...repositories import SomethingRepository
+from ...repositories import CatalogoRepository
 from ..base import CrudService
 from fastapi import HTTPException
-from .something_exceptions import NoFieldsToUpdateException, SomethingAlreadyExistsException, ProductNotExistException,ProductNameLengthException,SellerIDException, SKULengthException, SellerIDNotExistException
-from app.api.v1.schemas.something_schema import SomethingUpdate
+from .catalogo_exceptions import NoFieldsToUpdateException, ProductAlreadyExistsException, ProductNotExistException,ProductNameLengthException,SellerIDException, SKULengthException, SellerIDNotExistException
+from app.api.v1.schemas.catalogo_schema import CatalogoUpdate
 
 class CatalogoService(CrudService[Catalogo, int]):
-    def __init__(self, repository: SomethingRepository):
+    def __init__(self, repository: CatalogoRepository):
         super().__init__(repository)
 
 
@@ -68,7 +68,7 @@ class CatalogoService(CrudService[Catalogo, int]):
 
         # Se o produto já existir, lança uma exceção
         if product_exist:
-            raise SomethingAlreadyExistsException()
+            raise ProductAlreadyExistsException()
 
     async def validate_len_product_name(self, product_name: str) -> None:
         """
@@ -97,7 +97,7 @@ class CatalogoService(CrudService[Catalogo, int]):
         if len(seller_id) < 2 or seller_id == "" or is_only_whitespace(seller_id):
             raise SellerIDException()
         
-    async def update_product_partial(self, seller_id: str, sku: str, update_payload: SomethingUpdate) -> Catalogo:
+    async def update_product_partial(self, seller_id: str, sku: str, update_payload: CatalogoUpdate) -> Catalogo:
         """
         Atualiza parcialmente um produto no catálogo com base no seller_id e sku.
         """

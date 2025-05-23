@@ -1,1 +1,1 @@
-SOMETHING_PREFIX = "/catalogo"
+CATALOGO_PREFIX = "/catalogo"

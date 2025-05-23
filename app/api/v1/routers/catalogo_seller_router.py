@@ -5,17 +5,17 @@ from fastapi import APIRouter, Depends, HTTPException, status
 
 from app.api.common.schemas import ListResponse, Paginator, UuidType, get_request_pagination
 
-from ..schemas.something_schema import SomethingCreate, SomethingResponse, SomethingUpdate
-from . import SOMETHING_PREFIX
+from ..schemas.catalogo_schema import CatalogoCreate, CatalogoResponse, CatalogoUpdate
+from . import CATALOGO_PREFIX
 
 if TYPE_CHECKING:
     from app.services import SomethingService
 
-router = APIRouter(prefix=SOMETHING_PREFIX, tags=["CRUD Catálogo"])
+router = APIRouter(prefix=CATALOGO_PREFIX, tags=["CRUD Catálogo"])
 
 ##BUSCAR TODOS OS PRODUTOS
 @router.get("",
-    response_model=ListResponse[SomethingResponse],
+    response_model=ListResponse[CatalogoResponse],
     status_code=status.HTTP_200_OK,
     summary="Buscar todos os produtos",
     description=
@@ -50,7 +50,7 @@ async def get_all_products(
 #BUSCAR PRODUTO POR SELLER_ID + SKU
 @router.get(
     "/{seller_id}/{sku}",
-    response_model=SomethingResponse,
+    response_model=CatalogoResponse,
     status_code=status.HTTP_200_OK,
     summary="Buscar produto por Seller_id e SKU",
     description=
@@ -71,7 +71,7 @@ async def get_product(
 #CADASTRO DE UM PRODUTO
 @router.post(
     "",
-    response_model=SomethingResponse,
+    response_model=CatalogoResponse,
     status_code=status.HTTP_201_CREATED,
     summary="Cadastrar um novo produto",
     description=
@@ -92,14 +92,14 @@ async def get_product(
 )
 @inject
 async def create(
-    something: SomethingCreate, something_service: "SomethingService" = Depends(Provide["something_service"])
+    something: CatalogoCreate, something_service: "SomethingService" = Depends(Provide["something_service"])
 ):
     return await something_service.create(something)
 
 #ATUALIZA O NOME DE UM PRODUTO
 @router.patch(
     "/{seller_id}/{sku}",
-    response_model=SomethingResponse,
+    response_model=CatalogoResponse,
     status_code=status.HTTP_200_OK,
     summary="Atualizar produto",
 )
@@ -107,7 +107,7 @@ async def create(
 async def update_by_id(
     seller_id: str,
     sku: str,
-    something: SomethingUpdate,
+    something: CatalogoUpdate,
     something_service: "SomethingService" = Depends(Provide["something_service"]),
 ):
     return await something_service.update_product_partial(seller_id, sku, something)
@@ -142,7 +142,7 @@ async def delete(
 #BUSCA TODOS OS PRODUTOS CADASTRADOS POR UM SELLER_ID
 @router.get(
     "/{seller_id}",
-    response_model=List[SomethingResponse],
+    response_model=List[CatalogoResponse],
     status_code=status.HTTP_200_OK,
     summary="Buscar todos os produtos de um seller",
     description=
