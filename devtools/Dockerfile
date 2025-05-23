@@ -24,7 +24,7 @@ ENV PYTHONPATH=/app
 ENV PATH=/catalogo/venv/bin:$PATH
 
 WORKDIR /app
-COPY --from=construtor /app/venv /app/venv
+COPY --from=construtor /catalogo/venv /app/venv
 COPY app /projeto/app
 COPY requirements.txt /app
 
