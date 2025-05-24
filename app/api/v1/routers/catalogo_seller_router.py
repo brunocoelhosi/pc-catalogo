@@ -119,9 +119,9 @@ async def get_product(
 )
 @inject
 async def create(
-    something: CatalogoCreate, catalogo_service: "CatalogoService" = Depends(Provide["catalogo_service"])
+    catalogo: CatalogoCreate, catalogo_service: "CatalogoService" = Depends(Provide["catalogo_service"])
 ):
-    return await catalogo_service.create(something)
+    return await catalogo_service.create(catalogo)
 
 #ATUALIZA O NOME DE UM PRODUTO
 @router.patch(
@@ -133,11 +133,11 @@ async def create(
 @inject
 async def update_by_id(
     sku: str,
-    something: CatalogoUpdate,
+    catalogo: CatalogoUpdate,
     seller_id: str = Header(..., description="Identificador do vendedor"),
     catalogo_service: "CatalogoService" = Depends(Provide["catalogo_service"]),
 ):
-    return await catalogo_service.update_product_partial(seller_id, sku, something)
+    return await catalogo_service.update_product_partial(seller_id, sku, catalogo)
 
 #DELETA UM PRODUTO
 @router.delete(
