@@ -155,3 +155,8 @@ cython_debug/
 
 # Visual Studio Code
 .vscode/
+
+# SonarQube
+sonarqube-25.5.0.107428/
+.sonar/
+.scannerwork/

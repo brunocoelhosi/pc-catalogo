@@ -1,21 +1,22 @@
 from typing import TYPE_CHECKING, List
 
 from dependency_injector.wiring import Provide, inject
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, Header, status
 
 from app.api.common.schemas import ListResponse, Paginator, UuidType, get_request_pagination
 
-from ..schemas.something_schema import SomethingCreate, SomethingResponse, SomethingUpdate
-from . import SOMETHING_PREFIX
+from ..schemas.catalogo_schema import CatalogoCreate, CatalogoResponse, CatalogoUpdate
+from . import CATALOGO_PREFIX
 
 if TYPE_CHECKING:
-    from app.services import SomethingService
+    from app.services import CatalogoService
 
-router = APIRouter(prefix=SOMETHING_PREFIX, tags=["CRUD Catálogo"])
+router = APIRouter(prefix=CATALOGO_PREFIX, tags=["CRUD Catálogo"])
 
 ##BUSCAR TODOS OS PRODUTOS
-@router.get("",
-    response_model=ListResponse[SomethingResponse],
+@router.get(
+    "/find/all",
+    response_model=ListResponse[CatalogoResponse],
     status_code=status.HTTP_200_OK,
     summary="Buscar todos os produtos",
     description=
@@ -41,16 +42,43 @@ router = APIRouter(prefix=SOMETHING_PREFIX, tags=["CRUD Catálogo"])
 @inject
 async def get_all_products(
     paginator: Paginator = Depends(get_request_pagination),
-    something_service: "SomethingService" = Depends(Provide["something_service"]),
+    catalogo_service: "CatalogoService" = Depends(Provide["catalogo_service"]),
 ):
-    results = await something_service.find(paginator=paginator, filters={})
+    results = await catalogo_service.find(paginator=paginator, filters={})
 
     return paginator.paginate(results=results)
 
+#BUSCA TODOS OS PRODUTOS CADASTRADOS POR UM SELLER_ID
+@router.get(
+    "/find/by-seller-id",
+    response_model=List[CatalogoResponse],
+    status_code=status.HTTP_200_OK,
+    summary="Buscar todos os produtos de um seller",
+    description=
+    """
+        Retorna todos os produtos cadastrados no catálogo com base no seller_id.
+
+        Parâmetros:
+            seller_id: ID do seller.
+
+        Retorna:
+            Uma lista de produtos associados ao seller_id fornecido.
+
+        Erros:
+            404 - SellerID não encontrado.
+    """,
+)
+@inject
+async def get_by_seller_id(
+    seller_id: str = Header(..., description="Identificador do vendedor"),
+    catalogo_service: "CatalogoService" = Depends(Provide["catalogo_service"]),
+):
+    return await catalogo_service.find_by_seller_id(seller_id)
+
 #BUSCAR PRODUTO POR SELLER_ID + SKU
 @router.get(
-    "/{seller_id}/{sku}",
-    response_model=SomethingResponse,
+    "/find/by-seller-id-and-sku/{sku}",
+    response_model=CatalogoResponse,
     status_code=status.HTTP_200_OK,
     summary="Buscar produto por Seller_id e SKU",
     description=
@@ -61,17 +89,43 @@ async def get_all_products(
 )
 @inject
 async def get_product(
-    seller_id: str,
     sku: str,
-    something_service: "SomethingService" = Depends(Provide["something_service"]),
+    seller_id: str = Header(..., description="Identificador do vendedor"),
+    catalogo_service: "CatalogoService" = Depends(Provide["catalogo_service"]),
 ):
-    return await something_service.find_product(seller_id, sku)
+    return await catalogo_service.find_product(seller_id, sku)
 
+#BUSCAR PRODUTO POR SELLER_ID + PRODUCT_NAME
+@router.get(
+    "/find/by-seller-id-and-product_name/{product_name}",
+    response_model=ListResponse[CatalogoResponse],
+    status_code=status.HTTP_200_OK,
+    summary="Buscar produto por Seller_id e product_name",
+    description=
+    """
+        Retorna um produto específico do catálogo com base no seller_id e product_name.
+
+    """,
+)
+@inject
+async def get_product(
+    product_name: str,
+    paginator: Paginator = Depends(get_request_pagination),
+    seller_id: str = Header(..., description="Identificador do vendedor"),
+    catalogo_service: "CatalogoService" = Depends(Provide["catalogo_service"]),
+):
+    filters = {
+        "product_name": product_name,
+        "seller_id": seller_id
+    }
+    results = await catalogo_service.find_by_product_name(paginator=paginator, filters=filters)
+
+    return paginator.paginate(results=results)
 
 #CADASTRO DE UM PRODUTO
 @router.post(
-    "",
-    response_model=SomethingResponse,
+    "/create",
+    response_model=CatalogoResponse,
     status_code=status.HTTP_201_CREATED,
     summary="Cadastrar um novo produto",
     description=
@@ -92,30 +146,29 @@ async def get_product(
 )
 @inject
 async def create(
-    something: SomethingCreate, something_service: "SomethingService" = Depends(Provide["something_service"])
+    catalogo: CatalogoCreate, catalogo_service: "CatalogoService" = Depends(Provide["catalogo_service"])
 ):
-    return await something_service.create(something)
+    return await catalogo_service.create(catalogo)
 
 #ATUALIZA O NOME DE UM PRODUTO
 @router.patch(
-    "/{seller_id}/{sku}",
-    response_model=SomethingResponse,
+    "/update/{sku}",
+    response_model=CatalogoResponse,
     status_code=status.HTTP_200_OK,
     summary="Atualizar produto",
 )
 @inject
 async def update_by_id(
-    seller_id: str,
     sku: str,
-    something: SomethingUpdate,
-    something_service: "SomethingService" = Depends(Provide["something_service"]),
+    catalogo: CatalogoUpdate,
+    seller_id: str = Header(..., description="Identificador do vendedor"),
+    catalogo_service: "CatalogoService" = Depends(Provide["catalogo_service"]),
 ):
-    return await something_service.update_product_partial(seller_id, sku, something)
-
+    return await catalogo_service.update_product_partial(seller_id, sku, catalogo)
 
 #DELETA UM PRODUTO
 @router.delete(
-        "/{seller_id}/{sku}",
+        "/delete/{sku}",
         status_code=status.HTTP_204_NO_CONTENT,
         summary="Deletar produto",
         description=
@@ -133,35 +186,8 @@ async def update_by_id(
         )   
 @inject
 async def delete(
-    seller_id: str,
     sku: str,
-    something_service: "SomethingService" = Depends(Provide["something_service"]),
+    seller_id: str = Header(..., description="Identificador do vendedor"),
+    catalogo_service: "CatalogoService" = Depends(Provide["catalogo_service"]),
 ):
-    return await something_service.delete_product(seller_id, sku)
-
-#BUSCA TODOS OS PRODUTOS CADASTRADOS POR UM SELLER_ID
-@router.get(
-    "/{seller_id}",
-    response_model=List[SomethingResponse],
-    status_code=status.HTTP_200_OK,
-    summary="Buscar todos os produtos de um seller",
-    description=
-    """
-        Retorna todos os produtos cadastrados no catálogo com base no seller_id.
-
-        Parâmetros:
-            seller_id: ID do seller.
-
-        Retorna:
-            Uma lista de produtos associados ao seller_id fornecido.
-
-        Erros:
-            404 - SellerID não encontrado.
-    """,
-)
-@inject
-async def get_by_seller_id(
-    seller_id: str,
-    something_service: "SomethingService" = Depends(Provide["something_service"]),
-):
-    return await something_service.find_by_seller_id(seller_id)
+    return await catalogo_service.delete_product(seller_id, sku)

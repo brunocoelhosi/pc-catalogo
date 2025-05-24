@@ -25,7 +25,7 @@ class AsyncMemoryRepository(AsyncCrudRepository[T, ID], Generic[T, ID]):
         self.memory.append(entity)
         return entity_dict
 
-#Busca pelo ID do seller
+#Busca pelo ID
     async def find_by_id(self, entity_id: ID) -> Optional[T]:
         result = next((r for r in self.memory if r.seller == entity_id), None)
         return result
@@ -45,6 +45,19 @@ class AsyncMemoryRepository(AsyncCrudRepository[T, ID], Generic[T, ID]):
         id = id.lower()
         result = next((r for r in self.memory if r.sku == sku and r.seller_id == id), None)
         return result
+    
+# Busca por um produto ou mais produtos pelo seller + product_name paginados
+    async def find_by_product_name(self, filters: dict, limit: int = 10, offset: int = 0, sort: Optional[dict] = None) -> List[T]:
+        seller_id = filters.get("seller_id")
+        product_name = filters.get("product_name")
+        
+        filtered_list = [
+            item for item in self.memory
+            if (seller_id is None or item.seller_id.lower() == seller_id.lower())
+            and (product_name is None or item.product_name.lower() == product_name.lower())
+        ]
+
+        return filtered_list[offset:offset + limit]
 
 #Deleta um produto do repositório em memória
     async def delete_product(self, product) -> None:
