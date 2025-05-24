@@ -33,6 +33,12 @@ class AsyncCrudRepository(ABC, Generic[T, ID]):
         """
         Busca uma entidade pelo seu id+sku.
         """
+        
+    @abstractmethod
+    async def find_by_product_name(self, filters: dict, limit: int, offset: int, sort: dict | None = None) -> list[T]:
+        """
+        Busca entidades pelo seu id+name.
+        """
 
     @abstractmethod
     async def find(self, filters: dict, limit: int, offset: int, sort: dict | None = None) -> list[T]:

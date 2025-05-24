@@ -95,6 +95,33 @@ async def get_product(
 ):
     return await catalogo_service.find_product(seller_id, sku)
 
+#BUSCAR PRODUTO POR SELLER_ID + PRODUCT_NAME
+@router.get(
+    "/find/by-seller-id-and-product_name/{product_name}",
+    response_model=ListResponse[CatalogoResponse],
+    status_code=status.HTTP_200_OK,
+    summary="Buscar produto por Seller_id e product_name",
+    description=
+    """
+        Retorna um produto específico do catálogo com base no seller_id e product_name.
+
+    """,
+)
+@inject
+async def get_product(
+    product_name: str,
+    paginator: Paginator = Depends(get_request_pagination),
+    seller_id: str = Header(..., description="Identificador do vendedor"),
+    catalogo_service: "CatalogoService" = Depends(Provide["catalogo_service"]),
+):
+    filters = {
+        "product_name": product_name,
+        "seller_id": seller_id
+    }
+    results = await catalogo_service.find_by_product_name(paginator=paginator, filters=filters)
+
+    return paginator.paginate(results=results)
+
 #CADASTRO DE UM PRODUTO
 @router.post(
     "/create",
