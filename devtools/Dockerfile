@@ -37,9 +37,10 @@ EXPOSE 8000
 
 CMD ["uvicorn", "app.api_main:app", "--host", "0.0.0.0", "--port", "8000"]
 
-# Montagem
+# Montagem Docker
 # docker docker build -f ./devtools/Dockerfile -t catalogo:0.0.1 .
 # Execução
 # docker run --rm -e ENV=dev -p 8000:8000 catalogo:0.0.1
 
+#Docker compose
 #docker-compose -f docker-compose-catalogo.yml up --build

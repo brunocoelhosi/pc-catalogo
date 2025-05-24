@@ -37,6 +37,16 @@ Confirme se o [Python 3.12](https://docs.python.org/3.12/) está instalado em su
 
 #
 
+### Comandos execução do projeto utilizando Docker-compose.
+
+Clone o projeto, acesse o diretório:
+
+Na raiz do projeto, execute o comando:
+
+```sh
+docker-compose -f devtools/docker-compose-catalogo.yml up --build
+```
+
 ### Comandos via Linux 🐧.
 
 Clone o projeto, acesse o diretório:
