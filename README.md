@@ -37,16 +37,6 @@ Confirme se o [Python 3.12](https://docs.python.org/3.12/) está instalado em su
 
 #
 
-### Comandos execução do projeto utilizando Docker-compose.
-
-Clone o projeto, acesse o diretório:
-
-Na raiz do projeto, execute o comando:
-
-```sh
-docker-compose -f devtools/docker-compose-catalogo.yml up --build
-```
-
 ### Comandos via Linux 🐧.
 
 Clone o projeto, acesse o diretório:
@@ -119,7 +109,7 @@ pip install -r requirements.txt
 
 Para novos commits, siga o padrão do https://commitlint.io/
 
-## ▶️ Execução
+## ▶️ Execução da API usando Docker
 
 Configure o arquivo de env:
 
@@ -137,11 +127,65 @@ ou execute o seguinte script na pasta raiz do projeto com o Git Bash:
 
 Use o comando para subir a API:
 
-```bash
+```sh
 uvicorn app.api_main:app --reload
 ```
 
-Acesse a doc da API em: [localhost:8000/api/docs](http://0.0.0.0:8000/api/docs).
+## ▶️ Execução da API usando Docker-compose
+
+Na raiz do projeto, execute o comando:
+
+```sh
+docker-compose -f devtools/docker-compose-catalogo.yml up --build
+```
+
+API: http://localhost:8000
+
+## ▶️ Execução SonarQuve para análise do projeto
+
+```
+docker-compose -f devtools/docker-compose-sonar.yml up --build
+```
+
+SonarQube: http://localhost:9000 (usuário padrão: admin, senha: admin)
+
+## Análise com SonarQuve
+
+#### 1. Gere e exporte o token do SonarQube
+
+Após acessar o SonarQube:
+
+- **Vá em "My Account" > "Security".**
+
+- **Gere um novo token (ex: catalogo).**
+
+- **Em outro terminal execute o seguinte comando para executar o Sonar-scanner**
+
+#### Windows
+
+```
+set SONAR_TOKEN=<seu_token_aqui>
+```
+
+```
+set SONAR_HOST_URL=http://localhost:9000
+```
+
+```
+sonar-scanner -Dsonar.login=%SONAR_TOKEN% -Dsonar.host.url=%SONAR_HOST_URL%
+```
+
+#### Linux
+
+```
+export SONAR_TOKEN=<seu_token_aqui>
+```
+
+```
+SONAR_HOST_URL=http://localhost:9000 pysonar-scanner
+```
+
+#### Isso irá enviar os dados da sua aplicação para análise no SonarQube.
 
 ## Contribuições e Atualizações
 

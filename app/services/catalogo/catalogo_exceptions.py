@@ -70,3 +70,14 @@ class SellerIDNotExistException(NotFoundException):
         ]
         super().__init__(details)
 
+class LikeNotFoundException(NotFoundException):
+    def __init__(self):
+        details = [
+            {
+                "message": "Produto pesquisado não encontrado",
+                "slug": "400-produto-não-encontrado",
+            }
+        ]
+        super().__init__(details)
+
+

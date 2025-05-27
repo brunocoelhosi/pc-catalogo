@@ -34,7 +34,7 @@ class AsyncMemoryRepository(AsyncCrudRepository[T, ID], Generic[T, ID]):
     async def find_by_seller_id(self, seller_id: str) -> Optional[T]:
         result = [r for r in self.memory if r.seller_id == seller_id]
         return result
-
+    
 # Busca pelo SKU no repositório em memória
     async def find_by_sku(self, sku: str) -> Optional[T]:
         result = next((r for r in self.memory if r.sku == sku), None)
@@ -49,18 +49,18 @@ class AsyncMemoryRepository(AsyncCrudRepository[T, ID], Generic[T, ID]):
 # Busca por um produto ou mais produtos pelo seller + product_name paginados
     async def find_by_product_name(self, filters: dict, limit: int = 10, offset: int = 0, sort: Optional[dict] = None) -> List[T]:
         seller_id = filters.get("seller_id")
-        product_name = filters.get("product_name")
+        name = filters.get("name")
         
         filtered_list = [
             item for item in self.memory
             if (seller_id is None or item.seller_id.lower() == seller_id.lower())
-            and (product_name is None or item.product_name.lower() == product_name.lower())
+            and (name is None or item.name.lower() == name.lower())
         ]
 
         return filtered_list[offset:offset + limit]
 
 #Deleta um produto do repositório em memória
-    async def delete_product(self, product) -> None:
+    async def delete(self, product) -> None:
         if product in self.memory:
             result = self.memory.remove(product)
             return result
@@ -119,3 +119,27 @@ class AsyncMemoryRepository(AsyncCrudRepository[T, ID], Generic[T, ID]):
         return entities
        
         
+    async def find2(self, filters: dict, limit: int = 10, offset: int = 0, sort: Optional[dict] = None) -> List[T]:
+        def matches_filters(item):
+            for key, value in filters.items():
+                attr = getattr(item, key, None)
+                if attr is None:
+                    return False
+                # Case-insensitive comparison for strings
+                if isinstance(attr, str) and isinstance(value, str):
+                    if attr.lower() != value.lower():
+                        return False
+                else:
+                    if attr != value:
+                        return False
+            return True
+
+        filtered_list = [data for data in self.memory if matches_filters(data)]
+
+        # Optional sorting
+        if sort:
+            for key, direction in reversed(sort.items()):
+                reverse = direction.lower() == "desc"
+                filtered_list.sort(key=lambda x: getattr(x, key, None), reverse=reverse)
+
+        return filtered_list[offset:offset + limit]

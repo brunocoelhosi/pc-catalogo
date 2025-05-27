@@ -59,7 +59,7 @@ class AsyncCrudRepository(ABC, Generic[T, ID]):
         """
 
     @abstractmethod
-    async def delete_product(self, product) -> None:
+    async def delete(self, product) -> None:
         """
         Remove uma entidade pelo seu identificador único.
         """

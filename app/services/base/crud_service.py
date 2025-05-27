@@ -42,6 +42,9 @@ class CrudService(Generic[T, ID]):
         
     async def find_by_seller_id(self, seller_id: str) -> T | None:
         return await self.repository.find_by_seller_id(seller_id)
+    
+    async def find_by_filter(self, seller_id: str, paginator: Paginator = None, name_like: str = None) -> list[T]:
+        return await self.repository.find_by_filter(seller_id)
 
     async def update(self, entity_id: ID, entity: Any) -> T:
         return await self.repository.update(entity_id, entity)
@@ -49,5 +52,5 @@ class CrudService(Generic[T, ID]):
     async def delete_by_id(self, entity_id: ID) -> None:
         await self.repository.delete_by_id(entity_id)
 
-    async def delete_product(self, product) -> None:
-        await self.repository.delete_product(product)
+    async def delete(self, product) -> None:
+        await self.repository.delete(product)

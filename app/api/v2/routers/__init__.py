@@ -1,0 +1,1 @@
+CATALOGO_PREFIX = "/catalogo"
