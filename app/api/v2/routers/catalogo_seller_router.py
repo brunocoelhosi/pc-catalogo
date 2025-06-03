@@ -21,7 +21,22 @@ router = APIRouter(prefix=CATALOGO_PREFIX, tags=["CRUD Catálogo v2"])
     response_model=ListResponse[CatalogoResponse],
     status_code=status.HTTP_200_OK,
     summary="Buscar produtos por filtro",
-    description="Retorna os produtos do seller filtrando por nome (like)."
+    description=
+    """
+    Retorna os produtos do seller filtrando por nome (like).
+
+        Parâmetros:
+            
+            - seller_id: Identificador do vendedor.
+            - sku: Identificador do produto.
+            - name: Nome do produto.
+
+        Retorna:
+
+            O produto adicionado.
+
+    """,
+
 )
 @inject
 async def get_by_seller_id_paginado(
@@ -30,9 +45,11 @@ async def get_by_seller_id_paginado(
     paginator: Paginator = Depends(get_request_pagination),
     catalogo_service: "CatalogoService" = Depends(Provide["catalogo_service"]),
 ):
-    return await catalogo_service.find_by_filter(
+    results = await catalogo_service.find_by_filter(
         seller_id, paginator=paginator, name_like=name_like
     )
+    # Corrija aqui: retorne um objeto ListResponse
+    return ListResponse(results=results, meta=None)
 
 #BUSCAR PRODUTO POR SELLER_ID + SKU
 @router.get(

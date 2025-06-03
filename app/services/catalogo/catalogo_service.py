@@ -1,17 +1,17 @@
 from app.api.common.schemas.pagination import Paginator
-from ...models import Catalogo
+from ...models import CatalogoModel
 from ...repositories import CatalogoRepository
 from ..base import CrudService
 from fastapi import HTTPException
 from .catalogo_exceptions import NoFieldsToUpdateException, ProductAlreadyExistsException, ProductNotExistException,ProductNameLengthException,SellerIDException, SKULengthException, SellerIDNotExistException, LikeNotFoundException
 from app.api.v1.schemas.catalogo_schema import CatalogoUpdate
 
-class CatalogoService(CrudService[Catalogo, int]):
+class CatalogoService(CrudService[CatalogoModel, int]):
     def __init__(self, repository: CatalogoRepository):
         super().__init__(repository)
 
 
-    async def create(self, catalogo: Catalogo) -> Catalogo:
+    async def create(self, catalogo: CatalogoModel) -> CatalogoModel:
         """
         Cria um novo produto no catálogo.
         """
@@ -19,21 +19,21 @@ class CatalogoService(CrudService[Catalogo, int]):
         await self.validate(catalogo)
         return await self.save(catalogo)
 
-    async def validate(self, catalogo: Catalogo) -> None:
+    async def validate(self, catalogo: CatalogoModel) -> None:
+        ...
+       # await self.validade_len_seller_id(catalogo.seller_id)
+       # await self.validade_len_sku(catalogo.sku)
+       # await self.validate_len_product_name(catalogo.name)
+       # await self.validate_product_exist(catalogo.seller_id, catalogo.sku)
 
-        await self.validade_len_seller_id(catalogo.seller_id)
-        await self.validade_len_sku(catalogo.sku)
-        await self.validate_len_product_name(catalogo.name)
-        await self.validate_product_exist(catalogo.seller_id, catalogo.sku)
-
-    async def review(self, catalogo: Catalogo) -> None:
+    async def review(self, catalogo: CatalogoModel) -> None:
         # Converte e limpa campos
         catalogo.seller_id = catalogo.seller_id.lower().strip()
         catalogo.sku = catalogo.sku.strip()
         catalogo.name = catalogo.name.strip()
 
 
-    async def save(self, catalogo: Catalogo) -> Catalogo:
+    async def save(self, catalogo: CatalogoModel) -> CatalogoModel:
         return await super().create(catalogo)
     
     async def delete(self, seller_id: str, sku: str) -> None:
@@ -57,20 +57,22 @@ class CatalogoService(CrudService[Catalogo, int]):
             raise SellerIDNotExistException()
         return result
     
-    async def find_by_filter(self, seller_id: str, paginator: Paginator = None, name_like: str = None) -> list[Catalogo]:
-        seller_id = seller_id.lower()
-        # Busca todos os produtos do seller
-        result = await super().find_by_seller_id(seller_id)
-        if not result:  
-            raise SellerIDNotExistException()
-        # Filtro por name_like
-        filter_name = [item for item in result if name_like.lower() in item.name.lower()]
+async def find_by_filter(self, seller_id: str, paginator: Paginator = None, name_like: str = None) -> list[CatalogoModel]:
+    seller_id = seller_id.lower()
+    # Busca todos os produtos do seller
+    result = await super().find_by_seller_id(seller_id)
+    if not result:  
+        raise SellerIDNotExistException()
+    # Só filtra se name_like for informado
+    if name_like:
+        filter_name = [item for item in result if item.name and name_like.lower() in item.name.lower()]
         if not filter_name:
             raise LikeNotFoundException()
-        # Paginação
-        if paginator:
-            return paginator.paginate(results=result)
-        return result
+        result = filter_name
+    # Paginação
+    if paginator:
+        return paginator.paginate(results=result)
+    return result
 
     async def validate_product_exist(self, seller_id: str, sku: str) -> None:
         """

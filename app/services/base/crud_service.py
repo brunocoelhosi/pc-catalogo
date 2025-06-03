@@ -44,7 +44,8 @@ class CrudService(Generic[T, ID]):
         return await self.repository.find_by_seller_id(seller_id)
     
     async def find_by_filter(self, seller_id: str, paginator: Paginator = None, name_like: str = None) -> list[T]:
-        return await self.repository.find_by_filter(seller_id)
+        return await self.repository.find_by_seller_id2(seller_id)
+
 
     async def update(self, entity_id: ID, entity: Any) -> T:
         return await self.repository.update(entity_id, entity)
