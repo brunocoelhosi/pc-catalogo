@@ -42,91 +42,17 @@ class MongoCatalogoRepository(AsyncCrudRepository[T, ID], Generic[T, ID]):
         entity_dict["_id"] = created.inserted_id
         return self.model_class(**entity_dict)
     
-    @staticmethod
-    def build_sellerid_sku_filter(seller_id: str, sku: str) -> dict:
-        filter = {"seller_id": seller_id, "sku": sku}
-        return filter
-    
-    # Busca por um produto unico seller + sku
-    async def find_product(self, id: str, sku: str) -> Optional[T]:
-        id = id.lower()
-        filter = self.build_sellerid_sku_filter(id, sku)
-        result = await self.find_one(filter)
-        return result
-    
-    # Busca pelo seller_id
-    async def find_by_seller_id(self, seller_id: str) -> Optional[T]:
-        result = [r for r in self.memory if r.seller_id == seller_id]
-        return result
-    
-    
-    async def find_one(self, filter: dict) -> T | None:
-        result = await self.collection.find_one(filter)
-        if result is not None:
-            result = self.model_class(**result)
-        return result
-  
-    async def find(self, filters: dict, limit: int = 20, offset: int = 0, sort: dict | None = None) -> List[T]:
-        query = filters  # agora é um dict
-        cursor = self.collection.find(query)
-        if sort:
-            for field, order in sort.items():
-                cursor = cursor.sort(field, order)
-        cursor = cursor.skip(offset).limit(limit + 1)
-
-        entities = []
-        async for document in cursor:
-            entities.append(self.model_class(**document))
-        return entities
-
-    async def _update_document(self, filter: dict, document: dict) -> T | None:
-        document["updated_at"] = utcnow()
-
-        updated_document = await self.collection.find_one_and_update(
-            filter,
-            {"$set": document},
-            return_document=ReturnDocument.AFTER,
-        )
-        if updated_document:
-            updated_document = self.model_class(**updated_document)
-        return updated_document
-
-    async def update(self, filter: dict, entity: T) -> T | None:
-        entity_dict = entity.model_dump(by_alias=True, exclude={"id"})
-
-        updated_document = await self._update_document(filter, entity_dict)
-        return updated_document
-
-    async def update_by_sellerid_sku(self, seller_id, sku, entity: T) -> T | None:
-        filter = self.build_sellerid_sku_filter(seller_id, sku)
-
-        updated_document = await self.update(filter, entity)
-        return updated_document
-
-    async def patch_by_sellerid_sku(self, seller_id, sku, patch_entity) -> T | None:
-
-        filter = self.build_sellerid_sku_filter(seller_id, sku)
-        updated_document = await self._update_document(filter, patch_entity)
-        return updated_document
-
-    async def delete(self, filter: dict) -> bool:
-        # XXX Atenção aqui!
-        deleted = await self.collection.delete_many(filter)
-        has_deleted = deleted.deleted_count > 0
-        return has_deleted
-
-    async def delete_by_sellerid_sku(self, seller_id, sku) -> bool:
-        filter = self.build_sellerid_sku_filter(seller_id, sku)
-        has_deleted = await self.delete(filter)
-        return has_deleted
-
 
 #Busca pelo ID
     async def find_by_id(self, entity_id: ID) -> Optional[T]:
         result = next((r for r in self.memory if r.seller == entity_id), None)
         return result
     
-
+# Busca pelo seller_id no repositório em memória
+    async def find_by_seller_id(self, seller_id: str) -> Optional[T]:
+        result = [r for r in self.memory if r.seller_id == seller_id]
+        return result
+    
 # Busca pelo seller_id no repositório em memória
     async def find_by_seller_id2(self, seller_id: str) -> Optional[T]:
         result = [r for r in self.memory if r.seller_id == seller_id]
@@ -137,9 +63,13 @@ class MongoCatalogoRepository(AsyncCrudRepository[T, ID], Generic[T, ID]):
         result = next((r for r in self.memory if r.sku == sku), None)
         return result
     
-
+# Busca por um produto unico seller + sku
+    async def find_product(self, id: str, sku: str) -> Optional[T]:
+        id = id.lower()
+        result = next((r for r in self.memory if r.sku == sku and r.seller_id == id), None)
+        return result
     
-    # Busca por um produto ou mais produtos pelo seller + product_name paginados
+# Busca por um produto ou mais produtos pelo seller + product_name paginados
     async def find_by_product_name(self, filters: dict, limit: int = 10, offset: int = 0, sort: Optional[dict] = None) -> List[T]:
         seller_id = filters.get("seller_id")
         name = filters.get("name")
@@ -152,13 +82,13 @@ class MongoCatalogoRepository(AsyncCrudRepository[T, ID], Generic[T, ID]):
 
         return filtered_list[offset:offset + limit]
 
-    """#Deleta um produto do repositório em memória
+#Deleta um produto do repositório em memória
     async def delete(self, product) -> None:
         if product in self.memory:
             result = self.memory.remove(product)
             return result
         else:
-            return None"""
+            return None
 
     async def update(self, entity_id: ID, entity_update_payload) -> T:
         index_toupdate = -1
@@ -195,7 +125,7 @@ class MongoCatalogoRepository(AsyncCrudRepository[T, ID], Generic[T, ID]):
         if not current_document:
             raise NotFoundException()
         
-    """async def find(self, filters: dict, limit: int = 10, offset: int = 0, sort: Optional[dict] = None) -> List[T]:
+    async def find(self, filters: dict, limit: int = 10, offset: int = 0, sort: Optional[dict] = None) -> List[T]:
 
         filtered_list = [
             data
@@ -210,6 +140,7 @@ class MongoCatalogoRepository(AsyncCrudRepository[T, ID], Generic[T, ID]):
         for document in filtered_list:
             entities.append(document)
         return entities
+       
         
     async def find2(self, filters: dict, limit: int = 10, offset: int = 0, sort: Optional[dict] = None) -> List[T]:
         def matches_filters(item):
@@ -234,4 +165,4 @@ class MongoCatalogoRepository(AsyncCrudRepository[T, ID], Generic[T, ID]):
                 reverse = direction.lower() == "desc"
                 filtered_list.sort(key=lambda x: getattr(x, key, None), reverse=reverse)
 
-        return filtered_list[offset:offset + limit]"""
+        return filtered_list[offset:offset + limit]

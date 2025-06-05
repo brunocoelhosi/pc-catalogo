@@ -3,6 +3,7 @@ from typing import Any, Generic, TypeVar
 
 T = TypeVar("T")
 ID = TypeVar("ID")
+Q = TypeVar("Q")
 
 
 
@@ -40,8 +41,14 @@ class AsyncCrudRepository(ABC, Generic[T, ID]):
         Busca entidades pelo seu id+name.
         """
 
+   # @abstractmethod
+   # async def find(self, filters: dict, limit: int, offset: int, sort: dict | None = None) -> list[T]:
+        """
+        Busca entidades no repositório, utilizando filtros e paginação.
+        """
+
     @abstractmethod
-    async def find(self, filters: dict, limit: int, offset: int, sort: dict | None = None) -> list[T]:
+    async def find(self, filters: Q, limit: int = 20, offset: int = 0, sort: dict | None = None) -> list[T]:
         """
         Busca entidades no repositório, utilizando filtros e paginação.
         """

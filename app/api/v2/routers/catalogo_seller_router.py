@@ -3,10 +3,13 @@ from typing import TYPE_CHECKING, List
 from dependency_injector.wiring import Provide, inject
 from fastapi import APIRouter, Depends, Header, status
 
+from app.container import Container
 from app.api.common.schemas import ListResponse, Paginator, UuidType, get_request_pagination
 
 from ..schemas.catalogo_schema import CatalogoCreate, CatalogoResponse, CatalogoUpdate
 from . import CATALOGO_PREFIX
+
+from app.models import CatalogoModel
 
 if TYPE_CHECKING:
     from app.services import CatalogoService
@@ -46,9 +49,10 @@ async def get_by_seller_id_paginado(
     catalogo_service: "CatalogoService" = Depends(Provide["catalogo_service"]),
 ):
     results = await catalogo_service.find_by_filter(
-        seller_id, paginator=paginator, name_like=name_like
+        seller_id=seller_id,
+        paginator=paginator,
+        name_like=name_like
     )
-    # Corrija aqui: retorne um objeto ListResponse
     return ListResponse(results=results, meta=None)
 
 #BUSCAR PRODUTO POR SELLER_ID + SKU
@@ -95,9 +99,16 @@ async def get_product(
 )
 @inject
 async def create(
-    catalogo: CatalogoCreate, catalogo_service: "CatalogoService" = Depends(Provide["catalogo_service"])
+    catalogo: CatalogoCreate,
+    seller_id: str = Header(..., description="Identificador do vendedor"),
+    catalogo_service: "CatalogoService" = Depends(Provide["catalogo_service"]),
 ):
-    return await catalogo_service.create(catalogo)
+    """
+    Cria um novo produto no catálogo. Não pode haver um `seller_id` + `sku` já cadastrado.
+    """
+    catalogo_model = CatalogoModel(**catalogo.model_dump(), seller_id=seller_id)
+    catalogo_model = await catalogo_service.create(catalogo_model)
+    return CatalogoResponse(**catalogo_model.model_dump())
 
 #ATUALIZA O NOME DE UM PRODUTO
 @router.patch(
@@ -139,7 +150,7 @@ async def delete(
     seller_id: str = Header(..., description="Identificador do vendedor"),
     catalogo_service: "CatalogoService" = Depends(Provide["catalogo_service"]),
 ):
-    return await catalogo_service.delete(seller_id, sku)
+    return await catalogo_service.delete_by_sellerid_sku(seller_id, sku)
 
 ##BUSCAR TODOS OS PRODUTOS
 @router.get("/all",
