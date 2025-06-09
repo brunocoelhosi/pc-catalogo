@@ -47,25 +47,24 @@ class MongoCatalogoRepository(AsyncCrudRepository[T, ID], Generic[T, ID]):
         filter = {"seller_id": seller_id, "sku": sku}
         return filter
     
+    @staticmethod
+    def build_sellerid_filter(seller_id: str) -> dict:
+        filter = {"seller_id": seller_id}
+        return filter
+    
     # Busca por um produto unico seller + sku
     async def find_product(self, id: str, sku: str) -> Optional[T]:
         id = id.lower()
         filter = self.build_sellerid_sku_filter(id, sku)
         result = await self.find_one(filter)
         return result
-    
-    # Busca pelo seller_id
-    async def find_by_seller_id(self, seller_id: str) -> Optional[T]:
-        result = [r for r in self.memory if r.seller_id == seller_id]
-        return result
-    
-    
+
     async def find_one(self, filter: dict) -> T | None:
         result = await self.collection.find_one(filter)
         if result is not None:
             result = self.model_class(**result)
         return result
-  
+    
     async def find(self, filters: dict, limit: int = 20, offset: int = 0, sort: dict | None = None) -> List[T]:
         query = filters  # agora é um dict
         cursor = self.collection.find(query)
@@ -108,7 +107,17 @@ class MongoCatalogoRepository(AsyncCrudRepository[T, ID], Generic[T, ID]):
         filter = self.build_sellerid_sku_filter(seller_id, sku)
         updated_document = await self._update_document(filter, patch_entity)
         return updated_document
+    
+    async def find_by_sellerid_sku(self, seller_id: str, sku: str) -> T | None:
+        filter = self.build_sellerid_sku_filter(seller_id, sku)
+        result = await self.find_one(filter)
+        return result
 
+    async def find_by_seller_id(self, seller_id: str) -> T | None:
+        filter = self.build_sellerid_filter(seller_id)
+        result = await self.find_one(filter)
+        return result
+    
     async def delete(self, filter: dict) -> bool:
         # XXX Atenção aqui!
         deleted = await self.collection.delete_many(filter)
@@ -120,118 +129,3 @@ class MongoCatalogoRepository(AsyncCrudRepository[T, ID], Generic[T, ID]):
         has_deleted = await self.delete(filter)
         return has_deleted
 
-
-#Busca pelo ID
-    async def find_by_id(self, entity_id: ID) -> Optional[T]:
-        result = next((r for r in self.memory if r.seller == entity_id), None)
-        return result
-    
-
-# Busca pelo seller_id no repositório em memória
-    async def find_by_seller_id2(self, seller_id: str) -> Optional[T]:
-        result = [r for r in self.memory if r.seller_id == seller_id]
-        return result
-    
-# Busca pelo SKU no repositório em memória
-    async def find_by_sku(self, sku: str) -> Optional[T]:
-        result = next((r for r in self.memory if r.sku == sku), None)
-        return result
-    
-
-    
-    # Busca por um produto ou mais produtos pelo seller + product_name paginados
-    async def find_by_product_name(self, filters: dict, limit: int = 10, offset: int = 0, sort: Optional[dict] = None) -> List[T]:
-        seller_id = filters.get("seller_id")
-        name = filters.get("name")
-        
-        filtered_list = [
-            item for item in self.memory
-            if (seller_id is None or item.seller_id.lower() == seller_id.lower())
-            and (name is None or item.name.lower() == name.lower())
-        ]
-
-        return filtered_list[offset:offset + limit]
-
-    """#Deleta um produto do repositório em memória
-    async def delete(self, product) -> None:
-        if product in self.memory:
-            result = self.memory.remove(product)
-            return result
-        else:
-            return None"""
-
-    async def update(self, entity_id: ID, entity_update_payload) -> T:
-        index_toupdate = -1
-        found_entity = None
-        for i, item in enumerate(self.memory):
-            if hasattr(item, "seller_id") and item.seller_id == entity_id:
-                index_to_update = i
-                found_entity = item
-                break
-            elif hasattr(item, 'id') and item.id == entity_id:
-                index_to_update = i
-                found_entity = item
-                break
-        if found_entity is None:
-            return None
-        
-        update_data = entity_update_payload.model_dump(exclude_unset=True)
-        
-        if not update_data:
-            return found_entity
-        
-        for key, value in update_data.items():
-            if hasattr(found_entity, key):
-                setattr(found_entity, key, value)
-            
-        if hasattr(found_entity, "updated_at"):
-            setattr(found_entity, "updated_at", utcnow())
-            
-        return found_entity
-
-    async def delete_by_id(self, entity_id: ID) -> None:
-        # XXX TODO
-        current_document = await self.find_by_id(entity_id)
-        if not current_document:
-            raise NotFoundException()
-        
-    """async def find(self, filters: dict, limit: int = 10, offset: int = 0, sort: Optional[dict] = None) -> List[T]:
-
-        filtered_list = [
-            data
-            for data in self.memory
-                
-            # TODO Criar filtro
-        ]
-
-        # XXX TODO Falta ordenar    
-
-        entities = []
-        for document in filtered_list:
-            entities.append(document)
-        return entities
-        
-    async def find2(self, filters: dict, limit: int = 10, offset: int = 0, sort: Optional[dict] = None) -> List[T]:
-        def matches_filters(item):
-            for key, value in filters.items():
-                attr = getattr(item, key, None)
-                if attr is None:
-                    return False
-                # Case-insensitive comparison for strings
-                if isinstance(attr, str) and isinstance(value, str):
-                    if attr.lower() != value.lower():
-                        return False
-                else:
-                    if attr != value:
-                        return False
-            return True
-
-        filtered_list = [data for data in self.memory if matches_filters(data)]
-
-        # Optional sorting
-        if sort:
-            for key, direction in reversed(sort.items()):
-                reverse = direction.lower() == "desc"
-                filtered_list.sort(key=lambda x: getattr(x, key, None), reverse=reverse)
-
-        return filtered_list[offset:offset + limit]"""

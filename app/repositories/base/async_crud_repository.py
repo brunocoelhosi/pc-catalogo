@@ -18,13 +18,13 @@ class AsyncCrudRepository(ABC, Generic[T, ID]):
         Salva uma entidade no repositório.
         """
 
-    @abstractmethod
-    async def find_by_id(self, entity_id: ID) -> T | None:
+    #@abstractmethod
+    #async def find_by_id(self, entity_id: ID) -> T | None:
         """
         Busca uma entidade pelo seu identificador único.
         """
-    @abstractmethod
-    async def find_by_sku(self, sku: str) -> T | None:
+    #@abstractmethod
+    #async def find_by_sku(self, sku: str) -> T | None:
         """
         Busca uma entidade pelo seu sku.
         """
@@ -35,8 +35,8 @@ class AsyncCrudRepository(ABC, Generic[T, ID]):
         Busca uma entidade pelo seu id+sku.
         """
         
-    @abstractmethod
-    async def find_by_product_name(self, filters: dict, limit: int, offset: int, sort: dict | None = None) -> list[T]:
+    #@abstractmethod
+    #async def find_by_product_name(self, filters: dict, limit: int, offset: int, sort: dict | None = None) -> list[T]:
         """
         Busca entidades pelo seu id+name.
         """
