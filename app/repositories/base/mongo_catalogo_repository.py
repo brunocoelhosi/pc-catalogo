@@ -32,6 +32,7 @@ class MongoCatalogoRepository(AsyncCrudRepository[T, ID], Generic[T, ID]):
         self.model_class = model_class
 
     async def create(self, entity: T) -> T:
+        print(">>> ENTROU NO CREATE REAL <<<")
         entity_dict = entity.model_dump(by_alias=True)
         when = utcnow()
         entity_dict["created_at"] = when
@@ -66,6 +67,7 @@ class MongoCatalogoRepository(AsyncCrudRepository[T, ID], Generic[T, ID]):
         return result
     
     async def find(self, filters: dict, limit: int = 20, offset: int = 0, sort: dict | None = None) -> List[T]:
+        print(">>> ENTROU NO FIND REAL <<<")
         query = filters  # agora é um dict
         cursor = self.collection.find(query)
         if sort:

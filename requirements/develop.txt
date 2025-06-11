@@ -11,3 +11,4 @@ pytest-cov==6.1.1
 coverage[toml]==7.8.2
 pysonar-scanner==0.2.0.520
 mypy==1.15.0
+

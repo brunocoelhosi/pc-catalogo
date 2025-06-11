@@ -187,6 +187,48 @@ SONAR_HOST_URL=http://localhost:9000 pysonar-scanner
 
 #### Isso irá enviar os dados da sua aplicação para análise no SonarQube.
 
+## Cobertura de Código com pytest-cov 📊
+
+A cobertura de código é uma métrica que indica a porcentagem do seu código-fonte que foi executada durante a execução da sua suíte de testes. Ela ajuda a identificar partes do seu código que não estão sendo testadas e que, portanto, podem conter bugs ocultos.
+
+### Medindo a Cobertura com pytest-cov
+
+O pytest-cov é um plugin para o pytest que integra a medição de cobertura de forma muito simples.
+
+#### Instalação:
+
+```
+pip install pytest-cov
+```
+
+#### Executando Testes com Cobertura:
+
+Para executar seus testes e gerar um relatório de cobertura no terminal, use a flag `--cov`:
+
+```
+pytest --cov=app
+```
+
+### Gerando Relatórios Detalhados:
+
+Para uma análise mais aprofundada, você pode gerar relatórios em formatos diferentes:
+
+- Relatório HTML: Cria um site interativo onde você pode navegar pelos seus arquivos e ver exatamente quais linhas foram ou não cobertas.
+
+```
+pytest --cov=seu_modulo --cov-report=html
+```
+
+Isso criará um diretório htmlcov. Abra o arquivo index.html em seu navegador.
+
+- Relatório XML: Este formato é muito útil para integração com ferramentas de análise de qualidade de código, como o SonarQube.
+
+```
+pytest --cov=seu_modulo --cov-report=xml
+```
+
+Isso criará um arquivo coverage.xml no seu diretório.
+
 ## Contribuições e Atualizações
 
 O projeto está aberto a contribuições e atualizações da comunidade. O processo para contribuições é o seguinte:
