@@ -13,7 +13,7 @@ from app.models import CatalogoModel
 if TYPE_CHECKING:
     from app.services import CatalogoService
 
-router = APIRouter(prefix=CATALOGO_PREFIX, tags=["CRUD Catálogo v2"])
+router = APIRouter(prefix=CATALOGO_PREFIX, tags=["CRUD Catálogo v2 - MongoDB"])
 
 #BUSCA PRODUTO POR SELLER_ID PAGINADO
 @router.get(

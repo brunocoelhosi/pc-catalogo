@@ -2,14 +2,116 @@ from typing import Generator
 import pytest
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
+import asyncio
 
 from app.api.api_application import create_app
 from app.api.router import routes
 from app.container import Container
 from app.models import CatalogoModel
-from app.repositories import CatalogoRepository
+from app.repositories import CatalogoRepositoryV1
 from app.services import HealthCheckService
 from app.settings import api_settings
+from app.services import CatalogoServiceV1
+from app.services import CatalogoService
+
+
+"""@pytest.fixture
+def container() -> Generator[Container, None, None]:
+    container = Container()
+    container.config.from_pydantic(api_settings)
+    container.catalogo_repository.override(FakeCatalogoRepository())
+    container.catalogo_service.override(CatalogoServiceV1(container.catalogo_repository()))
+    yield container
+    container.unwire()"""
+
+"""@pytest.fixture
+def app(container: Container) -> Generator[FastAPI, None, None]:
+    import app.api.common.routers.health_check_routers as health_check_routers
+    import app.api.v1.routers.catalogo_seller_router as catalogo_seller_router_v1
+    import app.api.v2.routers.catalogo_seller_router as catalogo_seller_router_v2
+    from app.services import CatalogoServiceV1
+
+    container.catalogo_service.override(CatalogoServiceV1(container.catalogo_repository()))
+
+    container.wire(
+        modules=[
+            health_check_routers,
+            catalogo_seller_router_v1,
+            catalogo_seller_router_v2,
+        ]
+    )
+    app_instance = create_app(api_settings, routes)
+    app_instance.container = container  # type: ignore[attr-defined]
+    yield app_instance
+    container.unwire()
+
+@pytest.fixture
+def client(app: FastAPI) -> Generator[TestClient, None, None]:
+    with TestClient(app) as client_instance:
+        yield client_instance"""
+
+@pytest.fixture
+def health_check_service(container: Container) -> HealthCheckService:
+    return container.health_check_service()
+
+
+# -------------------------------- FIXTURE PARA V1 --------------------
+@pytest.fixture
+def test_catalogo_v1() -> list[CatalogoModel]:
+    return [
+        CatalogoModel(
+            seller_id="magalu2",
+            sku="ma2cel",
+            name="celular",
+
+
+        ),
+        CatalogoModel(
+            seller_id="magalu3",
+            sku="ma3notebook",
+            name="notebook",
+
+
+        ),
+    ]
+
+
+@pytest.fixture
+def container_v1(test_catalogo_v1) -> Container:
+    container = Container()
+    container.config.from_pydantic(api_settings)
+    repo = CatalogoRepositoryV1()
+    # Popula o repositório em memória com os produtos do fixture
+    async def populate_repo(repo, produtos):
+        for produto in produtos:
+            await repo.create(produto)
+
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
+    loop.run_until_complete(populate_repo(repo, test_catalogo_v1))
+    loop.close()
+
+    container.catalogo_repository.override(repo)
+    container.catalogo_service.override(CatalogoServiceV1(container.catalogo_repository()))
+    return container
+
+@pytest.fixture
+def app_v1(container_v1: Container) -> FastAPI:
+    import app.api.v1.routers.catalogo_seller_router as catalogo_seller_router_v1
+    container_v1.wire(modules=[catalogo_seller_router_v1])
+    app_instance = create_app(api_settings, routes)
+    app_instance.container = container_v1  # type: ignore[attr-defined]
+    yield app_instance
+    container_v1.unwire()
+
+@pytest.fixture
+def client_v1(app_v1: FastAPI) -> TestClient:
+    with TestClient(app_v1) as client:
+        yield client
+
+
+
+# --------------------------- FIXTURE PARA V2 -------------------------
 
 # --- FIXTURE DE MOCK PARA O REPOSITÓRIO DE CATÁLOGO ---
 class FakeCatalogoRepository:
@@ -57,6 +159,9 @@ class FakeCatalogoRepository:
                 return True
         return False
 
+    async def find_by_seller_id(self, seller_id: str):
+        return [item for item in self._data if item.seller_id == seller_id]
+
 @pytest.fixture
 def test_catalogo():
     return [
@@ -64,35 +169,25 @@ def test_catalogo():
         CatalogoModel(seller_id="magalu2", sku="ma2cel", name="celular"),
     ]
 
+
 @pytest.fixture
-def container() -> Generator[Container, None, None]:
+def container_v2() -> Container:
     container = Container()
     container.config.from_pydantic(api_settings)
     container.catalogo_repository.override(FakeCatalogoRepository())
-    yield container
-    container.unwire()
+    container.catalogo_service.override(CatalogoService(container.catalogo_repository()))
+    return container
 
 @pytest.fixture
-def app(container: Container) -> Generator[FastAPI, None, None]:
-    import app.api.common.routers.health_check_routers as health_check_routers
+def app_v2(container_v2: Container) -> FastAPI:
     import app.api.v2.routers.catalogo_seller_router as catalogo_seller_router_v2
-
-    container.wire(
-        modules=[
-            health_check_routers,
-            catalogo_seller_router_v2,
-        ]
-    )
+    container_v2.wire(modules=[catalogo_seller_router_v2])
     app_instance = create_app(api_settings, routes)
-    app_instance.container = container  # type: ignore[attr-defined]
+    app_instance.container = container_v2  # type: ignore[attr-defined]
     yield app_instance
-    container.unwire()
+    container_v2.unwire()
 
 @pytest.fixture
-def client(app: FastAPI) -> Generator[TestClient, None, None]:
-    with TestClient(app) as client_instance:
-        yield client_instance
-
-@pytest.fixture
-def health_check_service(container: Container) -> HealthCheckService:
-    return container.health_check_service()
+def client_v2(app_v2: FastAPI) -> TestClient:
+    with TestClient(app_v2) as client_v2:
+        yield client_v2
