@@ -37,7 +37,7 @@ Confirme se o [Python 3.12](https://docs.python.org/3.12/) está instalado em su
 
 #
 
-### Comandos via Linux 🐧.
+### 🐧 Comandos via Linux .
 
 Clone o projeto, acesse o diretório:
 
@@ -70,7 +70,7 @@ make requirements-dev
 
 #
 
-### Comandos via Windows 🗔.
+### 🗔 Comandos via Windows .
 
 Este projeto foi desenvolvido utilizando o [Python 3.12](https://docs.python.org/3.12/), confirme se o mesmo está instalado em sua máquina.
 
@@ -149,7 +149,7 @@ docker-compose -f devtools/docker-compose-sonar.yml up --build
 
 SonarQube: http://localhost:9000 (usuário padrão: admin, senha: admin)
 
-## Análise com SonarQuve
+## 🔎 Análise com SonarQuve
 
 #### 1. Gere e exporte o token do SonarQube
 
@@ -187,7 +187,7 @@ SONAR_HOST_URL=http://localhost:9000 pysonar-scanner
 
 #### Isso irá enviar os dados da sua aplicação para análise no SonarQube.
 
-## Cobertura de Código com pytest-cov 📊
+## 📊 Cobertura de Código com pytest-cov
 
 A cobertura de código é uma métrica que indica a porcentagem do seu código-fonte que foi executada durante a execução da sua suíte de testes. Ela ajuda a identificar partes do seu código que não estão sendo testadas e que, portanto, podem conter bugs ocultos.
 
@@ -213,7 +213,7 @@ pytest --cov=app
 
 Para uma análise mais aprofundada, você pode gerar relatórios em formatos diferentes:
 
-- Relatório HTML: Cria um site interativo onde você pode navegar pelos seus arquivos e ver exatamente quais linhas foram ou não cobertas.
+- Relatório HTML: Cria um HTML para navegar pelos seus arquivos e ver exatamente quais linhas foram ou não cobertas.
 
 ```
 pytest --cov=seu_modulo --cov-report=html

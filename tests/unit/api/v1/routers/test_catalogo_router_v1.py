@@ -37,7 +37,6 @@ class TestCatalogoRouterV1:
         patch = {"name": produto.name}
         resposta = client_v1.patch(f"/seller/v1/catalogo/{produto.seller_id}/{produto.sku}", json=patch)
         assert resposta.status_code == 404
-        #assert resposta.json()["detail"] == "Produto não encontrado ou nada foi alterado"
 
     def test_deletar_produto(self, client_v1: TestClient, test_catalogo_v1):
         produto = test_catalogo_v1[0]

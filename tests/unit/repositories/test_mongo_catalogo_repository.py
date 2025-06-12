@@ -158,6 +158,13 @@ class TestCatalogoRepository:
         assert updated.name == "Produto Atualizado"
 
     @pytest.mark.asyncio
+    async def test_update_document_not_found(self, repository):
+        # Mock find_one_and_update para retornar None
+        repository.collection.find_one_and_update = AsyncMock(return_value=None)
+        result = await repository._update_document({"seller_id": "notfound"}, {"name": "qualquer"})
+        assert result is None
+
+    @pytest.mark.asyncio
     async def test_delete(self, repository):
         result = await repository.delete({"seller_id": "123", "sku": "123"})
         assert result is True
