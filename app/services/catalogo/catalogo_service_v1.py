@@ -2,9 +2,17 @@ from app.api.common.schemas.pagination import Paginator
 from ...models import CatalogoModel
 from ...repositories import CatalogoRepositoryV1
 from ..base import CrudServiceV1
-from fastapi import HTTPException
-from .catalogo_exceptions_v1 import NoFieldsToUpdateException, ProductAlreadyExistsException, ProductNotExistException,ProductNameLengthException,SellerIDException, SKULengthException, SellerIDNotExistException, LikeNotFoundException
 from app.api.v1.schemas.catalogo_schema import CatalogoUpdate
+from .catalogo_exceptions_v1 import (
+    NoFieldsToUpdateException, 
+    ProductAlreadyExistsException,
+    ProductNotExistException,
+    ProductNameLengthException,
+    SellerIDException,
+    SKULengthException,
+    SellerIDNotExistException,
+    LikeNotFoundException
+)
 
 class CatalogoServiceV1(CrudServiceV1[CatalogoModel, int]):
     def __init__(self, repository: CatalogoRepositoryV1):

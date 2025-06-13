@@ -109,7 +109,9 @@ pip install -r requirements.txt
 
 Para novos commits, siga o padrão do https://commitlint.io/
 
-## ▶️ Execução da API usando Docker
+##
+
+### ▶️ Execução da API usando Docker
 
 Configure o arquivo de env:
 
@@ -131,7 +133,9 @@ Use o comando para subir a API:
 uvicorn app.api_main:app --reload
 ```
 
-## ▶️ Execução da API usando Docker-compose
+##
+
+### ▶️ Execução da API usando Docker-compose
 
 Na raiz do projeto, execute o comando:
 
@@ -141,7 +145,31 @@ docker-compose -f devtools/docker-compose-catalogo.yml up --build
 
 API: http://localhost:8000
 
-## ▶️ Execução SonarQuve para análise do projeto
+##
+
+### ▶️ Execução do Banco MongoDB usando Docker-compose
+
+Na raiz do projeto, execute o comando:
+
+```sh
+docker-compose -f devtools/docker-compose-mongo.yml up --build
+```
+
+##
+
+## ✨ Configuração ambiente de Testes
+
+### ▶️ Execução do Banco MongoDB-test usando Docker-compose
+
+Na raiz do projeto, execute o comando:
+
+```sh
+docker-compose -f devtools/docker-compose-mongo-tests.yml up --build
+```
+
+##
+
+### ▶️ Execução SonarQuve para análise do projeto
 
 ```
 docker-compose -f devtools/docker-compose-sonar.yml up --build
@@ -149,7 +177,9 @@ docker-compose -f devtools/docker-compose-sonar.yml up --build
 
 SonarQube: http://localhost:9000 (usuário padrão: admin, senha: admin)
 
-## 🔎 Análise com SonarQuve
+##
+
+### 🔎 Análise com SonarQuve
 
 #### 1. Gere e exporte o token do SonarQube
 
@@ -185,9 +215,11 @@ export SONAR_TOKEN=<seu_token_aqui>
 SONAR_HOST_URL=http://localhost:9000 pysonar-scanner
 ```
 
-#### Isso irá enviar os dados da sua aplicação para análise no SonarQube.
+Isso irá enviar os dados da sua aplicação para análise no SonarQube.
 
-## 📊 Cobertura de Código com pytest-cov
+##
+
+### 📊 Cobertura de Código com pytest-cov
 
 A cobertura de código é uma métrica que indica a porcentagem do seu código-fonte que foi executada durante a execução da sua suíte de testes. Ela ajuda a identificar partes do seu código que não estão sendo testadas e que, portanto, podem conter bugs ocultos.
 

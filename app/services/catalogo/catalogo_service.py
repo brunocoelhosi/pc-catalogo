@@ -2,12 +2,19 @@ from app.api.common.schemas.pagination import Paginator
 from ...models import CatalogoModel
 from ...repositories import CatalogoRepository
 from ..base import CrudService
-from fastapi import HTTPException
-from .catalogo_exceptions import NoFieldsToUpdateException, ProductAlreadyExistsException, ProductNotExistException,ProductNameLengthException,SellerIDException, SKULengthException, SellerIDNotExistException, LikeNotFoundException
+from .catalogo_exceptions import ( 
+    NoFieldsToUpdateException, 
+    ProductAlreadyExistsException, 
+    ProductNotExistException,
+    ProductNameLengthException,
+    SellerIDException, 
+    SKULengthException, 
+    SellerIDNotExistException, 
+    LikeNotFoundException
+)
+
 from app.api.v1.schemas.catalogo_schema import CatalogoUpdate
-from abc import ABC, abstractmethod
-from app.common.exceptions import NotFoundException
-from typing import TYPE_CHECKING, Generic, TypeVar
+from typing import TypeVar
 
 T = TypeVar("T")
 

@@ -1,15 +1,10 @@
 from typing import Type, Generic, List, Optional, TypeVar
-
-from uuid import UUID
 from pymongo import ReturnDocument
-
 from pydantic import BaseModel
-
 from app.common.datetime import utcnow
 from app.integrations.database.mongo_client import MongoClient
-from app.models import PersistableEntity, QueryModel
+from app.models import QueryModel
 
-from app.common.exceptions import NotFoundException
 
 from .async_crud_repository import AsyncCrudRepository
 

@@ -4,8 +4,6 @@ from typing import Any, Generic, TypeVar
 T = TypeVar("T")
 ID = TypeVar("ID")
 
-
-
 class AsyncCrudRepositoryV1(ABC, Generic[T, ID]):
     """
     Interface genérica para operações de repositório CRUD.
