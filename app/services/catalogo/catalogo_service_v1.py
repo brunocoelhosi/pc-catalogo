@@ -3,7 +3,7 @@ from ...models import CatalogoModel
 from ...repositories import CatalogoRepositoryV1
 from ..base import CrudServiceV1
 from app.api.v1.schemas.catalogo_schema import CatalogoUpdate
-from .catalogo_exceptions_v1 import (
+from .catalogo_exceptions import (
     NoFieldsToUpdateException, 
     ProductAlreadyExistsException,
     ProductNotExistException,

@@ -189,7 +189,7 @@ Após acessar o SonarQube:
 
 - **Gere um novo token (ex: catalogo).**
 
-- **Em outro terminal execute o seguinte comando para executar o Sonar-scanner**
+- **Em outro terminal, vá ate a raiz do projeto execute o seguinte comando para executar o Sonar-scanner**
 
 #### Windows
 
@@ -248,7 +248,7 @@ Para uma análise mais aprofundada, você pode gerar relatórios em formatos dif
 - Relatório HTML: Cria um HTML para navegar pelos seus arquivos e ver exatamente quais linhas foram ou não cobertas.
 
 ```
-pytest --cov=seu_modulo --cov-report=html
+pytest --cov=app --cov-report=html
 ```
 
 Isso criará um diretório htmlcov. Abra o arquivo index.html em seu navegador.
@@ -256,7 +256,7 @@ Isso criará um diretório htmlcov. Abra o arquivo index.html em seu navegador.
 - Relatório XML: Este formato é muito útil para integração com ferramentas de análise de qualidade de código, como o SonarQube.
 
 ```
-pytest --cov=seu_modulo --cov-report=xml
+pytest --cov=app --cov-report=xml
 ```
 
 Isso criará um arquivo coverage.xml no seu diretório.

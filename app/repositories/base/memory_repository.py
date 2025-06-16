@@ -42,7 +42,7 @@ class AsyncMemoryRepository(AsyncCrudRepositoryV1[T, ID], Generic[T, ID]):
     
 # Busca por um produto unico seller + sku
     async def find_product(self, id: str, sku: str) -> Optional[T]:
-        id = id.lower()
+        sell_id = sell_id.lower()
         result = next((r for r in self.memory if r.sku == sku and r.seller_id == id), None)
         return result
     
@@ -117,29 +117,3 @@ class AsyncMemoryRepository(AsyncCrudRepositoryV1[T, ID], Generic[T, ID]):
         for document in filtered_list:
             entities.append(document)
         return entities
-       
-        
-    async def find2(self, filters: dict, limit: int = 10, offset: int = 0, sort: Optional[dict] = None) -> List[T]:
-        def matches_filters(item):
-            for key, value in filters.items():
-                attr = getattr(item, key, None)
-                if attr is None:
-                    return False
-                # Case-insensitive comparison for strings
-                if isinstance(attr, str) and isinstance(value, str):
-                    if attr.lower() != value.lower():
-                        return False
-                else:
-                    if attr != value:
-                        return False
-            return True
-
-        filtered_list = [data for data in self.memory if matches_filters(data)]
-
-        # Optional sorting
-        if sort:
-            for key, direction in reversed(sort.items()):
-                reverse = direction.lower() == "desc"
-                filtered_list.sort(key=lambda x: getattr(x, key, None), reverse=reverse)
-
-        return filtered_list[offset:offset + limit]

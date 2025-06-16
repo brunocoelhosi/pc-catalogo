@@ -7,3 +7,9 @@ routes = APIRouter()
 
 routes.include_router(v1_router_seller)
 routes.include_router(v2_router_seller)
+
+# Adicione esta configuração para os testes
+router_configurations = [
+    (v1_router_seller, "/seller/v1"),
+    (v2_router_seller, "/seller/v2"),
+]

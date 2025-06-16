@@ -4,9 +4,15 @@ import pytest
 from app.common.exceptions import BadRequestException, NotFoundException
 from app.models import CatalogoModel
 from app.services import CatalogoService
-from app.services.catalogo.catalogo_exceptions import ProductAlreadyExistsException, ProductNotExistException
-
-
+from app.services.catalogo.catalogo_exceptions import(
+    ProductAlreadyExistsException,
+    ProductNotExistException,
+    LikeNotFoundException,
+    ProductNameLengthException,
+    SKULengthException,
+    SellerIDException
+    )
+from app.api.common.schemas.pagination import Paginator
 class FakeCursor:
     def __init__(self, items):
         self.items = items
@@ -47,6 +53,9 @@ def repository_mock():
     mock.create = AsyncMock(return_value=CatalogoModel(seller_id="seller1", sku="sku1", name="product1"))
     mock.validate_product_exist = AsyncMock(return_value=None)
     mock.find_product = AsyncMock(return_value=None)
+    mock.find_by_seller_id = AsyncMock(return_value=[])
+    mock.find = AsyncMock(return_value=[]) 
+    mock.find_by_filter = AsyncMock(return_value=[])
     mock.delete_by_sellerid_sku = AsyncMock(return_value=True)
     return mock
 
@@ -137,3 +146,191 @@ class TestCatalogoService:
         assert saved_catalogo.sku == "sku1"
         assert saved_catalogo.name == "product1"
         repository_mock.create.assert_called_once_with(catalogo)
+
+    @pytest.mark.asyncio
+    async def test_find_by_filter(self, service_with_mock, repository_mock, paginator: Paginator = None):
+        catalogo1 = CatalogoModel(seller_id="seller1", sku="sku1", name="product1")
+        catalogo2 = CatalogoModel(seller_id="seller1", sku="sku2", name="product2")
+        repository_mock.find = AsyncMock(return_value=[catalogo1, catalogo2])
+
+        result = await service_with_mock.find_by_filter("seller1", paginator)
+
+        assert len(result) == 2
+        assert result[0].sku == "sku1"
+        assert result[1].sku == "sku2"
+        repository_mock.find.assert_awaited_once_with(
+            filters={"seller_id": "seller1"},
+            limit=paginator.limit if paginator else 50,
+            offset=paginator.offset if paginator else 0,
+            sort=paginator.get_sort_order() if paginator else None
+        )
+
+    @pytest.mark.asyncio
+    async def test_find_by_filter_no_results(self, service_with_mock, repository_mock):
+        repository_mock.find = AsyncMock(return_value=[])
+
+        with pytest.raises(NotFoundException):
+            await service_with_mock.find_by_filter("seller1")
+
+        repository_mock.find.assert_awaited_once_with(
+            filters={"seller_id": "seller1"},
+            limit=50,
+            offset=0,
+            sort=None
+        )
+
+    @pytest.mark.asyncio
+    async def test_find_by_filter_with_name_like(self, service_with_mock, repository_mock, paginator: Paginator = None):
+        catalogo1 = CatalogoModel(seller_id="seller1", sku="sku1", name="product1")
+        catalogo2 = CatalogoModel(seller_id="seller1", sku="sku2", name="product2")
+        repository_mock.find = AsyncMock(return_value=[catalogo1, catalogo2])
+
+        paginator = Paginator(limit=10, offset=0, request_path="/fake-path")
+        result = await service_with_mock.find_by_filter("seller1", paginator, name_like="product")
+
+        assert len(result) == 2
+        assert result[0].name == "product1"
+        assert result[1].name == "product2"
+        repository_mock.find.assert_awaited_once_with(
+            filters={"seller_id": "seller1", "name": {"$regex": "product", "$options": "i"}},
+            limit=10,
+            offset=0,
+            sort=paginator.get_sort_order() if paginator else None
+        )
+
+    @pytest.mark.asyncio
+    async def test_find_by_filter_with_name_like_no_results(self, service_with_mock, repository_mock):
+        repository_mock.find_by_filter.return_value = []
+
+        paginator = Paginator(limit=10, offset=0, request_path="/fake-path")
+        with pytest.raises(LikeNotFoundException):
+            await service_with_mock.find_by_filter("seller1", paginator, name_like="nonexistent")
+
+        repository_mock.find.assert_awaited_once_with(
+            filters={"seller_id": "seller1", "name": {"$regex": "nonexistent", "$options": "i"}},
+            limit=10,
+            offset=0,
+            sort=paginator.get_sort_order() if paginator else None
+        )
+    
+    @pytest.mark.asyncio
+    async def test_validate_product_exist_handles_exception(self, service_with_mock, repository_mock):
+
+        repository_mock.find_product = AsyncMock(side_effect=Exception("Erro inesperado"))
+
+        await service_with_mock.validate_product_exist("qualquer", "coisa")
+
+        repository_mock.find_product.assert_called_once_with("qualquer", "coisa")
+        
+    @pytest.mark.asyncio
+    async def test_validate_len_product_name_valid(self, service_with_mock):
+        valid_names = ["Produto", "Produto com nome longo"]
+        for name in valid_names:
+            await service_with_mock.validate_len_product_name(name)
+
+    @pytest.mark.asyncio
+    async def test_validate_len_product_name_invalid(self, service_with_mock):
+        invalid_names = ["", " ", "P", "A"*201]
+        for name in invalid_names:
+            with pytest.raises(ProductNameLengthException):
+                await service_with_mock.validate_len_product_name(name)
+
+    @pytest.mark.asyncio
+    async def test_validate_len_sku_valid(self, service_with_mock):
+        valid_sku = ["SKU", "SKUvalido"]
+        for sku in valid_sku:
+            await service_with_mock.validate_len_sku(sku)
+
+    @pytest.mark.asyncio
+    async def test_validate_len_sku_invalid(self, service_with_mock):
+        invalid_skus = ["", " ", "A", None, 123, [], {}]
+        for sku in invalid_skus:
+            with pytest.raises(SKULengthException):
+                await service_with_mock.validate_len_sku(sku)
+
+    @pytest.mark.asyncio
+    async def test_validate_len_seller_id_valid(self, service_with_mock):
+        valid_seller_ids = ["seller1", "seller_123"]
+        for seller_id in valid_seller_ids:
+            await service_with_mock.validate_len_seller_id(seller_id)
+
+    @pytest.mark.asyncio
+    async def test_validate_len_seller_id_invalid(self, service_with_mock):
+        invalid_seller_ids = ["", " ", "A", None, [], {}, "seller id with spaces"]
+        with pytest.raises(SellerIDException):
+                await service_with_mock.validate_len_seller_id(invalid_seller_ids)
+
+    @pytest.mark.asyncio
+    async def test_validate_patch_success(self, service_with_mock, repository_mock):
+        seller_id = "seller1"
+        sku = "sku1"
+        patch_model = {"name": "Updated Product"}
+        # Simula que o produto existe
+        repository_mock.find_product.return_value = CatalogoModel(seller_id=seller_id, sku=sku, name="Old Product")
+
+        result = await service_with_mock.validate_patch(seller_id, sku, patch_model)
+
+        assert result == patch_model
+        repository_mock.find_product.assert_called_once_with(seller_id, sku)
+
+    @pytest.mark.asyncio
+    async def test_validate_patch_not_found(self, service_with_mock, repository_mock):
+        seller_id = "seller1"
+        sku = "sku1"
+        patch_model = {"name": "Updated Product"}
+        # Simula que o produto NÃO existe
+        repository_mock.find_product.return_value = None
+
+        with pytest.raises(ProductNotExistException):
+            await service_with_mock.validate_patch(seller_id, sku, patch_model)
+        repository_mock.find_product.assert_called_once_with(seller_id, sku)
+
+
+    @pytest.mark.asyncio
+    async def test_validate_update_success(self, service_with_mock, repository_mock):
+        seller_id = "seller1"
+        sku = "sku1"
+        catalogo = CatalogoModel(seller_id=seller_id, sku=sku, name="Updated Product")
+        # Simula que o produto existe
+        repository_mock.find_product.return_value = catalogo
+
+        result = await service_with_mock.validate_update(seller_id, sku, catalogo)
+
+        assert result == catalogo
+        repository_mock.find_product.assert_called_once_with(seller_id, sku)
+
+    @pytest.mark.asyncio
+    async def test_validate_update_not_found(self, service_with_mock, repository_mock):
+        seller_id = "seller1"
+        sku = "sku1"
+        catalogo = CatalogoModel(seller_id=seller_id, sku=sku, name="Updated Product")
+        # Simula que o produto NÃO existe
+        repository_mock.find_product.return_value = None
+
+        with pytest.raises(ProductNotExistException):
+            await service_with_mock.validate_update(seller_id, sku, catalogo)
+        repository_mock.find_product.assert_called_once_with(seller_id, sku)
+
+    @pytest.mark.asyncio
+    async def test_validate_patch_handles_exception(self, service_with_mock, repository_mock):
+        seller_id = "seller1"
+        sku = "sku1"
+        patch_model = {"name": "Updated Product"}
+        # Simula que find_product lança uma exceção
+        repository_mock.find_product = AsyncMock(side_effect=Exception("Erro inesperado"))
+
+        with pytest.raises(ProductNotExistException):
+            await service_with_mock.validate_patch(seller_id, sku, patch_model)
+        repository_mock.find_product.assert_called_once_with(seller_id, sku)
+
+    @pytest.mark.asyncio
+    async def test_validate_update_handles_exception(self, service_with_mock, repository_mock):
+        seller_id = "seller1"
+        sku = "sku1"
+        catalogo = CatalogoModel(seller_id=seller_id, sku=sku, name="Updated Product")
+        # Simula que find_product lança uma exceção
+        repository_mock.find_product = AsyncMock(side_effect=Exception("Erro inesperado"))
+
+        with pytest.raises(ProductNotExistException):
+            await service_with_mock.validate_update(seller_id, sku, catalogo)
+        repository_mock.find_product.assert_called_once_with(seller_id, sku)

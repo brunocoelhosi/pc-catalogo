@@ -13,6 +13,8 @@ from app.models import CatalogoModel
 if TYPE_CHECKING:
     from app.services import CatalogoService
 
+MSG_SELLER_IDENTIFICATION = "Identificador do vendedor"
+
 router = APIRouter(prefix=CATALOGO_PREFIX, tags=["CRUD Catálogo v2 - MongoDB"])
 
 #BUSCA PRODUTO POR SELLER_ID PAGINADO
@@ -42,7 +44,7 @@ router = APIRouter(prefix=CATALOGO_PREFIX, tags=["CRUD Catálogo v2 - MongoDB"])
 )
 @inject
 async def get_by_seller_id_paginado(
-    seller_id: str = Header(..., description="Identificador do vendedor"),
+    seller_id: str = Header(..., description= MSG_SELLER_IDENTIFICATION),
     name_like: str = None,  
     paginator: Paginator = Depends(get_request_pagination),
     catalogo_service: "CatalogoService" = Depends(Provide["catalogo_service"]),
@@ -69,7 +71,7 @@ async def get_by_seller_id_paginado(
 @inject
 async def get_product(
     sku: str,
-    seller_id: str = Header(..., description="Identificador do vendedor"),
+    seller_id: str = Header(..., description= MSG_SELLER_IDENTIFICATION),
     catalogo_service: "CatalogoService" = Depends(Provide["catalogo_service"]),
 ):
     return await catalogo_service.find_product(seller_id, sku)
@@ -99,7 +101,7 @@ async def get_product(
 @inject
 async def create(
     catalogo: CatalogoCreate,
-    seller_id: str = Header(..., description="Identificador do vendedor"),
+    seller_id: str = Header(..., description= MSG_SELLER_IDENTIFICATION),
     catalogo_service: "CatalogoService" = Depends(Provide["catalogo_service"]),
 ):
     """
@@ -135,7 +137,7 @@ async def create(
 async def put_something(
     sku: str,
     catalogo: CatalogoUpdate,
-    seller_id: str = Header(..., description="Identificador do vendedor"),
+    seller_id: str = Header(..., description= MSG_SELLER_IDENTIFICATION),
     catalogo_service: "CatalogoService" = Depends(Provide["catalogo_service"]),
 ):
     """
@@ -175,7 +177,7 @@ async def put_something(
 async def patch_something(
     sku: str,
     catalogo: CatalogoUpdate,
-    seller_id: str = Header(..., description="Identificador do vendedor"),
+    seller_id: str = Header(..., description= MSG_SELLER_IDENTIFICATION),
     catalogo_service: "CatalogoService" = Depends(Provide["catalogo_service"]),
 ):
     """
@@ -213,7 +215,7 @@ async def patch_something(
 @inject
 async def delete(
     sku: str,
-    seller_id: str = Header(..., description="Identificador do vendedor"),
+    seller_id: str = Header(..., description= MSG_SELLER_IDENTIFICATION),
     catalogo_service: "CatalogoService" = Depends(Provide["catalogo_service"]),
 ):
     return await catalogo_service.delete_by_sellerid_sku(seller_id, sku)

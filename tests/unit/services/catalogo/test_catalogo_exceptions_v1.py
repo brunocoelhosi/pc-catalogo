@@ -1,6 +1,6 @@
 import pytest
 from app.common.exceptions import ConflictException
-from app.services.catalogo.catalogo_exceptions_v1 import (
+from app.services.catalogo.catalogo_exceptions import (
     ProductAlreadyExistsException,
     ProductNotExistException,
     ProductNameLengthException,

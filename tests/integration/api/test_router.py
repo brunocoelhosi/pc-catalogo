@@ -6,5 +6,5 @@ def test_router_configuracoes_existem():
     assert isinstance(configuracoes, list)
     assert len(configuracoes) == 2
     assert all(len(cfg) >= 2 for cfg in configuracoes)
-    assert any("/api/v1" in cfg[1] for cfg in configuracoes)
-    assert any("/api/v2" in cfg[1] for cfg in configuracoes)
+    assert any("/seller/v1" in cfg[1] for cfg in configuracoes)
+    assert any("/seller/v2" in cfg[1] for cfg in configuracoes)
