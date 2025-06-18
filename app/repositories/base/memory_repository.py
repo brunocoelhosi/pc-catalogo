@@ -1,47 +1,29 @@
-from typing import Type, Generic, List, Optional, TypeVar
-
-from uuid import UUID
-from pymongo import ReturnDocument
+from typing import Generic, List, Optional, TypeVar
 
 from pydantic import BaseModel
 
 from app.common.datetime import utcnow
-from app.integrations.database.mongo_client import MongoClient
-from app.models import PersistableEntity, QueryModel
-
 from app.common.exceptions import NotFoundException
 
-from .async_crud_repository import AsyncCrudRepository
+from .async_crud_repository_v1 import AsyncCrudRepositoryV1
 
 T = TypeVar("T", bound=BaseModel)
 ID = TypeVar("ID", bound=int | str)
-Q = TypeVar("Q", bound=QueryModel)
 
 
-class MongoCatalogoRepository(AsyncCrudRepository[T, ID], Generic[T, ID]):
+class AsyncMemoryRepository(AsyncCrudRepositoryV1[T, ID], Generic[T, ID]):
 
-    def __init__(self, client: MongoClient, collection_name: str, model_class: Type[T]):
-        """
-        Repositório genérico para MongoDB.
-
-        :param client: Instância do MongoClient.
-        :param collection_name: Nome da coleção.
-        :param model_class: Classe do modelo (usada para criar instâncias de saída).
-        """
-        self.collection = client.get_default_database()[collection_name]
-        self.model_class = model_class
+    def __init__(self):
+        super().__init__()
+        self.memory = []
+        # Deveria passar dinamco
 
     async def create(self, entity: T) -> T:
         entity_dict = entity.model_dump(by_alias=True)
-        when = utcnow()
-        entity_dict["created_at"] = when
-        entity_dict["updated_at"] = when
+        entity_dict["created_at"] = utcnow()
 
-        created = await self.collection.insert_one(entity_dict)
-        # XXX Rever pegar chave do banco.
-        entity_dict["_id"] = created.inserted_id
-        return self.model_class(**entity_dict)
-    
+        self.memory.append(entity)
+        return entity_dict
 
 #Busca pelo ID
     async def find_by_id(self, entity_id: ID) -> Optional[T]:
@@ -53,11 +35,6 @@ class MongoCatalogoRepository(AsyncCrudRepository[T, ID], Generic[T, ID]):
         result = [r for r in self.memory if r.seller_id == seller_id]
         return result
     
-# Busca pelo seller_id no repositório em memória
-    async def find_by_seller_id2(self, seller_id: str) -> Optional[T]:
-        result = [r for r in self.memory if r.seller_id == seller_id]
-        return result
-    
 # Busca pelo SKU no repositório em memória
     async def find_by_sku(self, sku: str) -> Optional[T]:
         result = next((r for r in self.memory if r.sku == sku), None)
@@ -65,7 +42,7 @@ class MongoCatalogoRepository(AsyncCrudRepository[T, ID], Generic[T, ID]):
     
 # Busca por um produto unico seller + sku
     async def find_product(self, id: str, sku: str) -> Optional[T]:
-        id = id.lower()
+        sell_id = sell_id.lower()
         result = next((r for r in self.memory if r.sku == sku and r.seller_id == id), None)
         return result
     
@@ -140,29 +117,3 @@ class MongoCatalogoRepository(AsyncCrudRepository[T, ID], Generic[T, ID]):
         for document in filtered_list:
             entities.append(document)
         return entities
-       
-        
-    async def find2(self, filters: dict, limit: int = 10, offset: int = 0, sort: Optional[dict] = None) -> List[T]:
-        def matches_filters(item):
-            for key, value in filters.items():
-                attr = getattr(item, key, None)
-                if attr is None:
-                    return False
-                # Case-insensitive comparison for strings
-                if isinstance(attr, str) and isinstance(value, str):
-                    if attr.lower() != value.lower():
-                        return False
-                else:
-                    if attr != value:
-                        return False
-            return True
-
-        filtered_list = [data for data in self.memory if matches_filters(data)]
-
-        # Optional sorting
-        if sort:
-            for key, direction in reversed(sort.items()):
-                reverse = direction.lower() == "desc"
-                filtered_list.sort(key=lambda x: getattr(x, key, None), reverse=reverse)
-
-        return filtered_list[offset:offset + limit]

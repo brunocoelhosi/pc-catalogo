@@ -2,12 +2,19 @@ from app.api.common.schemas.pagination import Paginator
 from ...models import CatalogoModel
 from ...repositories import CatalogoRepository
 from ..base import CrudService
-from fastapi import HTTPException
-from .catalogo_exceptions import NoFieldsToUpdateException, ProductAlreadyExistsException, ProductNotExistException,ProductNameLengthException,SellerIDException, SKULengthException, SellerIDNotExistException, LikeNotFoundException
+from .catalogo_exceptions import ( 
+    NoFieldsToUpdateException, 
+    ProductAlreadyExistsException, 
+    ProductNotExistException,
+    ProductNameLengthException,
+    SellerIDException, 
+    SKULengthException, 
+    SellerIDNotExistException, 
+    LikeNotFoundException
+)
+
 from app.api.v1.schemas.catalogo_schema import CatalogoUpdate
-from abc import ABC, abstractmethod
-from app.common.exceptions import NotFoundException
-from typing import TYPE_CHECKING, Generic, TypeVar
+from typing import TypeVar
 
 T = TypeVar("T")
 
@@ -51,64 +58,13 @@ class CatalogoService(CrudService[CatalogoModel, int]):
         """
         await self.validate_delete(seller_id, sku)
         deleted = await self.repository.delete_by_sellerid_sku(seller_id, sku)
-        #await self._check_find_raises_exception(seller_id, sku, raises_exception, deleted)
         return deleted
     
     async def patch_by_sellerid_sku(self, seller_id: str, sku: str, patch_model: dict) -> T:
-        await self.find_seller_id(seller_id)
+        await self.find_by_seller_id(seller_id)
         patch_model = await self.validate_patch(seller_id, sku, patch_model)
         model = await self.repository.patch_by_sellerid_sku(seller_id, sku, patch_model)
         return model
-    
-    async def update_product_partial(self, seller_id: str, sku: str, update_payload: CatalogoUpdate) -> CatalogoModel:
-        """
-        Atualiza parcialmente um produto no catálogo com base no seller_id e sku.
-        """
-        seller_id = seller_id.lower()
-
-        # Busca o produto atual
-        product_to_update = await self.find_product(seller_id, sku)
-
-        if not product_to_update:
-            raise ProductNotExistException()
-
-        #exclude_unset=True: somente os campos que foram enviados no payload serão atualizados
-        update_data_for_service = update_payload.model_dump(exclude_unset=True)
-
-        if not update_data_for_service:
-            raise NoFieldsToUpdateException()
-
-        # Verifica se os dados enviados são iguais aos já existentes
-        if all(getattr(product_to_update, key, None) == value for key, value in update_data_for_service.items()):
-            raise NoFieldsToUpdateException()
-
-        if "name" in update_data_for_service and update_data_for_service["name"] is not None:
-            await self.validate_len_product_name(update_data_for_service["name"])
-
-        updated_product = await super().patch(seller_id, update_payload)
-        return updated_product
-
-    async def find_seller_id(self, seller_id: str) -> CatalogoModel:
-        """
-        Verifica se o seller_id existe no catálogo.
-        """
-        seller_id = seller_id.lower().strip()
-        result = await self.repository.find_by_seller_id(seller_id)
-        
-        if not result:
-            raise SellerIDNotExistException()
-        
-        return result
-    
-    async def find_by_seller_id(self, seller_id):
-        """
-        Busca todos os produtos no catálogo com base no seller_id.
-        """
-        seller_id = seller_id.lower()
-        result = await super().find_by_seller_id(seller_id)
-        if not result:
-            raise SellerIDNotExistException()
-        return result
     
     async def find_by_filter(self, seller_id: str, paginator: Paginator = None, name_like: str = None) -> list[CatalogoModel]:
         """ 
@@ -154,6 +110,7 @@ class CatalogoService(CrudService[CatalogoModel, int]):
         Valida o SKU.
         """
         if not isinstance(sku, str) or not sku.strip() or len(sku.strip()) < 2:
+        
             raise SKULengthException()
         
     async def validate_len_seller_id(self, seller_id: str) -> None:
@@ -162,7 +119,7 @@ class CatalogoService(CrudService[CatalogoModel, int]):
         """
         if not isinstance(seller_id, str) or not seller_id.strip() or len(seller_id.strip()) < 2:
             raise SellerIDException()
-     
+
     async def validate_patch(self, seller_id, sku, patch_model) -> dict:
 
         try:
@@ -174,15 +131,8 @@ class CatalogoService(CrudService[CatalogoModel, int]):
             raise ProductNotExistException()
 
         return patch_model
-
-
     
     async def validate_update(self, seller_id: str, sku: str, catalogo: CatalogoModel) -> CatalogoModel:
-        #filter = catalogo.get_sellerid_sku()
-
-        """another_catalogo = await self.repository.find_by_sellerid_sku(**filter)
-        if not another_catalogo:
-            raise NotFoundException()"""
         try:
             product_exist = await self.find_product(seller_id, sku)
         except Exception:
@@ -192,8 +142,7 @@ class CatalogoService(CrudService[CatalogoModel, int]):
             raise ProductNotExistException()
 
         return catalogo
-    
-        
+            
     async def validate_delete(self, seller_id: str, sku: str):
         try:
             product_exist = await self.find_product(seller_id, sku)

@@ -1,15 +1,10 @@
 from typing import Type, Generic, List, Optional, TypeVar
-
-from uuid import UUID
 from pymongo import ReturnDocument
-
 from pydantic import BaseModel
-
 from app.common.datetime import utcnow
 from app.integrations.database.mongo_client import MongoClient
-from app.models import PersistableEntity, QueryModel
+from app.models import QueryModel
 
-from app.common.exceptions import NotFoundException
 
 from .async_crud_repository import AsyncCrudRepository
 
@@ -44,19 +39,19 @@ class MongoCatalogoRepository(AsyncCrudRepository[T, ID], Generic[T, ID]):
     
     @staticmethod
     def build_sellerid_sku_filter(seller_id: str, sku: str) -> dict:
-        filter = {"seller_id": seller_id, "sku": sku}
-        return filter
+        query_filter = {"seller_id": seller_id, "sku": sku}
+        return query_filter
     
     @staticmethod
     def build_sellerid_filter(seller_id: str) -> dict:
-        filter = {"seller_id": seller_id}
-        return filter
+        query_filter = {"seller_id": seller_id}
+        return query_filter
     
     # Busca por um produto unico seller + sku
     async def find_product(self, id: str, sku: str) -> Optional[T]:
-        id = id.lower()
-        filter = self.build_sellerid_sku_filter(id, sku)
-        result = await self.find_one(filter)
+        id_product = id.lower()
+        query_filter = self.build_sellerid_sku_filter(id_product, sku)
+        result = await self.find_one(query_filter)
         return result
 
     async def find_one(self, filter: dict) -> T | None:
@@ -97,35 +92,34 @@ class MongoCatalogoRepository(AsyncCrudRepository[T, ID], Generic[T, ID]):
         return updated_document
 
     async def update_by_sellerid_sku(self, seller_id, sku, entity: T) -> T | None:
-        filter = self.build_sellerid_sku_filter(seller_id, sku)
+        query_filter = self.build_sellerid_sku_filter(seller_id, sku)
 
-        updated_document = await self.update(filter, entity)
+        updated_document = await self.update(query_filter, entity)
         return updated_document
 
     async def patch_by_sellerid_sku(self, seller_id, sku, patch_entity) -> T | None:
 
-        filter = self.build_sellerid_sku_filter(seller_id, sku)
-        updated_document = await self._update_document(filter, patch_entity)
+        query_filter = self.build_sellerid_sku_filter(seller_id, sku)
+        updated_document = await self._update_document(query_filter, patch_entity)
         return updated_document
     
     async def find_by_sellerid_sku(self, seller_id: str, sku: str) -> T | None:
-        filter = self.build_sellerid_sku_filter(seller_id, sku)
-        result = await self.find_one(filter)
+        query_filter = self.build_sellerid_sku_filter(seller_id, sku)
+        result = await self.find_one(query_filter)
         return result
 
     async def find_by_seller_id(self, seller_id: str) -> T | None:
-        filter = self.build_sellerid_filter(seller_id)
-        result = await self.find_one(filter)
+        query_filter = self.build_sellerid_filter(seller_id)
+        result = await self.find_one(query_filter)
         return result
     
     async def delete(self, filter: dict) -> bool:
-        # XXX Atenção aqui!
         deleted = await self.collection.delete_many(filter)
         has_deleted = deleted.deleted_count > 0
         return has_deleted
 
     async def delete_by_sellerid_sku(self, seller_id, sku) -> bool:
-        filter = self.build_sellerid_sku_filter(seller_id, sku)
-        has_deleted = await self.delete(filter)
+        query_filter = self.build_sellerid_sku_filter(seller_id, sku)
+        has_deleted = await self.delete(query_filter)
         return has_deleted
 

@@ -22,19 +22,9 @@ class CrudService(Generic[T, ID]):
 
     async def create(self, entity: Any) -> T:
         return await self.repository.create(entity)
-
-    """async def find_by_id(self, entity_id: ID) -> T | None:
-        return await self.repository.find_by_id(entity_id)
-    
-    async def find_by_sku(self, sku: str) -> T | None:
-        return await self.repository.find_by_sku(sku)"""
     
     async def find_product(self, seller_id: str,sku: str) -> T | None:
         return await self.repository.find_product(seller_id, sku)
-    
-    """async def find_by_product_name(self, paginator: Paginator, filters: dict) -> list[T]:
-        return await self.repository.find_by_product_name(
-            filters=filters, limit=paginator.limit, offset=paginator.offset, sort=paginator.get_sort_order())"""
     
     async def find(self, paginator: Paginator, filters: dict) -> list[T]:
         return await self.repository.find(
@@ -42,19 +32,6 @@ class CrudService(Generic[T, ID]):
         
     async def find_by_seller_id(self, seller_id: str) -> T | None:
         return await self.repository.find_by_seller_id(seller_id)
-    
-    async def find_by_filter(self, seller_id: str, paginator: Paginator = None, name_like: str = None) -> list[T]:
-        return await self.repository.find_by_seller_id2(seller_id)
-
-    """    async def delete_by_sellerid_sku(self, seller_id, sku) -> bool:
-        return await self.repository.delete_by_sellerid_sku(seller_id, sku)
-
-    async def find_by_id(self, entity_id: ID) -> T | None:
-        return await self.repository.find_by_id(entity_id)
-    
-    async def find_by_product_name(self, filters: dict, paginator: Paginator) -> list[T]:
-        return await self.repository.find_by_product_name(
-            filters=filters, limit=paginator.limit, offset=paginator.offset, sort=paginator.get_sort_order())"""
     
     async def find_by_sku(self, sku: str) -> T | None:
         return await self.repository.find_by_sku(sku)

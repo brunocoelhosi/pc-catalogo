@@ -9,9 +9,9 @@ from ..schemas.catalogo_schema import CatalogoCreate, CatalogoResponse, Catalogo
 from . import CATALOGO_PREFIX
 
 if TYPE_CHECKING:
-    from app.services import CatalogoService
+    from app.services import CatalogoServiceV1
 
-router = APIRouter(prefix=CATALOGO_PREFIX, tags=["CRUD Catálogo v1"])
+router = APIRouter(prefix=CATALOGO_PREFIX, tags=["CRUD Catálogo v1 - Memory"])
 
 ##BUSCAR TODOS OS PRODUTOS
 @router.get("",
@@ -41,7 +41,7 @@ router = APIRouter(prefix=CATALOGO_PREFIX, tags=["CRUD Catálogo v1"])
 @inject
 async def get_all_products(
     paginator: Paginator = Depends(get_request_pagination),
-    catalogo_service: "CatalogoService" = Depends(Provide["catalogo_service"]),
+    catalogo_service: "CatalogoServiceV1" = Depends(Provide["catalogo_service_v1"]),
 ):
     results = await catalogo_service.find(paginator=paginator, filters={})
 
@@ -63,7 +63,7 @@ async def get_all_products(
 async def get_product(
     sku: str,
     seller_id: str,
-    catalogo_service: "CatalogoService" = Depends(Provide["catalogo_service"]),
+    catalogo_service: "CatalogoServiceV1" = Depends(Provide["catalogo_service_v1"]),
 ):
     return await catalogo_service.find_product(seller_id, sku)
 
@@ -90,7 +90,7 @@ async def get_product(
 @inject
 async def get_by_seller_id(
     seller_id: str,
-    something_service: "CatalogoService" = Depends(Provide["catalogo_service"]),
+    something_service: "CatalogoServiceV1" = Depends(Provide["catalogo_service_v1"]),
 ):
     return await something_service.find_by_seller_id(seller_id)
 
@@ -118,7 +118,7 @@ async def get_by_seller_id(
 )
 @inject
 async def create(
-    catalogo: CatalogoCreate, catalogo_service: "CatalogoService" = Depends(Provide["catalogo_service"])
+    catalogo: CatalogoCreate, catalogo_service: "CatalogoServiceV1" = Depends(Provide["catalogo_service_v1"])
 ):
     return await catalogo_service.create(catalogo)
 
@@ -134,7 +134,7 @@ async def update_by_id(
     seller_id: str,
     sku: str,
     catalogo: CatalogoUpdate,
-    catalogo_service: "CatalogoService" = Depends(Provide["catalogo_service"]),
+    catalogo_service: "CatalogoServiceV1" = Depends(Provide["catalogo_service_v1"]),
 ):
     return await catalogo_service.update_product_partial(seller_id, sku, catalogo)
 
@@ -159,6 +159,6 @@ async def update_by_id(
 async def delete(
     seller_id: str,
     sku: str,
-    catalogo_service: "CatalogoService" = Depends(Provide["catalogo_service"]),
+    catalogo_service: "CatalogoServiceV1" = Depends(Provide["catalogo_service_v1"]),
 ):
     return await catalogo_service.delete(seller_id, sku)
