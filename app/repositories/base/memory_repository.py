@@ -41,9 +41,9 @@ class AsyncMemoryRepository(AsyncCrudRepositoryV1[T, ID], Generic[T, ID]):
         return result
     
 # Busca por um produto unico seller + sku
-    async def find_product(self, id: str, sku: str) -> Optional[T]:
-        sell_id = sell_id.lower()
-        result = next((r for r in self.memory if r.sku == sku and r.seller_id == id), None)
+    async def find_product(self, seller_id: str, sku: str) -> Optional[T]:
+        seller_id = seller_id.lower()
+        result = next((r for r in self.memory if r.sku == sku and r.seller_id == seller_id), None)
         return result
     
 # Busca por um produto ou mais produtos pelo seller + product_name paginados
