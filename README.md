@@ -4,7 +4,7 @@
 
 ## Introdução
 
-O projeto tem como objetivo **descrever os produtos**, considerando suas características e especificações detalhadas. As informações são obtidas por meio de pesquisas em **diversos sites de e-commerce**, permitindo uma visão ampla e comparativa de cada item. Isso facilita a **organização, comparação e apresentação** dos produtos de forma clara e padronizada.
+O projeto tem como objetivo **fornecer as informações dos produtos** presentes no catálogo, considerando suas características e especificações detalhadas..
 
 ## 🎯 Para que Serve um Catálogo de Produtos?
 
@@ -28,8 +28,14 @@ O projeto tem como objetivo **descrever os produtos**, considerando suas caracte
 
 Este projeto foi construído usando várias tecnologias chaves para garantir performance, segurança e facilidade de uso:
 
-- **Python 3.12**: Escolhido por sua simplicidade e poderosas capacidades de programação. A versão 3.13 é a mais recente, oferecendo melhorias significativas em eficiência e recursos linguísticos.
-- **FastAPI**: Uma moderna e rápida (altas performances) web framework para Python, que é ideal para a construção de APIs.
+- **Linguagem**: [Python 3.12](https://docs.python.org/3.12/) - Escolhido por sua simplicidade e poderosas capacidades de programação. A versão 3.13 é a mais recente, oferecendo melhorias
+- **Framework**: [FastAPI](https://fastapi.tiangolo.com/) - Uma moderna e rápida (altas performances) web framework para Python, que é ideal para a construção de APIs.
+- **Documentação da API**: Swagger (via FastAPI)
+- **Banco de Dados**: [MongoDB](https://www.mongodb.com/)
+- **Docker**: [Docker](https://www.docker.com/)
+- **Testes**: [Pytest](https://docs.pytest.org/)
+- **Code Quality**: [SonarQube](https://www.sonarsource.com/products/sonarqube/)
+- **Makefile**: Automação de tarefas
 
 ## ✨ Configuração do ambiente local
 
@@ -39,7 +45,11 @@ Confirme se o [Python 3.12](https://docs.python.org/3.12/) está instalado em su
 
 ### 🐧 Comandos via Linux .
 
-Clone o projeto, acesse o diretório:
+Clone o projeto e acesse o diretório:
+
+```sh
+https://github.com/projeto-carreira-luizalabs-2025/pc-catalogo.git
+```
 
 ```sh
 cd pc-catalogo
@@ -55,7 +65,7 @@ make build-venv
 Uma vez criado o ambiente virtual do Python, você precisa ativá-lo:
 
 ```sh
-./venv/bin/activate
+source ./venv/bin/activate
 ```
 
 Quaisquer comandos daqui para frente, iremos considerar que você está dentro
@@ -66,6 +76,36 @@ Instale as bibliotecas necessárias para o seu projeto. Execute os comandos:
 ```sh
 # Instala os pacotes.
 make requirements-dev
+```
+
+## 🛠️ Execução local
+
+Para rodar a aplicação localmente execute os os seguintes comandos:
+
+Carregue as variáveis de ambiente para o modo de teste:
+
+```sh
+make load-test-env
+```
+
+Inicie a API em modo desenvolvimento:
+
+```bash
+make run-dev
+```
+
+## 🐳 Execução com Docker
+
+🟢 Subar o Docker
+
+```bash
+make docker-tests-up # Esse comando subir o docker da aplicação + docker do banco para testes
+```
+
+🛑 Parar e remover contêineres
+
+```bash
+make docker-compose-down # Encerra e remove os contêineres gerenciados pelo Docker Compose.
 ```
 
 #
@@ -137,10 +177,16 @@ uvicorn app.api_main:app --reload
 
 ### ▶️ Execução da API usando Docker-compose
 
-Na raiz do projeto, execute o comando:
+🟢 Suba o container com o seguinte comando na raiz do projeto:
 
 ```sh
 docker-compose -f devtools/docker-compose-catalogo.yml up --build
+```
+
+🛑 Parar e remover o container
+
+```sh
+docker-compose -f devtools/docker-compose-catalogo.yml down
 ```
 
 API: http://localhost:8000
@@ -149,23 +195,47 @@ API: http://localhost:8000
 
 ### ▶️ Execução do Banco MongoDB usando Docker-compose
 
-Na raiz do projeto, execute o comando:
+🟢 Suba o container do banco com o seguinte comando na raiz do projeto:
 
 ```sh
 docker-compose -f devtools/docker-compose-mongo.yml up --build
+```
+
+🛑 Parar e remover o container
+
+```sh
+docker-compose -f devtools/docker-compose-mongo.yml down
 ```
 
 ##
 
 ## ✨ Configuração ambiente de Testes
 
-### ▶️ Execução do Banco MongoDB-test usando Docker-compose
+### ▶️ Execução da API e Banco MongoDB no modo Teste usando Docker-compose
 
 Na raiz do projeto, execute o comando:
 
 ```sh
-docker-compose -f devtools/docker-compose-mongo-tests.yml up --build
+docker-compose -f devtools/docker-compose-tests.yml up --build
 ```
+
+### 🗃️ Migração do Banco de dados
+
+Para migração do MongoDB, instalamos a biblioteca mongodb-migrations.
+
+```sh
+pip install mongodb-migrations==1.3.1
+```
+
+Criamos o arquivo no formato <DATA>\_<TEXTO>.py na pasta migrations, exemplo: 20250101102030_somethingindexes.py.
+
+Fizemos a migração:
+
+```sh
+mongodb-migrate --url "$APP_DB_URL_MONGO"
+```
+
+Sendo que a variável "APP_DB_URL_MONGO" contém a URL de conexão com o MongoDB.
 
 ##
 

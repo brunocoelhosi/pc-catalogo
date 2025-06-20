@@ -1,3 +1,4 @@
+URL_MONGO_MIGRATION_TEST = "mongodb://admin:admin@localhost:27018/test_db?authSource=admin"
 # Criar o diretório venv
 build-venv:
 	python3.12 -m venv venv
@@ -15,16 +16,17 @@ check-lint:
 	flake8 --max-line-length=120 ${APP_DIR} ${ROOT_TESTS_DIR}
 	mypy ${APP_DIR} ${ROOT_TESTS_DIR}
 
-
+#Carregar as variáveis de ambiente
 load-env:
 	@./devtools/scripts/push-env "devtools/dotenv.$(env)"
+
 # Carregar a variável 
 load-test-env:
 	@env=test make $(MAKE_ARGS) load-env
 
 # Realizar a migração do banco de dados
 migration:
-
+	mongodb-migrate --url URL_MONGO_MIGRATION_TEST
 # Testar fazendo a cobertura do código
 coverage:
 	pytest --cov=${APP_DIR} --cov-report=term-missing --cov-report=xml ${ROOT_TESTS_DIR} --cov-fail-under=90 --durations=5
