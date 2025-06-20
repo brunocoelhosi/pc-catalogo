@@ -130,7 +130,7 @@ def repository(mongo_clientv2):
 
 @pytest.fixture(autouse=True)
 def clean_catalogo_collection():
-    client = pymongo.MongoClient("mongodb://admin:admin@localhost:27018/test_db?authSource=admin")
+    client = pymongo.MongoClient("mongodb://admin:admin@localhost-tests:27018/test_db?authSource=admin")
     db = client.get_default_database()
     db["catalogo"].delete_many({})
     yield
