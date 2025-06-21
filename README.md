@@ -96,16 +96,16 @@ make run-dev
 
 ## 🐳 Execução com Docker
 
-🟢 Subar o Docker
+🟢 Subir o Docker
 
 ```bash
-make docker-tests-up # Esse comando subir o docker da aplicação + docker do banco para testes
+make docker-tests-up # Esse comando sobe o docker da aplicação + docker do banco para testes
 ```
 
-🛑 Parar e remover contêineres
+🛑 Parar e remover container
 
 ```bash
-make docker-compose-down # Encerra e remove os contêineres gerenciados pelo Docker Compose.
+make docker-compose-down
 ```
 
 #
@@ -114,10 +114,13 @@ make docker-compose-down # Encerra e remove os contêineres gerenciados pelo Doc
 
 Este projeto foi desenvolvido utilizando o [Python 3.12](https://docs.python.org/3.12/), confirme se o mesmo está instalado em sua máquina.
 
-Clone o projeto, acesse o diretório:
+Clone o projeto e acesse o diretório:
 
 ```sh
-# Clona o projeto.
+https://github.com/projeto-carreira-luizalabs-2025/pc-catalogo.git
+```
+
+```sh
 cd pc-catalogo
 ```
 
@@ -134,7 +137,6 @@ Uma vez criado o ambiente virtual do Python, você precisa ativá-lo:
 ```sh
 # Ativa o ambiente virtual.
 venv\Scripts\activate
-
 ```
 
 Quaisquer comandos daqui para frente, iremos considerar que você está dentro

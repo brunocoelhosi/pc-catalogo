@@ -36,7 +36,7 @@ docker-tests-down:
 
 # Realizar a migração do banco de dados
 migration:
-	mongodb-migrate --url URL_MONGO_MIGRATION_TEST
+	mongodb-migrate --url "$(URL_MONGO_MIGRATION_TEST)"
 
 # Testar fazendo a cobertura do código
 coverage:
