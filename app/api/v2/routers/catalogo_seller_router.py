@@ -3,6 +3,8 @@ from typing import TYPE_CHECKING
 from dependency_injector.wiring import Provide, inject
 from fastapi import APIRouter, Depends, Header, status
 
+from app.api.common.auth_handler import do_auth
+
 from app.api.common.schemas import ListResponse, Paginator, get_request_pagination
 
 from ..schemas.catalogo_schema import CatalogoCreate, CatalogoResponse, CatalogoUpdate
@@ -15,7 +17,7 @@ if TYPE_CHECKING:
 
 MSG_SELLER_IDENTIFICATION = "Identificador do vendedor"
 
-router = APIRouter(prefix=CATALOGO_PREFIX, tags=["CRUD Catálogo v2 - MongoDB"])
+router = APIRouter(prefix=CATALOGO_PREFIX, tags=["CRUD Catálogo v2 - MongoDB"], dependencies=[Depends(do_auth)])
 
 #BUSCA PRODUTO POR SELLER_ID PAGINADO
 @router.get(
