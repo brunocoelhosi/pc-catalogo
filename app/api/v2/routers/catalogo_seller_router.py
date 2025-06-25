@@ -103,7 +103,7 @@ async def get_product(
 @inject
 async def create(
     catalogo: CatalogoCreate,
-    seller_id: str = Header(..., description= MSG_SELLER_IDENTIFICATION),
+    seller_id: str = Header(..., alias="x-seller-id", description=MSG_SELLER_IDENTIFICATION),
     catalogo_service: "CatalogoService" = Depends(Provide["catalogo_service"]),
 ):
     """

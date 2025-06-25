@@ -6,14 +6,14 @@ import pymongo
 
 from app.api.api_application import create_app
 from app.api.router import routes
-from app.container import Container
+
 from app.models import CatalogoModel
 from app.repositories import CatalogoRepositoryV1
 from app.services import HealthCheckService
 from app.settings import api_settings
 from app.services import CatalogoServiceV1
 from app.services import CatalogoService
-
+from app.container import Container
 #v2
 
 from motor.motor_asyncio import AsyncIOMotorClient

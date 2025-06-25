@@ -10,13 +10,13 @@ from fastapi.security import OAuth2PasswordBearer
 
 from app.api.common.injector import get_seller_id
 from app.common.exceptions import ForbiddenException, UnauthorizedException
-from app.container import Container
+
 from app.integrations.auth.keycloak_adapter import OAuthException
 
 if TYPE_CHECKING:
     from app.integrations.auth.keycloak_adapter import KeycloakAdapter
 
-
+from app.container import Container
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 
@@ -35,6 +35,10 @@ async def do_auth(
     except OAuthException as exception:
         # XXX Poderíamos especializar as exceções
         raise UnauthorizedException from exception
+
+# Debug temporário
+    print("DEBUG seller_id header:", seller_id)
+    print("DEBUG sellers claim:", info_token.get("sellers", None))
 
     # Nossa autorização (permissão): 
     # O usuário pode operar com o seller informado?
