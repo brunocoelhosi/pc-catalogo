@@ -19,6 +19,10 @@ from app.container import Container
 from motor.motor_asyncio import AsyncIOMotorClient
 from app.repositories.catalogo_repository import CatalogoRepository
 
+from pytest import fixture
+from httpx import AsyncClient, ASGITransport
+from typing import AsyncGenerator
+
 
 @pytest.fixture
 def health_check_service(container: Container) -> HealthCheckService:
@@ -131,3 +135,20 @@ def repository(mongo_clientv2):
     return CatalogoRepository(mongo_clientv2)
 
 
+
+@pytest.fixture
+async def async_client(app_v2) -> AsyncGenerator[AsyncClient, None]:
+    transport = ASGITransport(app=app_v2)
+    async with AsyncClient(transport=transport, base_url="http://test") as ac:
+        yield ac
+
+@pytest.fixture
+def mock_do_auth(app_v2):
+    """
+    Mocando o do_auth para o app_v2 usado nos testes
+    """
+    from app.api.common.auth_handler import do_auth
+
+    app_v2.dependency_overrides[do_auth] = lambda: None
+    yield
+    app_v2.dependency_overrides.pop(do_auth, None)

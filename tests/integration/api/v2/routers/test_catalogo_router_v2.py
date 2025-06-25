@@ -1,10 +1,23 @@
 import pytest
 from fastapi.testclient import TestClient
+from httpx import AsyncClient
 
-@pytest.mark.usefixtures("client_v2")
+#@pytest.mark.usefixtures("client_v2") OLD
+@pytest.mark.usefixtures("mock_do_auth", "async_client")
 class TestCatalogoRouterV2:
 
-    def test_criar_produto(self, client_v2: TestClient):
+    @pytest.mark.asyncio    
+    async def test_criar_produto(self, async_client: AsyncClient):
+        novo_produto = {"seller_id": "magalu11", "sku": "magalu10", "name": "20"}
+        resposta = await async_client.post("/seller/v2/catalogo", json=novo_produto, headers={"x-seller-id": "magalu11"})
+        assert resposta.status_code == 201
+        assert resposta.json()["seller_id"] == "magalu11"
+        assert resposta.json()["sku"] == "magalu10"
+        assert resposta.json()["name"] == "20"
+
+
+
+    def test_criar_produto2(self, client_v2: TestClient):
         novo_produto = {"seller_id": "magalu11", "sku": "magalu10", "name": "20"}
         resposta = client_v2.post("/seller/v2/catalogo", json=novo_produto, headers={"seller-id": "magalu11"})
         assert resposta.status_code == 201
