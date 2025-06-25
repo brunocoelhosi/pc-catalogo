@@ -11,3 +11,17 @@ def mock_do_auth(app_v2):
     app_v2.dependency_overrides[do_auth] = lambda: None
     yield
     app_v2.dependency_overrides.pop(do_auth, None)
+
+
+@fixture
+def mock_do_auth():
+    """
+    Mocando o do_auth
+    """
+    from app.api.common.auth_handler import do_auth
+    from app.api_main import app
+
+    app.dependency_overrides[do_auth] = lambda: None
+    yield
+    # Limpando o override
+    app.dependency_overrides[do_auth] = {}
