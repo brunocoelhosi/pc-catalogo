@@ -195,7 +195,8 @@ def mock_do_auth(monkeypatch):
 @pytest.fixture
 def app_v2(mock_do_auth, container_v2: Container) -> FastAPI:
     import app.api.v2.routers.catalogo_seller_router as catalogo_seller_router_v2
-    container_v2.wire(modules=[catalogo_seller_router_v2])
+    import app.api.common.auth_handler as auth_handler
+    container_v2.wire(modules=[catalogo_seller_router_v2, auth_handler])
     app_instance = create_app(api_settings, routes)
     app_instance.container = container_v2  # type: ignore[attr-defined]
     yield app_instance
