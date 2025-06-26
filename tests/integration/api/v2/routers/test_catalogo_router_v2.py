@@ -5,16 +5,21 @@ from httpx import AsyncClient
 #@pytest.mark.usefixtures("client_v2") OLD
 @pytest.mark.usefixtures("mock_do_auth", "async_client")
 class TestCatalogoRouterV2:
-
     @pytest.mark.asyncio    
     async def test_criar_produto(self, async_client: AsyncClient):
-        novo_produto = {"seller_id": "magalu11", "sku": "magalu10", "name": "20"}
-        resposta = await async_client.post("/seller/v2/catalogo", json=novo_produto, headers={"x-seller-id": "magalu11"})
+        novo_produto = {"seller-id": "magalu11", "sku": "magalu10", "name": "20"}
+        resposta = await async_client.post(
+            "/seller/v2/catalogo",
+            json=novo_produto,
+            headers={
+                "x-seller-id": "magalu11",
+                "Authorization": "Bearer fake-token"
+            }
+        )
         assert resposta.status_code == 201
-        assert resposta.json()["seller_id"] == "magalu11"
+        assert resposta.json()["x-seller-id"] == "magalu11"
         assert resposta.json()["sku"] == "magalu10"
         assert resposta.json()["name"] == "20"
-
 
 
     def test_criar_produto2(self, client_v2: TestClient):

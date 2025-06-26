@@ -10,7 +10,7 @@ from ...settings import ApiSettings
 HEADER_X_REQUEST_ID = "X-Request-ID"
 
 
-# Exemplo de middleware
+# TraceIdMiddleware é usado para gerar um ID de rastreamento único para cada requisição.
 from starlette.middleware.base import BaseHTTPMiddleware
 import uuid
 
