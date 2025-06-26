@@ -10,6 +10,8 @@ from app.api.common.schemas import ListResponse, Paginator, get_request_paginati
 from ..schemas.catalogo_schema import CatalogoCreate, CatalogoResponse, CatalogoUpdate
 from . import CATALOGO_PREFIX
 
+from app.api.common.auth_handler import UserAuthInfo, do_auth, get_current_user
+
 from app.models import CatalogoModel
 
 if TYPE_CHECKING:
@@ -46,7 +48,7 @@ router = APIRouter(prefix=CATALOGO_PREFIX, tags=["CRUD Catálogo v2 - MongoDB"],
 )
 @inject
 async def get_by_seller_id_paginado(
-    seller_id: str = Header(..., description= MSG_SELLER_IDENTIFICATION),
+    seller_id: str = Header(...,alias="x-seller-id", description= MSG_SELLER_IDENTIFICATION),
     name_like: str = None,  
     paginator: Paginator = Depends(get_request_pagination),
     catalogo_service: "CatalogoService" = Depends(Provide["catalogo_service"]),
@@ -73,7 +75,7 @@ async def get_by_seller_id_paginado(
 @inject
 async def get_product(
     sku: str,
-    seller_id: str = Header(..., description= MSG_SELLER_IDENTIFICATION),
+    seller_id: str = Header(..., alias="x-seller_id", description= MSG_SELLER_IDENTIFICATION),
     catalogo_service: "CatalogoService" = Depends(Provide["catalogo_service"]),
 ):
     return await catalogo_service.find_product(seller_id, sku)
@@ -105,13 +107,20 @@ async def create(
     catalogo: CatalogoCreate,
     seller_id: str = Header(..., alias="x-seller-id", description=MSG_SELLER_IDENTIFICATION),
     catalogo_service: "CatalogoService" = Depends(Provide["catalogo_service"]),
+    user_info: UserAuthInfo = Depends(get_current_user),
 ):
     """
     Cria um novo produto no catálogo. Não pode haver um `seller_id` + `sku` já cadastrado.
     """
+    
     catalogo_model = CatalogoModel(**catalogo.model_dump(), seller_id=seller_id)
+    catalogo_model.created_by = user_info.user
+    catalogo_model.updated_by = user_info.user
     catalogo_model = await catalogo_service.create(catalogo_model)
-    return CatalogoResponse(**catalogo_model.model_dump())
+
+    catalogo_response = catalogo_model.model_dump()
+    
+    return catalogo_response
 
 #ATUALIZA UM PRODUTO
 @router.put(

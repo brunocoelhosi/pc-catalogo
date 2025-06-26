@@ -10,7 +10,8 @@ ENV = os.getenv("ENV", "production")
 is_dev = ENV == "dev"
 
 dotenv.load_dotenv(override=is_dev)
-
+print("DEBUG - APP_OPENID_WELLKNOWN:", os.getenv("APP_OPENID_WELLKNOWN"))
+print("DEBUG - APP_OPENID_WELLKNOWN:", os.getenv("APP_DB_URL_MONGO"))
 
 def init() -> FastAPI:
     print("API Settings:", api_settings.dict())

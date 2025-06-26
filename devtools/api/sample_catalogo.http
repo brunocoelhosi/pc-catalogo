@@ -4,6 +4,8 @@
 ###
 # URL
 @url=http://127.0.0.1:8000
+@url_keycloak=http://localhost:8080/realms/marketplace
+@api_catalogo=http://127.0.0.1:8000/seller/v2/catalogo
 
 ## ---------------------------
 # HEALTH
@@ -14,36 +16,32 @@
 # Ping versão
 GET {{api_health}}
 
+## ---------------------------
+# CATALOGO
 ###
 # Meu seller de testes
-@seller_id=luizalabs
 
+@seller_id=magalu
 ###
-#
-# Usuário e senha do seller
-@username=seller01
-@password=senha123
-
-@sku=sample-sku
-
-###
-# Conectando no Keycloak
-
-@url_keycloak=http://localhost:8080/realms/marketplace
-
-###
-# Obtendo o token do usuário `vendedor1`
+# Obtendo o token do usuário `bruno01`
 # @name usertoken
 POST {{url_keycloak}}/protocol/openid-connect/token
 Content-Type: application/x-www-form-urlencoded
 
-client_id=varejo&username=vendedor1&password=senha123&grant_type=password
+client_id=varejo&username=bruno01&password=bruno123&grant_type=password&scope=sellers
 
+###
 
-### -----------------------
-# SOMETHING
+POST {{api_catalogo}}
+x-seller-id: magalu
+Authorization: Bearer {{usertoken.response.body.access_token}}
+Content-Type: application/json
 
-@api_catalogo=http://127.0.0.1:8000/seller/v2/catalogo
+{
+    "sku": "tvsam4k70",
+    "name": "tv samsung 4k 70 polegadas"
+}
+
 
 ###
 # Consultando sem enviar token
@@ -57,16 +55,51 @@ x-seller-id: {{seller_id}}
 Authorization: Bearer token-invalido
 
 ###
+# Consultando com seller-id-invalido
+GET {{api_catalogo}}/{{sku}}
+x-seller-id: seller-nao-cadastrado
+Authorization: Bearer {{usertoken.response.body.access_token}}
+
+
+###
+# Consultando
+GET {{api_catalogo}}
+x-seller-id: {{seller_id}}
+Authorization: Bearer {{usertoken.response.body.access_token}}
+
+
+
+
+###
 # Consultando
 GET {{api_catalogo}}/{{sku}}
 x-seller-id: {{seller_id}}
 Authorization: Bearer {{usertoken.response.body.access_token}}
 
+#
+# Usuário e senha do seller
+@username=seller01
+@password=senha123
+
+@sku=sample-sku
+
 ###
-# Consultando com seller-id-invalido
-GET {{api_catalogo}}/{{sku}}
-x-seller-id: seller-nao-cadastrado
-Authorization: Bearer {{usertoken.response.body.access_token}}
+# Conectando no Keycloak
+
+###
+# Obtendo o token do usuário `vendedor1`
+# @name usertoken
+POST {{url_keycloak}}/protocol/openid-connect/token
+Content-Type: application/x-www-form-urlencoded
+
+client_id=varejo&username=vendedor1&password=senha123&grant_type=password
+
+
+### -----------------------
+
+
+
+
 
 
 ###
@@ -108,29 +141,3 @@ x-seller-id: {{seller_id}}
 # Removendo
 DELETE {{api_catalogo}}/{{sku}}
 x-seller-id: {{seller_id}}
-
-
-
-@seller_id=magalu
-###
-# Obtendo o token do usuário `bruno01`
-# @name usertoken
-POST {{url_keycloak}}/protocol/openid-connect/token
-Content-Type: application/x-www-form-urlencoded
-
-client_id=varejo&username=bruno01&password=bruno123&grant_type=password&scope=sellers
-
-
-###
-
-###
-
-POST {{api_catalogo}}
-x-seller-id: magalu
-Authorization: Bearer {{usertoken.response.body.access_token}}
-
-{
-    "sku": "samplesku",
-    "name": "teste"
-}
-

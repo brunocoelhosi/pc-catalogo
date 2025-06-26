@@ -29,6 +29,7 @@ class CatalogoService(CrudService[CatalogoModel, int]):
         """
         await self.review(catalogo)
         await self.validate(catalogo)
+        print("BODY RECEBIDO:", catalogo)
         return await self.save(catalogo)
 
     async def validate(self, catalogo: CatalogoModel) -> None:
