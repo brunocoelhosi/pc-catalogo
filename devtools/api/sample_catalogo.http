@@ -38,10 +38,9 @@ x-seller-id: magalu
 Authorization: Bearer {{usertoken.response.body.access_token}}
 
 {
-    "sku": "tvsam4k7012",
-    "name": "tv samsung 4k 70 polegadas"
+    "sku": "tvsam4k60",
+    "name": "tv samsung 4k 60 polegadas"
 }
-
 
 ###
 # Buscando produtos por seller_id
@@ -50,17 +49,41 @@ x-seller-id: {{seller_id}}
 Authorization: Bearer {{usertoken.response.body.access_token}}
 
 ###
-@sku=tvsam4k7012
+@sku=tvsam4k60
 # Consultando produto por seller_id + sku
 GET {{api_catalogo}}/{{sku}}
 x-seller-id: {{seller_id}}
 Authorization: Bearer {{usertoken.response.body.access_token}}
 
+###
+# Atualizando apenas o campo name
+PATCH {{api_catalogo}}/{{sku}}
+x-seller-id: {{seller_id}}
+Authorization: Bearer {{usertoken.response.body.access_token}}
+
+{
+    "name": "tvsam4k70"
+}
+
+###
+# Atualizando todos os campos / terao novos campos
+PATCH {{api_catalogo}}/{{sku}}
+x-seller-id: {{seller_id}}
+Authorization: Bearer {{usertoken.response.body.access_token}}
+
+{
+    "name": "tv samsung 4k 80 polegadas"
+}
+
+###
+# Removendo
+DELETE {{api_catalogo}}/{{sku}}
+x-seller-id: {{seller_id}}
+Authorization: Bearer {{usertoken.response.body.access_token}}
 
 ###
 # Consultando sem enviar token
 GET {{api_catalogo}}/{{sku}}
-
 
 ###
 # Consultando enviando token inválido
@@ -76,72 +99,3 @@ Authorization: Bearer {{usertoken.response.body.access_token}}
 
 
 
-
-
-
-
-
-#
-# Usuário e senha do seller
-@username=seller01
-@password=senha123
-
-
-###
-# Conectando no Keycloak
-
-###
-# Obtendo o token do usuário `vendedor1`
-# @name usertoken
-POST {{url_keycloak}}/protocol/openid-connect/token
-Content-Type: application/x-www-form-urlencoded
-
-client_id=varejo&username=vendedor1&password=senha123&grant_type=password
-
-
-### -----------------------
-
-
-
-
-
-
-###
-# Cadastrando
-#
-POST {{api_catalogo}}
-seller-id: {{seller_id}}
-
-{
-    "sku": "samplesku",
-    "name": "valuefeld1"
-}
-
-###
-# Pesquisando por sku
-GET {{api_catalogo}}/{{sku}}
-x-seller-id: {{seller_id}}
-
-###
-# Atualizando
-PUT {{api_catalogo}}/{{sku}}
-x-seller-id: {{seller_id}}
-
-{
-    "field1": "value-field-2",
-    "field2": 1234
-}
-
-###
-# Atualizando apenas o campo field2
-PATCH {{api_catalogo}}/{{sku}}
-x-seller-id: {{seller_id}}
-
-{
-    "field2": -10
-}
-
-###
-# Removendo
-DELETE {{api_catalogo}}/{{sku}}
-x-seller-id: {{seller_id}}

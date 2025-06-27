@@ -2,7 +2,6 @@ import pytest
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 import asyncio
-import pymongo
 
 #v1
 from app.api.api_application import create_app
@@ -87,6 +86,10 @@ def client_v1(app_v1: FastAPI) -> TestClient:
 
 # --------------------------- FIXTURE PARA V2 -------------------------
 
+"""
+auth_fixture.py
+clean_catalogo_fixture.py
+"""
 # --- FIXTURE DE MOCK PARA O REPOSITÓRIO DE CATÁLOGO ---
 from unittest.mock import AsyncMock
 
@@ -95,38 +98,12 @@ from unittest.mock import AsyncMock
 def mongo_clientv2():
     return AsyncIOMotorClient("mongodb://admin:admin@localhost:27018/test_db?authSource=admin")
 
-@pytest.fixture(autouse=True)
-def clean_catalogo_collection():
-    client = pymongo.MongoClient("mongodb://admin:admin@localhost:27018/test_db?authSource=admin")
-    db = client.get_default_database()
-    db["catalogo"].delete_many({})
-    yield
-    db["catalogo"].delete_many({})
-    client.close()
 
-@pytest.fixture
-def container_v2(mongo_clientv2) -> Container:
-    container = Container()
-    container.config.from_pydantic(api_settings)
-    repo = CatalogoRepository(mongo_clientv2)
-    container.catalogo_repository.override(repo)
-    container.catalogo_service.override(CatalogoService(repo))
 
-    # Mock do keycloak_adapter
-    fake_adapter = AsyncMock()
-    fake_adapter.validate_token.return_value = {
-        "sub": "fake-user-id",
-        "iss": "fake-issuer",
-        "sellers": "magalu11"
-    }
-    container.keycloak_adapter.override(fake_adapter)
-    return container
 
 @pytest.fixture
 def repository(mongo_clientv2):
     return CatalogoRepository(mongo_clientv2)
-
-
 
 @pytest.fixture
 def app_v2(mock_do_auth, container_v2: Container) -> FastAPI:
