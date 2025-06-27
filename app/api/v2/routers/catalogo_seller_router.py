@@ -48,6 +48,7 @@ router = APIRouter(prefix=CATALOGO_PREFIX, tags=["CRUD Catálogo v2 - MongoDB"],
 )
 @inject
 async def get_by_seller_id_paginado(
+    
     seller_id: str = Header(...,alias="x-seller-id", description= MSG_SELLER_IDENTIFICATION),
     name_like: str = None,  
     paginator: Paginator = Depends(get_request_pagination),
@@ -75,7 +76,7 @@ async def get_by_seller_id_paginado(
 @inject
 async def get_product(
     sku: str,
-    seller_id: str = Header(..., alias="x-seller_id", description= MSG_SELLER_IDENTIFICATION),
+    seller_id: str = Header(..., alias="x-seller-id", description= MSG_SELLER_IDENTIFICATION),
     catalogo_service: "CatalogoService" = Depends(Provide["catalogo_service"]),
 ):
     return await catalogo_service.find_product(seller_id, sku)
@@ -117,7 +118,7 @@ async def create(
     catalogo_model.created_by = user_info.user
     catalogo_model.updated_by = user_info.user
     catalogo_model = await catalogo_service.create(catalogo_model)
-
+    
     catalogo_response = catalogo_model.model_dump()
     
     return catalogo_response
@@ -148,7 +149,7 @@ async def create(
 async def put_something(
     sku: str,
     catalogo: CatalogoUpdate,
-    seller_id: str = Header(..., description= MSG_SELLER_IDENTIFICATION),
+    seller_id: str = Header(..., alias="x-seller-id", description=MSG_SELLER_IDENTIFICATION),
     catalogo_service: "CatalogoService" = Depends(Provide["catalogo_service"]),
 ):
     """
@@ -188,7 +189,7 @@ async def put_something(
 async def patch_something(
     sku: str,
     catalogo: CatalogoUpdate,
-    seller_id: str = Header(..., description= MSG_SELLER_IDENTIFICATION),
+    seller_id: str = Header(..., alias="x-seller-id", description=MSG_SELLER_IDENTIFICATION),
     catalogo_service: "CatalogoService" = Depends(Provide["catalogo_service"]),
 ):
     """
@@ -226,7 +227,7 @@ async def patch_something(
 @inject
 async def delete(
     sku: str,
-    seller_id: str = Header(..., description= MSG_SELLER_IDENTIFICATION),
+    seller_id: str = Header(..., alias="x-seller-id", description=MSG_SELLER_IDENTIFICATION),
     catalogo_service: "CatalogoService" = Depends(Provide["catalogo_service"]),
 ):
     return await catalogo_service.delete_by_sellerid_sku(seller_id, sku)
