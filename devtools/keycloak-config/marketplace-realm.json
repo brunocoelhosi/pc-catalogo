@@ -105,6 +105,24 @@
         }
       ],
       "realmRoles": ["offline_access", "uma_authorization"]
+    },
+    {
+      "username": "vendedorcatalogo",
+      "enabled": true,
+      "firstName": "VendedorCatalogo",
+      "lastName": "Um",
+      "email": "vendedorcatalogo1@varejo.com",
+      "attributes": {
+        "sellers": "magalu"
+      },
+      "credentials": [
+        {
+          "type": "password",
+          "value": "senha123",
+          "temporary": false
+        }
+      ],
+      "realmRoles": ["offline_access", "uma_authorization"]
     }
   ]
 }

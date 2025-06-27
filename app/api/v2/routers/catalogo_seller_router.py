@@ -61,7 +61,7 @@ async def get_by_seller_id_paginado(
     )
     return ListResponse(results=results, meta=None)
 
-#BUSCAR PRODUTO POR SELLER_ID + SKU
+#Busca um produto por Seller_id + SKU
 @router.get(
     "/{sku}",
     response_model=CatalogoResponse,
@@ -79,9 +79,11 @@ async def get_product(
     seller_id: str = Header(..., alias="x-seller-id", description= MSG_SELLER_IDENTIFICATION),
     catalogo_service: "CatalogoService" = Depends(Provide["catalogo_service"]),
 ):
-    return await catalogo_service.find_product(seller_id, sku)
+    result = await catalogo_service.find_by_sellerid_sku(seller_id, sku)
+    print(result)
+    return result
 
-#CADASTRO DE UM PRODUTO
+#Cadastra um produto
 @router.post(
     "",
     response_model=CatalogoResponse,
@@ -123,7 +125,7 @@ async def create(
     
     return catalogo_response
 
-#ATUALIZA UM PRODUTO
+#Atualiza um produto
 @router.put(
     "/{sku}",
     status_code=status.HTTP_202_ACCEPTED,
@@ -203,7 +205,7 @@ async def patch_something(
 
     return catalogo_response
 
-#DELETA UM PRODUTO
+#Deleta um produto
 @router.delete(
         "/{sku}",
         status_code=status.HTTP_204_NO_CONTENT,
