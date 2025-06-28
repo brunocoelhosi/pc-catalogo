@@ -14,4 +14,8 @@ class AppSettings(BaseSettings):
 
     app_openid_wellknown: HttpUrl = Field(..., title="URL para well known de um openid")
 
+    # XXX Configurações para o logging.
+    pc_logging_level: str = Field("WARNING", description="Nível do logging")
+    pc_logging_env: str = Field("prod", description="Ambiente do logging (prod ou dev ou test)")
+    
 settings = AppSettings()
