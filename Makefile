@@ -22,11 +22,11 @@ check-lint:
 load-env:
 	@./devtools/scripts/push-env "devtools/dotenv.$(env)"
 
-# Carregar a variável 
+# Carregar a variável de testes
 load-test-env:
 	@env=test make $(MAKE_ARGS) load-env
 
-# Subir o docker para os testes
+# Subir o docker (Mongo + API Catalogo) para os testes
 docker-tests-up:
 	docker-compose -f devtools/docker-compose-tests.yml up --build
 
@@ -34,6 +34,10 @@ docker-tests-up:
 docker-tests-down:
 	docker-compose down -d
 
+# Subir o docker (Keycloak) para os testes 
+docker-tests-up:
+	docker-compose -f devtools/docker-compose-keycloak.yml up --build
+	
 # Realizar a migração do banco de dados
 migration:
 	mongodb-migrate --url "$(URL_MONGO_MIGRATION_TEST)"
