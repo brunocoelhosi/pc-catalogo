@@ -8,6 +8,10 @@ WORKDIR /catalogo
 
 COPY requirements ./requirements
 
+# Instalar git antes do pip instalar os pacotes que dependem do git
+RUN apt-get update && apt-get install -y git \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
+    
 RUN pip install --upgrade pip && pip install -r requirements/base.txt
 
 # Instalar meus pacotes
