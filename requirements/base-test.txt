@@ -1,0 +1,16 @@
+asgi-correlation-id==4.3.4
+fastapi[standard]==0.115.12
+uvicorn[standard]==0.34.0
+dependency-injector==4.46.0
+pydantic_settings==2.9.1
+uuid7==0.1.0
+motor==3.7.1
+asyncpg==0.30.0
+sqlalchemy==2.0.41
+greenlet==3.2.2
+pyjwt[crypto]==2.10.1
+cryptography==45.0.4
+git+https://${GITHUB_TOKEN}@github.com/projeto-carreira-luizalabs-2025/pc-logging
+# Para o testes aqui usamos a versão v0.1.0 da biblioteca pc-logging.
+#git+ssh://git@github.com/projeto-carreira-luizalabs-2025/pc-logging.git@v0.1.0
+#pip install 'git+https://github.com/projeto-carreira-luizalabs-2025/pc-logging'
