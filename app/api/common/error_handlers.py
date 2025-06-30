@@ -124,7 +124,7 @@ def add_error_handlers(app: FastAPI):
 
     @app.exception_handler(ApplicationException)
     async def application_exception_handler(_, exc: ApplicationException):
-        logger.error("⚠ Falha na aplicacao", extra={"status_code": exc.status_code, "trace": exc.detail})
+        logger.error("⚠ Falha na aplicacao", extra={"status_code": exc.status_code, "trace": exc.details})
         return JSONResponse(
             status_code=exc.status_code,
             content=exc.error_response.model_dump(mode="json", exclude_none=True, exclude_unset=True),
