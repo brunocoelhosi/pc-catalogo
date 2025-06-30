@@ -6,9 +6,9 @@ build-venv:
 	python3.12 -m venv venv
 
 # Instalar os pacotes
-requirements-dev:
+requirements-test:
 	pip install --upgrade pip
-	pip install -r requirements/develop.txt
+	pip install -r requirements/test.txt
 	
 
 # Verificar o código
