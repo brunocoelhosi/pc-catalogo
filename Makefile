@@ -9,6 +9,7 @@ build-venv:
 requirements-dev:
 	pip install --upgrade pip
 	pip install -r requirements/develop.txt
+	
 
 # Verificar o código
 check-lint:
@@ -32,7 +33,7 @@ docker-tests-up:
 
 # Descer e remover o docker dos testes
 docker-tests-down:
-	docker-compose down -d
+	docker-compose -f devtools/docker-compose-tests.yml down
 
 # Subir o docker (Keycloak) para os testes 
 docker-tests-keycloak-up:
