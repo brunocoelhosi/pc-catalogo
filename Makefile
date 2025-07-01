@@ -38,6 +38,10 @@ docker-tests-down:
 # Subir o docker (Keycloak) para os testes 
 docker-tests-keycloak-up:
 	docker-compose -f devtools/docker-compose-keycloak.yml up --build
+
+# Descer e remover o docker do Keycloak
+docker-tests-keycloak-down:
+	docker-compose -f devtools/docker-compose-keycloak.yml down
 	
 # Realizar a migração do banco de dados
 migration:

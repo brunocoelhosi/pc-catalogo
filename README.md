@@ -78,23 +78,9 @@ Instale as bibliotecas necessárias para o seu projeto. Execute os comandos:
 make requirements-test
 ```
 
-## 🛠️ Execução local
-
-Para rodar a aplicação localmente execute os os seguintes comandos:
-
-Carregue as variáveis de ambiente para o modo de teste:
-
-```sh
-make load-test-env
-```
-
-Inicie a API em modo desenvolvimento:
-
-```bash
-make run-dev
-```
-
 ## 🐳 Execução com Docker
+
+#### API CATÁLOGO + BANCO MONGODB
 
 Gere um token do [GitHub](https://github.com/settings/tokens), crie um arquivo `.env` dentro da pasta `devtools` e cole seu token.
 
@@ -104,16 +90,32 @@ GITHUB_TOKEN=<SEU_TOKEN>
 
 ###### Obs.: Token necessário para instalação da [Biblioteca pc-logging](https://github.com/projeto-carreira-luizalabs-2025/pc-logging)
 
-🟢 Subir o Docker
+🟢 Subir o Docker API + Banco
 
 ```bash
-make docker-tests-up # Esse comando sobe o docker da aplicação + docker do banco para testes
+make docker-tests-up
+# Esse comando sobe o docker da aplicação + docker do banco para testes
 ```
 
 🛑 Parar e remover container
 
 ```bash
-make docker-compose-down
+make docker-tests-down
+```
+
+#### KEYCLOAK
+
+🟢 Subir o Docker Keycloak
+
+```bash
+make docker-tests-keycloak-up
+# Esse comando sobe o docker da aplicação + docker do banco para testes
+```
+
+🛑 Parar e remover container
+
+```bash
+make docker-tests-keycloak-down
 ```
 
 #
@@ -161,7 +163,7 @@ Para novos commits, siga o padrão do https://commitlint.io/
 
 ##
 
-### ▶️ Execução da API usando Docker
+## ▶️ Execução da API localmente
 
 Configure o arquivo de env:
 
@@ -185,7 +187,71 @@ uvicorn app.api_main:app --reload
 
 ##
 
-### ▶️ Execução da API usando Docker-compose
+## 🐳 Execução da API e Banco MongoDB no modo Teste usando Docker
+
+Gere um token do [GitHub](https://github.com/settings/tokens), crie um arquivo `.env` dentro da pasta `devtools` e cole seu token.
+
+```bash
+GITHUB_TOKEN=<SEU_TOKEN>
+```
+
+###### Obs.: Token necessário para instalação da [Biblioteca pc-logging](https://github.com/projeto-carreira-luizalabs-2025/pc-logging)
+
+Na raiz do projeto, execute o comando:
+
+🟢 Subir o Docker API + Banco
+
+```sh
+docker-compose -f devtools/docker-compose-tests.yml up --build
+# Esse comando sobe o docker da aplicação + docker do banco para testes
+```
+
+🛑 Parar e remover container
+
+```bash
+docker-compose -f devtools/docker-compose-tests.yml down
+```
+
+#### KEYCLOAK
+
+🟢 Subir o Docker Keycloak
+
+```sh
+docker-compose -f devtools/docker-compose-keycloak.yml up --build
+# Esse comando sobe o docker da aplicação + docker do banco para testes
+```
+
+🛑 Parar e remover container
+
+```bash
+docker-compose -f devtools/docker-compose-keycloak.yml down
+```
+
+#
+
+## 🗃️ Migração do Banco de dados
+
+Para migração do MongoDB, instalamos a biblioteca mongodb-migrations.
+
+```sh
+pip install mongodb-migrations==1.3.1
+```
+
+Criamos o arquivo no formato <DATA>\_<TEXTO>.py na pasta migrations, exemplo: 20250101102030_somethingindexes.py.
+
+Fazemos a migração:
+
+```sh
+mongodb-migrate --url "$APP_DB_URL_MONGO"
+```
+
+Sendo que a variável "APP_DB_URL_MONGO" contém a URL de conexão com o MongoDB.
+
+##
+
+## ⚙️ Execução dos Containers separadamente
+
+### API Catálogo
 
 Gere um token do [GitHub](https://github.com/settings/tokens), crie um arquivo `.env` dentro da pasta `devtools` e cole seu token
 
@@ -209,7 +275,7 @@ API: http://localhost:8000
 
 ##
 
-### ▶️ Execução do Banco MongoDB usando Docker-compose
+### Banco MongoDB
 
 🟢 Suba o container do banco com o seguinte comando na raiz do projeto:
 
@@ -225,37 +291,7 @@ docker-compose -f devtools/docker-compose-mongo.yml down
 
 ##
 
-## ✨ Configuração ambiente de Testes
-
-### ▶️ Execução da API e Banco MongoDB no modo Teste usando Docker-compose
-
-Na raiz do projeto, execute o comando:
-
-```sh
-docker-compose -f devtools/docker-compose-tests.yml up --build
-```
-
-### 🗃️ Migração do Banco de dados
-
-Para migração do MongoDB, instalamos a biblioteca mongodb-migrations.
-
-```sh
-pip install mongodb-migrations==1.3.1
-```
-
-Criamos o arquivo no formato <DATA>\_<TEXTO>.py na pasta migrations, exemplo: 20250101102030_somethingindexes.py.
-
-Fizemos a migração:
-
-```sh
-mongodb-migrate --url "$APP_DB_URL_MONGO"
-```
-
-Sendo que a variável "APP_DB_URL_MONGO" contém a URL de conexão com o MongoDB.
-
-##
-
-### ▶️ Execução SonarQuve para análise do projeto
+## ▶️ SonarQuve para análise do projeto
 
 ```
 docker-compose -f devtools/docker-compose-sonar.yml up --build
@@ -305,7 +341,7 @@ Isso irá enviar os dados da sua aplicação para análise no SonarQube.
 
 ##
 
-### 📊 Cobertura de Código com pytest-cov
+## 📊 Cobertura de Código com pytest-cov
 
 A cobertura de código é uma métrica que indica a porcentagem do seu código-fonte que foi executada durante a execução da sua suíte de testes. Ela ajuda a identificar partes do seu código que não estão sendo testadas e que, portanto, podem conter bugs ocultos.
 
