@@ -1,0 +1,47 @@
+# Etapa 1: build / instalação dos pacotes
+FROM python:3.12-slim AS construtor
+
+SHELL ["/bin/bash", "-c"]
+
+WORKDIR /catalogo
+
+COPY requirements ./requirements
+
+# Instala git e gettext (para envsubst)
+RUN apt-get update && apt-get install -y git gettext \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
+
+# Recebe o token como argumento do build
+ARG GITHUB_TOKEN
+ENV GITHUB_TOKEN=${GITHUB_TOKEN}
+
+# Substitui a variável GITHUB_TOKEN no requirements/base.txt antes de instalar
+RUN envsubst < requirements/base.txt > requirements/base_resolved.txt
+
+RUN pip install --upgrade pip && pip install -r requirements/base_resolved.txt
+
+# Criar virtualenv e instalar pacotes (com o requirements já resolvido)
+RUN python -m venv venv && \
+  . venv/bin/activate && \
+  pip install --upgrade pip && \
+  pip install --no-cache-dir -r requirements/base_resolved.txt
+
+# Etapa 2: imagem final
+FROM python:3.12-slim
+
+ENV PYTHONPATH=/app
+ENV PATH=/catalogo/venv/bin:$PATH
+
+WORKDIR /app
+
+COPY --from=construtor /catalogo/venv /catalogo/venv
+COPY app /projeto/app
+COPY requirements.txt /app
+
+RUN python -m compileall app
+
+COPY . .
+
+EXPOSE 8000
+
+CMD ["uvicorn", "app.api_main:app", "--host", "0.0.0.0", "--port", "8000"]

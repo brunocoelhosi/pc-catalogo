@@ -60,9 +60,9 @@ async def do_auth(
         sellers=UserAuthInfo.to_sellers(info_token.get("sellers")),
     )
 
-# Debug temporário
-    print("DEBUG seller_id header:", seller_id)
-    print("DEBUG sellers claim:", info_token.get("sellers", None))
+    # Debug temporário
+    #print("DEBUG seller_id header:", seller_id)
+    #print("DEBUG sellers claim:", info_token.get("sellers", None))
 
     # Nossa autorização (permissão):
     # O usuário pode operar com o seller informado?

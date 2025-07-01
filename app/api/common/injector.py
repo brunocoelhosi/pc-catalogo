@@ -14,7 +14,7 @@ from fastapi.requests import Request
     return seller_id"""
 
 async def get_seller_id(request: Request) -> str:
-    print("HEADERS RECEBIDOS:", dict(request.headers), flush=True)
+    #print("HEADERS RECEBIDOS:", dict(request.headers), flush=True)
 
     seller_id = (
         request.headers.get("x-seller-id")

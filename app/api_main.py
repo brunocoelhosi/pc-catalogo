@@ -6,23 +6,28 @@ from fastapi import FastAPI
 from app.container import Container
 from app.settings import api_settings
 
+from pclogging import LoggingBuilder
+
 ENV = os.getenv("ENV", "production")
 is_dev = ENV == "dev"
 
 dotenv.load_dotenv(override=is_dev)
-print("DEBUG - APP_OPENID_WELLKNOWN:", os.getenv("APP_OPENID_WELLKNOWN"))
-print("DEBUG - APP_OPENID_WELLKNOWN:", os.getenv("APP_DB_URL_MONGO"))
+#print("DEBUG - APP_OPENID_WELLKNOWN:", os.getenv("APP_OPENID_WELLKNOWN"))
+#print("DEBUG - APP_OPENID_WELLKNOWN:", os.getenv("APP_DB_URL_MONGO"))
+
+# XXX Iniciando a biblitoeca pc-logging.
+LoggingBuilder.init()
 
 def init() -> FastAPI:
-    print("API Settings:", api_settings.model_dump())
-    print("APP_OPENID_WELLKNOWN:", os.getenv("APP_OPENID_WELLKNOWN"))
+    #print("API Settings:", api_settings.model_dump())
+    #print("APP_OPENID_WELLKNOWN:", os.getenv("APP_OPENID_WELLKNOWN"))
     from app.api.api_application import create_app
     from app.api.router import routes as api_routes
 
     container = Container()
 
     container.config.from_pydantic(api_settings)
-    print("DEBUG - config.app_openid_wellknown:", container.config.app_openid_wellknown())
+    #print("DEBUG - config.app_openid_wellknown:", container.config.app_openid_wellknown())
     app_api = create_app(api_settings, api_routes)
     app_api.container = container  # type: ignore[attr-defined]
 

@@ -6,9 +6,10 @@ build-venv:
 	python3.12 -m venv venv
 
 # Instalar os pacotes
-requirements-dev:
+requirements-test:
 	pip install --upgrade pip
-	pip install -r requirements/develop.txt
+	pip install -r requirements/test.txt
+	
 
 # Verificar o código
 check-lint:
@@ -22,18 +23,22 @@ check-lint:
 load-env:
 	@./devtools/scripts/push-env "devtools/dotenv.$(env)"
 
-# Carregar a variável 
+# Carregar a variável de testes
 load-test-env:
 	@env=test make $(MAKE_ARGS) load-env
 
-# Subir o docker para os testes
+# Subir o docker (Mongo + API Catalogo) para os testes
 docker-tests-up:
 	docker-compose -f devtools/docker-compose-tests.yml up --build
 
 # Descer e remover o docker dos testes
 docker-tests-down:
-	docker-compose down -d
+	docker-compose -f devtools/docker-compose-tests.yml down
 
+# Subir o docker (Keycloak) para os testes 
+docker-tests-keycloak-up:
+	docker-compose -f devtools/docker-compose-keycloak.yml up --build
+	
 # Realizar a migração do banco de dados
 migration:
 	mongodb-migrate --url "$(URL_MONGO_MIGRATION_TEST)"

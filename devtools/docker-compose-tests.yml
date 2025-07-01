@@ -2,7 +2,9 @@ services:
   app:
     build:
       context: ..
-      dockerfile: devtools/Dockerfile
+      dockerfile: devtools/Dockerfile-test
+      args:
+        GITHUB_TOKEN: ${GITHUB_TOKEN}
     container_name: catalogo
     ports:
       - "8000:8000"

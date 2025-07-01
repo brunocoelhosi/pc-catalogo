@@ -75,7 +75,7 @@ Instale as bibliotecas necessárias para o seu projeto. Execute os comandos:
 
 ```sh
 # Instala os pacotes.
-make requirements-dev
+make requirements-test
 ```
 
 ## 🛠️ Execução local
@@ -95,6 +95,14 @@ make run-dev
 ```
 
 ## 🐳 Execução com Docker
+
+Gere um token do [GitHub](https://github.com/settings/tokens), crie um arquivo `.env` dentro da pasta `devtools` e cole seu token.
+
+```bash
+GITHUB_TOKEN=<SEU_TOKEN>
+```
+
+###### Obs.: Token necessário para instalação da [Biblioteca pc-logging](https://github.com/projeto-carreira-luizalabs-2025/pc-logging)
 
 🟢 Subir o Docker
 
@@ -178,6 +186,12 @@ uvicorn app.api_main:app --reload
 ##
 
 ### ▶️ Execução da API usando Docker-compose
+
+Gere um token do [GitHub](https://github.com/settings/tokens), crie um arquivo `.env` dentro da pasta `devtools` e cole seu token
+
+```bash
+GITHUB_TOKEN=<SEU_TOKEN>
+```
 
 🟢 Suba o container com o seguinte comando na raiz do projeto:
 
