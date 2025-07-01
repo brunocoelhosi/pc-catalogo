@@ -229,6 +229,28 @@ docker-compose -f devtools/docker-compose-keycloak.yml down
 
 #
 
+## 🔑 Configurações do Keycloak
+
+Após o Docker do Keycloak estar rodando, execute o seguinte comando para realizar as configurações necessárias dos usuários pré-cadastrados
+
+```sh
+python ./devtools/keycloak-config/setup_sellers_attribute.py
+```
+
+### Autorização no Swagger
+
+Para realizar a autorização diretamente no swagger e poder testar os endpoints protegidos, siga os passos:
+
+Acesse: [Localhost](http://localhost:8000/api/docs#/)
+
+Authorize 🔒
+
+Usuário para testes:
+
+- username: vendedorcatalogo
+- password: senha123
+- client_id: varejo
+
 ## 🗃️ Migração do Banco de dados
 
 Para migração do MongoDB, instalamos a biblioteca mongodb-migrations.
