@@ -31,8 +31,10 @@
     {
       "clientId": "varejo",
       "enabled": true,
+      "redirectUris": ["*"],
+      "webOrigins": ["*"],
       "publicClient": true,
-      "standardFlowEnabled": false,
+      "standardFlowEnabled": true,
       "directAccessGrantsEnabled": true,
       "serviceAccountsEnabled": false,
       "protocol": "openid-connect",

@@ -20,7 +20,7 @@ from app.models.base import BaseModel, UserModel
 
 
 from app.container import Container
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="http://localhost:8080/realms/marketplace/protocol/openid-connect/token")
 
 class UserAuthInfo(BaseModel):
     user: UserModel
