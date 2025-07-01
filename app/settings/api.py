@@ -33,8 +33,13 @@ class ApiSettings(AppSettings):
         title="Caminho para o health check. A partir dele haverão dois recursos: ping e health",
     )
 
-    cors_origins: list[str] = Field(default=["*"], title="Origens permitidas para CORS")
+    #cors_origins: list[str] = Field(default=["*"], title="Origens permitidas para CORS")
 
+    cors_origins: list[str] = Field(default=[
+        "http://localhost:8000",
+        "http://127.0.0.1:8000"
+    ], title="Origens permitidas para CORS")
+    
     access_log_ignored_urls: set[str] | None = Field(
         default=None,
         title="URLs da API que não devem ter o log de acesso emitido",
