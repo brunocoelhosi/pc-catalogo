@@ -12,25 +12,38 @@ from .catalogo_exceptions import (
     SellerIDNotExistException, 
     LikeNotFoundException
 )
-
+from dependency_injector.wiring import inject, Provide
 from app.api.v1.schemas.catalogo_schema import CatalogoUpdate
 from typing import TypeVar
 
+from app.worker.description.creating_product_description import CreatingProductDescription
 T = TypeVar("T")
 
 class CatalogoService(CrudService[CatalogoModel, int]):
     def __init__(self, repository: CatalogoRepository):
         super().__init__(repository)
 
-
-    async def create(self, catalogo: CatalogoModel) -> CatalogoModel:
+    @inject
+    async def create(self,
+                    catalogo: CatalogoModel,
+                    creating_product_description: CreatingProductDescription = Provide["creating_product_description"],
+                    ) -> CatalogoModel:
         """
         Cria um novo produto no catálogo.
         """
         await self.review(catalogo)
         await self.validate(catalogo)
+        # Gera a descrição usando IA
+        description_data = await creating_product_description.create_description(catalogo)
+        # Se a IA retornar um dicionário com a chave "description"
+        if description_data and "description" in description_data:
+            catalogo.description = description_data["description"]
+        else:
+            catalogo.description = ""
         return await self.save(catalogo)
 
+
+    
     async def validate(self, catalogo: CatalogoModel) -> None:
         
         await self.validate_len_seller_id(catalogo.seller_id)

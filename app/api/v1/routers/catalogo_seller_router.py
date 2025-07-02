@@ -8,6 +8,8 @@ from app.api.common.schemas import ListResponse, Paginator, UuidType, get_reques
 from ..schemas.catalogo_schema import CatalogoCreate, CatalogoResponse, CatalogoUpdate
 from . import CATALOGO_PREFIX
 
+from app.worker.description.creating_product_description import CreatingProductDescription
+
 if TYPE_CHECKING:
     from app.services import CatalogoServiceV1
 
@@ -118,7 +120,8 @@ async def get_by_seller_id(
 )
 @inject
 async def create(
-    catalogo: CatalogoCreate, catalogo_service: "CatalogoServiceV1" = Depends(Provide["catalogo_service_v1"])
+    catalogo: CatalogoCreate, catalogo_service: "CatalogoServiceV1" = Depends(Provide["catalogo_service_v1"]),
+
 ):
     return await catalogo_service.create(catalogo)
 

@@ -25,6 +25,8 @@ class TraceIdMiddleware(BaseHTTPMiddleware):
 
 
 def configure_middlewares(app: FastAPI, settings: ApiSettings) -> None:
+    
+    
     app.add_middleware(
         CORSMiddleware,  # type: ignore[attr-defined]
         allow_origins=settings.cors_origins,

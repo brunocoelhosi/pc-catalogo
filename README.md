@@ -187,7 +187,7 @@ uvicorn app.api_main:app --reload
 
 ##
 
-## 🐳 Execução da API e Banco MongoDB no modo Teste usando Docker
+## 🐳 Execução da API, Banco MongoDB e IA no modo Teste usando Docker
 
 Gere um token do [GitHub](https://github.com/settings/tokens), crie um arquivo `.env` dentro da pasta `devtools` e cole seu token.
 
@@ -199,7 +199,7 @@ GITHUB_TOKEN=<SEU_TOKEN>
 
 Na raiz do projeto, execute o comando:
 
-🟢 Subir o Docker API + Banco
+🟢 Subir o Docker API + Banco + IA
 
 ```sh
 docker-compose -f devtools/docker-compose-tests.yml up --build

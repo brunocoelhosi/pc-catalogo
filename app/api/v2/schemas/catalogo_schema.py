@@ -8,6 +8,11 @@ class CatalogoSchema(SchemaType):
     seller_id: str = Field(..., pattern=r'^[a-z0-9]+$', description="Só letras minúsculas e números")
     sku: str = Field(..., pattern=r'^[A-Za-z0-9]+$', description="Só letras e números, sem espaços")
     name: str = Field(..., min_length=2, max_length=200, description="Nome entre 2 e 200 caracteres, sem só espaços")
+    description: Optional[str] = Field(
+        default=None,
+        max_length=1000,
+        description="Descrição do produto (opcional, mas não pode ser vazia se fornecida)"
+    )
 
 
 class CatalogoResponse(CatalogoSchema, ResponseEntity):

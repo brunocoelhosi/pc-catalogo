@@ -10,6 +10,7 @@ from app.settings.app import AppSettings
 
 from app.integrations.auth.keycloak_adapter import KeycloakAdapter
 
+from app.worker.description.creating_product_description import CreatingProductDescription
 
 class Container(containers.DeclarativeContainer):
     config = providers.Configuration()
@@ -46,3 +47,10 @@ class Container(containers.DeclarativeContainer):
         HealthCheckService, checkers=config.health_check_checkers, settings=settings
     )
 
+    from app.settings.worker import WorkerSettings
+    configapi = providers.Configuration()
+    creating_product_description = providers.Singleton(
+        CreatingProductDescription,
+        ia_api_url=configapi.ia_api_url,
+        ia_model=configapi.ia_model,
+        )

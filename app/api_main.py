@@ -8,6 +8,10 @@ from app.settings import api_settings
 
 from pclogging import LoggingBuilder
 
+import app.services.catalogo.catalogo_service as catalogo_service_module
+
+from app.settings.worker import WorkerSettings
+
 ENV = os.getenv("ENV", "production")
 is_dev = ENV == "dev"
 
@@ -35,6 +39,12 @@ def init() -> FastAPI:
     container.wire(modules=["app.api.common.routers.health_check_routers"])
     container.wire(modules=["app.api.v1.routers.catalogo_seller_router"])
     container.wire(modules=["app.api.v2.routers.catalogo_seller_router"])
+
+    worker_settings = WorkerSettings()
+    container2 = Container()
+    container2.configapi.from_pydantic(worker_settings)
+
+    container2.wire(modules=[catalogo_service_module])
     
 
     # Outros middlewares podem ser adicionados aqui se necessário
