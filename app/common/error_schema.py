@@ -4,7 +4,6 @@ from pydantic import BaseModel, Field
 
 type ErrorLocation = Literal["query", "path", "body", "header"]
 
-
 class ErrorDetail(BaseModel):
     message: str = Field(..., description="Descrição do erro")
     location: ErrorLocation | None = Field(None, description="Descrição do erro")

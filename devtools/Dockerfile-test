@@ -15,8 +15,8 @@ RUN apt-get update && apt-get install -y git gettext \
 ARG GITHUB_TOKEN
 ENV GITHUB_TOKEN=${GITHUB_TOKEN}
 
-# Substitui a variável GITHUB_TOKEN no requirements/base.txt antes de instalar
-RUN envsubst < requirements/base.txt > requirements/base_resolved.txt
+# Substitui a variável GITHUB_TOKEN no requirements/test.txt antes de instalar
+RUN envsubst < requirements/test.txt > requirements/base_resolved.txt
 
 RUN pip install --upgrade pip && pip install -r requirements/base_resolved.txt
 

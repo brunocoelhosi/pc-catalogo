@@ -20,7 +20,7 @@ class CreatingProductDescription:
             Analise os dados cadastrados do produto para nosso marketplace pelo seller.
             Você é uma especialista em marketplace. Gere uma descrição detalhada e atrativa para o produto abaixo, incluindo características técnicas, benefícios, aplicações e diferenciais. Use linguagem envolvente e profissional.
 
-            A resposta sua DEVE ser um JSON válido, sem nenhum texto adicional antes ou depois.
+            A resposta sua DEVE ser um JSON válido, com no MÁXIMO 1000 caracteres, sem nenhum texto adicional antes ou depois.
             Exemplo de resposta:
 
             {{

@@ -42,7 +42,7 @@ def init() -> FastAPI:
 
     worker_settings = WorkerSettings()
     container2 = Container()
-    container2.configapi.from_pydantic(worker_settings)
+    container2.config.from_pydantic(worker_settings)
 
     container2.wire(modules=[catalogo_service_module])
     

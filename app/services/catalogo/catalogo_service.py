@@ -10,7 +10,8 @@ from .catalogo_exceptions import (
     SellerIDException, 
     SKULengthException, 
     SellerIDNotExistException, 
-    LikeNotFoundException
+    LikeNotFoundException,
+    ProductNameNotFoundException
 )
 from dependency_injector.wiring import inject, Provide
 from app.api.v1.schemas.catalogo_schema import CatalogoUpdate
@@ -61,6 +62,10 @@ class CatalogoService(CrudService[CatalogoModel, int]):
         return await super().create(catalogo)
     
     async def update_by_sellerid_sku(self, seller_id: str, sku: str, model: T) -> T:
+
+        if not model.name or not model.name.strip():
+            raise ProductNameNotFoundException()
+        
         model = await self.validate_update(seller_id, sku, model)
         model = await self.repository.update_by_sellerid_sku(seller_id, sku, model)
         return model

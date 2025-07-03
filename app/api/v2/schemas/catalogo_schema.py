@@ -27,8 +27,13 @@ class CatalogoCreate(SchemaType):
 class CatalogoUpdate(SchemaType):
     """Permite apenas a atualização do nome do produto"""
     name: Optional[str] = Field(
-        default=None,
+        None,
         min_length=2,
         max_length=200,
         description="Nome do produto (opcional, mas não pode ser vazio se fornecido)"
+    )
+    description: Optional[str] = Field(
+        None,
+        max_length=1000,
+        description="Descrição do produto (opcional, mas não pode ser vazia se fornecida)"
     )

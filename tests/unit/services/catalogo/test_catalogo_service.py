@@ -72,12 +72,20 @@ class TestCatalogoService:
         catalogo_create = CatalogoModel(seller_id="magalu", sku="magatv", name="tv")
         repository_mock.create.return_value = catalogo_create
 
-        created_catalogo = await service_with_mock.create(catalogo_create)
+        # Mock da IA
+        mock_ia = MagicMock()
+        mock_ia.create_description = AsyncMock(return_value={"description": "desc gerada"})
+
+        created_catalogo = await service_with_mock.create(
+            catalogo_create,
+            creating_product_description=mock_ia  # <-- passa explicitamente o mock
+        )
 
         assert created_catalogo is not None
         assert created_catalogo.seller_id == "magalu"
         assert created_catalogo.sku == "magatv"
         assert created_catalogo.name == "tv"
+        assert created_catalogo.description == "desc gerada"
         repository_mock.create.assert_called_once_with(catalogo_create)
 
     @pytest.mark.asyncio

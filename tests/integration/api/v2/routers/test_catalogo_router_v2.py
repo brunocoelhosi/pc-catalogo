@@ -2,9 +2,6 @@ import pytest
 from fastapi.testclient import TestClient
 from httpx import AsyncClient
 
-
-
-#@pytest.mark.usefixtures("client_v2") OLD
 @pytest.mark.usefixtures("mock_do_auth", "async_client")
 class TestCatalogoRouterV2:
 
@@ -23,7 +20,6 @@ class TestCatalogoRouterV2:
         assert resposta.json()["seller_id"] == "magalu11"
         assert resposta.json()["sku"] == "magalu10"
         assert resposta.json()["name"] == "20"
-
 
     @pytest.mark.asyncio
     async def test_buscar_produto_sellerid_sku(self, async_client: AsyncClient):
@@ -69,6 +65,8 @@ class TestCatalogoRouterV2:
             "Authorization": "Bearer fake-token"})
         assert resposta.status_code == 204
 
+   
+    @pytest.mark.asyncio 
     async def test_atualizar_catalogo(self, async_client: AsyncClient):
         # Cria o produto via API
         novo_produto = {"x-seller-id": "magalu11", "sku": "magalu10", "name": "tv20"}
@@ -83,7 +81,7 @@ class TestCatalogoRouterV2:
         assert resposta.status_code == 201
 
         # Atualiza o produto
-        update = {"name": "tv50"}
+        update = {"name": "tv50", "description": "20"}
         resposta = await async_client.put(
             "/seller/v2/catalogo/magalu10",
             json=update,

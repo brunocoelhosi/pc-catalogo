@@ -80,4 +80,14 @@ class LikeNotFoundException(NotFoundException):
         ]
         super().__init__(details)
 
+class ProductNameNotFoundException(NotFoundException):
+    def __init__(self):
+        details = [
+            {
+                "message": "Campo name do produto não encontrado",
+                "slug": "400-name-produto-não-encontrado",
+            }
+        ]
+        super().__init__(details)
+
 
