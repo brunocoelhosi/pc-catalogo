@@ -65,7 +65,6 @@ class TestCatalogoRouterV2:
             "Authorization": "Bearer fake-token"})
         assert resposta.status_code == 204
 
-   
     @pytest.mark.asyncio 
     async def test_atualizar_catalogo(self, async_client: AsyncClient):
         # Cria o produto via API
@@ -93,6 +92,7 @@ class TestCatalogoRouterV2:
         assert resposta.status_code == 202
         assert resposta.json()["name"] == "tv50"
 
+    @pytest.mark.asyncio 
     async def test_patch_catalogo(self, async_client: AsyncClient):
         # Cria o produto via API
         novo_produto = {"x-seller-id": "magalu11", "sku": "magalu10", "name": "tv20"}

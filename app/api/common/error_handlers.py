@@ -14,8 +14,6 @@ from app.common.exceptions import ApplicationException
 
 logger = LoggingBuilder.get_logger(__name__)
 
-VALID_LOCATIONS = {"query", "path", "body", "header"}
-
 
 def get_error_response(error: ErrorInfo, details: list[ErrorDetail] | None = None) -> ErrorResponse:
     return ErrorResponse(slug=error.slug, message=error.message, details=details)
@@ -60,17 +58,14 @@ def add_error_handlers(app: FastAPI):
         details: list[ErrorDetail] = []
         for error in errors:
             ctx = error.get("ctx", {})
-            loc = error["loc"][0] if error["loc"] else "body"
-            if loc not in VALID_LOCATIONS:
-                loc = "body"
 
             details.append(
                 ErrorDetail(
                     **{
                         "message": error["msg"],
-                        "location": loc,
+                        "location": error["loc"][0],
                         "slug": error["type"],
-                        "field": ", ".join(map(str, error["loc"][1:])) if error["loc"] else "",
+                        "field": ", ".join(map(str, error["loc"][1:])),
                         "ctx": ctx,
                     }
                 )
@@ -92,31 +87,17 @@ def add_error_handlers(app: FastAPI):
             ctx = error.get("ctx", {})
 
             if isinstance(ctx.get("error", {}), ValueError):  # pragma: no cover
+                # Pydantic não trata direito erros como ValueError, retornando um padrão
+                # diferente do FastAPI.
                 ctx["error"] = str(ctx["error"])
-
-            loc = error["loc"][0] if error["loc"] else "body"
-            if loc not in VALID_LOCATIONS:
-                loc = "body"
-
-            field_value = ""
-            if error["loc"]:
-                parts = []
-                for part in error["loc"][1:]:
-                    if isinstance(part, (dict, list)):
-                        parts.append(json.dumps(part))
-                    else:
-                        parts.append(str(part))
-                field_value = ", ".join(parts)
-            else:
-                field_value = ""
 
             details.append(
                 ErrorDetail(
                     **{
                         "message": error["msg"],
-                        "location": loc,
+                        "location": error["loc"][0] if error["loc"] else "body",
                         "slug": error["type"],
-                        "field": field_value,
+                        "field": (", ".join(map(str, error["loc"][1:])) if error["loc"] else ""),
                         "ctx": ctx,
                     }
                 )

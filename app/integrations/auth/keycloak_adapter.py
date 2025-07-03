@@ -26,7 +26,6 @@ class InvalidTokenException(OAuthException):
 
 class KeycloakAdapter:
     def __init__(self, well_known_url: str):
-        #print("DEBUG - wellknown_url recebido:", well_known_url, flush=True)
         
         self.well_known_url = str(well_known_url)
         self._well_knwon: dict | None = None
@@ -77,6 +76,7 @@ class KeycloakAdapter:
         alg = header.get("alg")
 
         return kid, alg
+        
 
     async def get_alg_key_for_kid(self, kid) -> dict:
         # Procurando pela chave específica
@@ -107,7 +107,7 @@ class KeycloakAdapter:
                 # Vou validar desconsiderando a audiência
                 options={"verify_aud": False},
             )
-            #print("DEBUG - info_token:", info_token, flush=True)
+
             return info_token
         except jwt.ExpiredSignatureError as exception:
             raise TokenExpiredException("Token expirou") from exception
@@ -116,6 +116,4 @@ class KeycloakAdapter:
         except OAuthException:
             raise
         except Exception as e:
-            #print("DEBUG - Token inválido:", e, flush=True)
-    
             raise OAuthException("Falha ao validar o token") from e

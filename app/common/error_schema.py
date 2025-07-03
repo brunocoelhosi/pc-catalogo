@@ -6,7 +6,7 @@ type ErrorLocation = Literal["query", "path", "body", "header"]
 
 class ErrorDetail(BaseModel):
     message: str = Field(..., description="Descrição do erro")
-    location: ErrorLocation | None = Field(None, description="Descrição do erro")
+    location: ErrorLocation | None = Field(None, description="Local do erro")
     slug: str | None = Field(None, description="Identificação do erro")
     field: str | None = Field(None, description="Campo que gerou o erro")
     ctx: dict | None = Field(None, description="Contexto do erro")
@@ -14,5 +14,5 @@ class ErrorDetail(BaseModel):
 
 class ErrorResponse(BaseModel):
     slug: str = Field(..., description="Identificação do erro")
-    message: str = Field(..., description="Descrição do erro")
+    message: str = Field(..., description="Mensagem de descrição do erro")
     details: None | list[ErrorDetail] = Field(..., description="Detalhes do erro")
