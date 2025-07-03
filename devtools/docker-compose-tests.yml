@@ -29,15 +29,4 @@ services:
       MONGO_INITDB_ROOT_PASSWORD: admin
       MONGO_INITDB_DATABASE: test_db
 
-  # Serviço da IA (Ollama)
-  ollama:
-    image: ollama/ollama
-    ports:
-      - "11434:11434"
-    volumes:
-      - ollama:/root/.ollama
-    entrypoint: >
-      sh -c "ollama serve & sleep 5 && ollama pull phi3 && wait"
-
-volumes:
-  ollama:
+ 
