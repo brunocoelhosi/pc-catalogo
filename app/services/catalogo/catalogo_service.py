@@ -16,13 +16,24 @@ from .catalogo_exceptions import (
 from dependency_injector.wiring import inject, Provide
 from app.api.v1.schemas.catalogo_schema import CatalogoUpdate
 from typing import TypeVar
-
+from app.integrations.cache.redis_asyncio_adapter import RedisAsyncioAdapter
 from app.worker.description.creating_product_description import CreatingProductDescription
+
 T = TypeVar("T")
 
+from pclogging import LoggingBuilder
+
+LoggingBuilder.init(log_level="DEBUG")
+
+logger = LoggingBuilder.get_logger(__name__)
+
 class CatalogoService(CrudService[CatalogoModel, int]):
-    def __init__(self, repository: CatalogoRepository):
+
+    redis_adapter: RedisAsyncioAdapter
+
+    def __init__(self, repository: CatalogoRepository, redis_adapter: RedisAsyncioAdapter):
         super().__init__(repository)
+        self.redis_adapter = redis_adapter
 
     @inject
     async def create(self,
@@ -171,6 +182,13 @@ class CatalogoService(CrudService[CatalogoModel, int]):
             raise ProductNotExistException()
         
     async def find_by_sellerid_sku(self, seller_id: str, sku: str, raises_exception: bool = True) -> T | None:
+        logger.debug(f"Buscando produto no CACHE -> seller_id: {seller_id}, sku: {sku}")
+        cache_key = f"produto:{seller_id}:{sku}"
+        cached = await self.find_product_in_cache(seller_id, sku, cache_key)
+
+        if cached is not None:
+            return cached
+        
         try:
             product_exist = await self.repository.find_by_sellerid_sku(seller_id, sku)
         except Exception:
@@ -180,7 +198,26 @@ class CatalogoService(CrudService[CatalogoModel, int]):
             if raises_exception:
                 raise ProductNotExistException()
             return None
+
+        # Cache the product after fetching from repository
+        try:
+            # Assuming product_exist has a model_dump method (like a Pydantic model)
+            await self.redis_adapter.set_json(cache_key, product_exist.model_dump(mode="json"), expires_in_seconds=300)
+        except Exception as e:
+            logger.warning(f"Falha ao salvar produto no cache: {e}")
+
         return product_exist
 
+    async def find_product_in_cache(self, seller_id: str, sku: str, cache_key: str) -> dict:
+        """
+        Busca um preço pelo seller_id e sku, utilizando cache.
 
-   
+        :param seller_id: Identificador do vendedor.
+        :param sku: Código do produto.
+        :return: Instância de Preco encontrada.
+        :raises NotFoundException: Se não encontrar o preço.
+        """
+        cached = await self.redis_adapter.get_json(cache_key)
+        if cached is not None:
+            logger.debug(f"💾Produto encontrado no CACHE para seller_id: {seller_id}, sku: {sku}")
+            return CatalogoModel.model_validate(cached)

@@ -27,7 +27,15 @@ load-env:
 load-test-env:
 	@env=test make $(MAKE_ARGS) load-env
 
-# Subir o docker (Mongo + API Catalogo + IA) para os testes
+# Subir o docker (IA) para os testes
+docker-ia-up:
+	docker-compose -f devtools/docker-compose-ia.yml up --build
+
+# Descer e remover o docker da IA
+docker-ia-down:
+	docker-compose -f devtools/docker-compose-ia.yml down
+
+# Subir o docker (Mongo + API Catalogo) para os testes
 docker-tests-up:
 	docker-compose -f devtools/docker-compose-tests.yml up --build
 

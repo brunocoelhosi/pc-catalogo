@@ -90,6 +90,19 @@ GITHUB_TOKEN=<SEU_TOKEN>
 
 ###### Obs.: Token necessário para instalação da [Biblioteca pc-logging](https://github.com/projeto-carreira-luizalabs-2025/pc-logging)
 
+🟢 Subir o Docker IA
+
+```bash
+make docker-ia-up
+# Esse comando sobe o docker da aplicação + docker do banco para testes
+```
+
+🛑 Parar e remover container
+
+```bash
+make docker-ia-down
+```
+
 🟢 Subir o Docker API + Banco
 
 ```bash
@@ -199,7 +212,20 @@ GITHUB_TOKEN=<SEU_TOKEN>
 
 Na raiz do projeto, execute o comando:
 
-🟢 Subir o Docker API + Banco + IA
+🟢 Subir o Docker da IA
+
+```sh
+docker-compose -f devtools/docker-compose-ia.yml up --build
+# Esse comando sobe o docker da IA
+```
+
+🛑 Parar e remover container
+
+```bash
+docker-compose -f devtools/docker-compose-ia.yml down
+```
+
+🟢 Subir o Docker API + Banco
 
 ```sh
 docker-compose -f devtools/docker-compose-tests.yml up --build
