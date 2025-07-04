@@ -17,21 +17,21 @@ class CreatingProductDescription:
         """
 
         prompt = f"""
-            Analise os dados cadastrados do produto para nosso marketplace pelo seller.
-            Você é uma especialista em marketplace. Gere uma descrição detalhada e atrativa para o produto abaixo, incluindo características técnicas, benefícios, aplicações e diferenciais. Use linguagem envolvente e profissional.
+        Você é um especialista em e-commerce. Crie uma descrição de produto em português baseada APENAS nos dados fornecidos abaixo.
 
-            A resposta sua DEVE ser um JSON válido, com no MÁXIMO 1000 caracteres, sem nenhum texto adicional antes ou depois.
-            Exemplo de resposta:
+        PRODUTO: {catalogo.name}
 
-            {{
-            "description": "A Smart TV Samsung 4K 100 polegadas oferece imagens ultra nítidas, conectividade Wi-Fi, múltiplas entradas HDMI e design moderno. Ideal para quem busca qualidade e tecnologia de ponta em entretenimento doméstico."
-            }}
+        INSTRUÇÕES:
+        - Crie uma descrição atrativa e profissional
+        - Use APENAS as informações do produto fornecido
+        - Máximo 1000 caracteres
+        - Retorne APENAS um JSON válido no formato exato abaixo
+        - NÃO inclua texto adicional
 
-            Segue aqui o produto cadastrado para analise:
-            ---
-            {catalogo}
-            ---
-            """
+        Formato de resposta:
+        {{"description": "sua descrição aqui"}}
+        """
+
         payload = {"model": self.ia_model, "prompt": prompt, "stream": False, "format": "json"}
 
         try:
