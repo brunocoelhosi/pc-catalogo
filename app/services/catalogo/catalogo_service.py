@@ -53,8 +53,6 @@ class CatalogoService(CrudService[CatalogoModel, int]):
         else:
             catalogo.description = ""
         return await self.save(catalogo)
-
-
     
     async def validate(self, catalogo: CatalogoModel) -> None:
         
@@ -79,6 +77,9 @@ class CatalogoService(CrudService[CatalogoModel, int]):
         
         model = await self.validate_update(seller_id, sku, model)
         model = await self.repository.update_by_sellerid_sku(seller_id, sku, model)
+        #Remove produto do cache após atualização
+        cache_key = f"produto:{seller_id}:{sku}"
+        await self.redis_adapter.delete(cache_key)
         return model
     
     async def delete_by_sellerid_sku(self, seller_id: str, sku: str, raises_exception: bool = True) -> bool:
@@ -87,12 +88,20 @@ class CatalogoService(CrudService[CatalogoModel, int]):
         """
         await self.validate_delete(seller_id, sku)
         deleted = await self.repository.delete_by_sellerid_sku(seller_id, sku)
+        #Remove produto do cache após deleção
+        cache_key = f"produto:{seller_id}:{sku}"
+        await self.redis_adapter.delete(cache_key)
         return deleted
     
     async def patch_by_sellerid_sku(self, seller_id: str, sku: str, patch_model: dict) -> T:
+
         await self.find_by_seller_id(seller_id)
         patch_model = await self.validate_patch(seller_id, sku, patch_model)
         model = await self.repository.patch_by_sellerid_sku(seller_id, sku, patch_model)
+        #Remove produto do cache após atualização
+        cache_key = f"produto:{seller_id}:{sku}"
+        await self.redis_adapter.delete(cache_key)
+
         return model
     
     async def find_by_filter(self, seller_id: str, paginator: Paginator = None, name_like: str = None) -> list[CatalogoModel]:
@@ -219,5 +228,5 @@ class CatalogoService(CrudService[CatalogoModel, int]):
         """
         cached = await self.redis_adapter.get_json(cache_key)
         if cached is not None:
-            logger.debug(f"💾Produto encontrado no CACHE para seller_id: {seller_id}, sku: {sku}")
+            logger.debug(f"🔄 Produto encontrado no CACHE -> seller_id: {seller_id}, sku: {sku}")
             return CatalogoModel.model_validate(cached)

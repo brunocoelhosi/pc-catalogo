@@ -10,9 +10,12 @@ from unittest.mock import AsyncMock
 def container_v2(mongo_clientv2) -> Container:
     container = Container()
     container.config.from_pydantic(api_settings)
+    container.config.app_redis_url.from_value("redis://localhost:6379/0")
     repo = CatalogoRepository(mongo_clientv2)
+    redis_adapter = container.redis_adapter()
     container.catalogo_repository.override(repo)
-    container.catalogo_service.override(CatalogoService(repo))
+    #container.catalogo_service.override(CatalogoService(repo))
+    container.catalogo_service.override(CatalogoService(repo, redis_adapter))
 
     # Mock do keycloak_adapter
     fake_adapter = AsyncMock()
