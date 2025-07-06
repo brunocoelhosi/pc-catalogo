@@ -249,6 +249,11 @@ Sendo que a variável "APP_DB_URL_MONGO" contém a URL de conexão com o MongoDB
 
 #### 🟢 API
 ```bash
+make docker-catalogo-up
+```
+
+#### 🟢 IA
+```bash
 make docker-ia-up
 ```
 
