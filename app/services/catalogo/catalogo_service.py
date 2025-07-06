@@ -42,6 +42,10 @@ class CatalogoService(CrudService[CatalogoModel, int]):
                     ) -> CatalogoModel:
         """
         Cria um novo produto no catálogo.
+        
+        :param catalogo: Produto a ser cadastrado.
+        :param product_description: Descrição do produto gerada pela IA.
+        :return: Instância de Produto criado.
         """
         await self.review(catalogo)
         await self.validate(catalogo)
@@ -85,6 +89,11 @@ class CatalogoService(CrudService[CatalogoModel, int]):
     async def delete_by_sellerid_sku(self, seller_id: str, sku: str, raises_exception: bool = True) -> bool:
         """ 
         Deleta um produto do catálogo com base no seller_id e SKU.
+        
+        :param seller_id: Identificador do vendedor.
+        :param sku: Código do produto.
+        :return: Confirmação deleção do produto.
+        :raises NotFoundException: Se não encontrar o produto.
         """
         await self.validate_delete(seller_id, sku)
         deleted = await self.repository.delete_by_sellerid_sku(seller_id, sku)
@@ -207,10 +216,7 @@ class CatalogoService(CrudService[CatalogoModel, int]):
             if raises_exception:
                 raise ProductNotExistException()
             return None
-
-        # Cache the product after fetching from repository
         try:
-            # Assuming product_exist has a model_dump method (like a Pydantic model)
             await self.redis_adapter.set_json(cache_key, product_exist.model_dump(mode="json"), expires_in_seconds=300)
         except Exception as e:
             logger.warning(f"Falha ao salvar produto no cache: {e}")

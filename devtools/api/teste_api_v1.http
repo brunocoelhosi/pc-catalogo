@@ -1,0 +1,47 @@
+@url=http://127.0.0.1:8000
+
+## Listar todos os produtos do catálogo
+GET {{url}}/seller/v1/catalogo?_limit=50&_offset=0
+
+###
+#Cadastrar um produto no catalogo
+@api_catalogo={{url}}/seller/v1/catalogo
+
+POST {{api_catalogo}}
+
+{
+  "seller_id": "magalu3",
+  "sku": "cadeira1",
+  "name": "cadeira1"
+}
+
+###
+
+###
+#Cadastrar um produto no catalogo
+@api_catalogo={{url}}/seller/v1/catalogo
+
+POST {{api_catalogo}}
+
+{
+  "seller_id": "magalu1",
+  "sku": "  ",
+  "name": "aaa"
+}
+
+###
+#Buca todos os produtos de um seller
+GET {{api_catalogo}}/magalu1
+
+
+###
+#Atualiza o noem de um produto
+PATCH {{api_catalogo}}/MagAlu1/cadeira1
+
+{
+  "name": "122253"
+}
+
+###
+# Remove produto
+DELETE {{api_catalogo}}/mAgalu1/cadeira1

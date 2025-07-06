@@ -87,7 +87,6 @@ class KeycloakAdapter:
         return key
 
     async def validate_token(self, token: str) -> dict:
-        #print("DEBUG - Token recebido:", token[:40], flush=True)
         try:
             # Obendo o kid (key id) no cabeçalho
             kid, alg = self.get_header_info_from_token(token)

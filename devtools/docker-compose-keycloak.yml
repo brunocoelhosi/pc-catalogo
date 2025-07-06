@@ -39,7 +39,7 @@ services:
 
     volumes:
       # Monta o diretório local com seu arquivo JSON para importação
-      - ./keycloak-config:/opt/keycloak/data/import
+      - ../keycloak-config:/opt/keycloak/data/import
       # Volume para persistir os dados do Keycloak (sessions, caches, etc.)
       # - keycloak_data:/opt/keycloak/data
     depends_on:
