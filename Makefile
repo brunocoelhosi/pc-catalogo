@@ -35,6 +35,15 @@ docker-ia-up:
 docker-ia-down:
 	docker-compose -f devtools/docker-compose-ia.yml down
 
+# Subir o docker Redis
+docker-redis-up:
+	docker-compose -f devtools/docker-compose-redis.yml up --build
+
+# Descer e remover o docker Redis
+docker-redis-down:
+	docker-compose -f devtools/docker-compose-redis.yml down
+
+
 # Subir o docker (Mongo + API Catalogo) para os testes
 docker-tests-up:
 	docker-compose -f devtools/docker-compose-tests.yml up --build

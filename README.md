@@ -80,7 +80,7 @@ make requirements-test
 
 ## 🐳 Execução com Docker
 
-#### API CATÁLOGO + BANCO MONGODB
+#### API, Banco MongoDB, IA, Redis e Keycloak
 
 Gere um token do [GitHub](https://github.com/settings/tokens), crie um arquivo `.env` dentro da pasta `devtools` e cole seu token.
 
@@ -93,42 +93,14 @@ GITHUB_TOKEN=<SEU_TOKEN>
 🟢 Subir o Docker IA
 
 ```bash
-make docker-ia-up
-# Esse comando sobe o docker da aplicação + docker do banco para testes
+make docker-run-dev
+# Esse comando sobe os Dockers (API, Banco, IA, Redis e Keycloak )
 ```
 
 🛑 Parar e remover container
 
 ```bash
-make docker-ia-down
-```
-
-🟢 Subir o Docker API + Banco
-
-```bash
-make docker-tests-up
-# Esse comando sobe o docker da aplicação + docker do banco para testes
-```
-
-🛑 Parar e remover container
-
-```bash
-make docker-tests-down
-```
-
-#### KEYCLOAK
-
-🟢 Subir o Docker Keycloak
-
-```bash
-make docker-tests-keycloak-up
-# Esse comando sobe o docker da aplicação + docker do banco para testes
-```
-
-🛑 Parar e remover container
-
-```bash
-make docker-tests-keycloak-down
+make docker-dev-down
 ```
 
 #
@@ -200,7 +172,7 @@ uvicorn app.api_main:app --reload
 
 ##
 
-## 🐳 Execução da API, Banco MongoDB e IA no modo Teste usando Docker
+## 🐳 Execução da API, Banco MongoDB, IA, Redis e Keycloak usando Docker
 
 Gere um token do [GitHub](https://github.com/settings/tokens), crie um arquivo `.env` dentro da pasta `devtools` e cole seu token.
 
@@ -212,47 +184,19 @@ GITHUB_TOKEN=<SEU_TOKEN>
 
 Na raiz do projeto, execute o comando:
 
-🟢 Subir o Docker da IA
+🟢 Subir o pack de Dockers
 
 ```sh
-docker-compose -f devtools/docker-compose-ia.yml up --build
-# Esse comando sobe o docker da IA
+docker-compose -f devtools/docker-compose.yml up --build
+# Esse comando sobe os dockers (API, Banco, IA, Redis e Keycloak)
 ```
 
 🛑 Parar e remover container
 
 ```bash
-docker-compose -f devtools/docker-compose-ia.yml down
+docker-compose -f devtools/docker-compose.yml down
 ```
-
-🟢 Subir o Docker API + Banco
-
-```sh
-docker-compose -f devtools/docker-compose-tests.yml up --build
-# Esse comando sobe o docker da aplicação + docker do banco para testes
-```
-
-🛑 Parar e remover container
-
-```bash
-docker-compose -f devtools/docker-compose-tests.yml down
-```
-
-#### KEYCLOAK
-
-🟢 Subir o Docker Keycloak
-
-```sh
-docker-compose -f devtools/docker-compose-keycloak.yml up --build
-# Esse comando sobe o docker da aplicação + docker do banco para testes
-```
-
-🛑 Parar e remover container
-
-```bash
-docker-compose -f devtools/docker-compose-keycloak.yml down
-```
-
+ #### Obs.: Para subir os dockers separadamente, os comandos estão presente no Makefile
 #
 
 ## 🔑 Configurações do Keycloak
@@ -298,43 +242,64 @@ Sendo que a variável "APP_DB_URL_MONGO" contém a URL de conexão com o MongoDB
 ##
 
 ## ⚙️ Execução dos Containers separadamente
+#### Todos os comandos devem ser executados na raiz do projeto
 
-### API Catálogo
+### Linux
+
+
+#### 🟢 API
+```bash
+make docker-ia-up
+```
+
+#### 🟢 Keycloak
+```bash
+make docker-tests-keycloak-up
+```
+
+#### 🟢 Redis
+```bash
+make docker-redis-up
+```
+
+#### 🟢 MongoDB Teste
+```bash
+make docker-mongo-test-up
+```
+
+
+### Windows
+#### 🟢 API Catálogo
 
 Gere um token do [GitHub](https://github.com/settings/tokens), crie um arquivo `.env` dentro da pasta `devtools` e cole seu token
 
 ```bash
 GITHUB_TOKEN=<SEU_TOKEN>
 ```
-
-🟢 Suba o container com o seguinte comando na raiz do projeto:
-
 ```sh
 docker-compose -f devtools/docker-compose-catalogo.yml up --build
 ```
 
-🛑 Parar e remover o container
-
-```sh
-docker-compose -f devtools/docker-compose-catalogo.yml down
-```
-
 API: http://localhost:8000
 
-##
-
-### Banco MongoDB
-
-🟢 Suba o container do banco com o seguinte comando na raiz do projeto:
-
+#### 🟢 Banco MongoDB
 ```sh
 docker-compose -f devtools/docker-compose-mongo.yml up --build
 ```
 
-🛑 Parar e remover o container
-
+#### 🟢 IA Ollama PHI3
 ```sh
-docker-compose -f devtools/docker-compose-mongo.yml down
+docker-compose -f devtools/docker-compose-ia.yml up --build
+```
+
+#### 🟢 Keycloak
+```sh
+docker-compose -f devtools/docker-compose-keycloak.yml up --build
+```
+
+#### 🟢 Redis
+```sh
+docker-compose -f devtools/docker-compose-redis.yml up --build
 ```
 
 ##
