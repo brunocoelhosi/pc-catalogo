@@ -23,9 +23,9 @@ class CreatingProductDescription:
         PRODUTO: {catalogo.name}
 
         INSTRUÇÕES:
-        - Crie uma descrição atrativa e profissional
+        - Crie uma descrição profissional e atrativa para um produto de e-commerce
         - Use APENAS as informações do produto fornecido
-        - Máximo 1000 caracteres
+        - Limite de até 300 caracteres
         - Retorne APENAS um JSON válido no formato exato abaixo
         - NÃO inclua texto adicional
 
@@ -33,13 +33,19 @@ class CreatingProductDescription:
         {{"description": "sua descrição aqui"}}
         """
 
-        payload = {"model": self.ia_model, "prompt": prompt, "stream": False, "format": "json"}
+        payload = {"model": self.ia_model,
+                    "prompt": prompt,
+                    "stream": False,
+                    "format": "json",
+                    
+                    }
 
         try:
             logger.info(
                 f"Enviando para análise da IA. Modelo: {self.ia_model}", extra={"Produto": catalogo}
             )
-            async with httpx.AsyncClient(timeout=120) as http_client:
+
+            async with httpx.AsyncClient(timeout=200) as http_client:
                 response = await http_client.post(self.ia_api_url, json=payload)  
             # Lança um erro para respostas com código 4xx ou 5xx
             response.raise_for_status()
@@ -54,6 +60,7 @@ class CreatingProductDescription:
             
             logger.info(f"Resposta da IA: {ia_response}")
             return ia_response
+        
         except httpx.HTTPError as e:
             logger.error(f"Erro ao chamar a API do Ollama: {e}", exc_info=True)
         except json.JSONDecodeError as e:

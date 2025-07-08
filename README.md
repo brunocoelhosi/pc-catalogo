@@ -196,7 +196,9 @@ docker-compose -f devtools/docker-compose.yml up --build
 ```bash
 docker-compose -f devtools/docker-compose.yml down
 ```
- #### Obs.: Para subir os dockers separadamente, os comandos estão presente no Makefile
+
+#### Obs.: Para subir os dockers separadamente, os comandos estão presente no Makefile
+
 #
 
 ## 🔑 Configurações do Keycloak
@@ -242,38 +244,43 @@ Sendo que a variável "APP_DB_URL_MONGO" contém a URL de conexão com o MongoDB
 ##
 
 ## ⚙️ Execução dos Containers separadamente
+
 #### Todos os comandos devem ser executados na raiz do projeto
 
 ### Linux
 
-
 #### 🟢 API
+
 ```bash
 make docker-catalogo-up
 ```
 
 #### 🟢 IA
+
 ```bash
 make docker-ia-up
 ```
 
 #### 🟢 Keycloak
+
 ```bash
 make docker-tests-keycloak-up
 ```
 
 #### 🟢 Redis
+
 ```bash
 make docker-redis-up
 ```
 
 #### 🟢 MongoDB Teste
+
 ```bash
 make docker-mongo-test-up
 ```
 
-
 ### Windows
+
 #### 🟢 API Catálogo
 
 Gere um token do [GitHub](https://github.com/settings/tokens), crie um arquivo `.env` dentro da pasta `devtools` e cole seu token
@@ -281,6 +288,7 @@ Gere um token do [GitHub](https://github.com/settings/tokens), crie um arquivo `
 ```bash
 GITHUB_TOKEN=<SEU_TOKEN>
 ```
+
 ```sh
 docker-compose -f devtools/docker-compose-catalogo.yml up --build
 ```
@@ -288,21 +296,25 @@ docker-compose -f devtools/docker-compose-catalogo.yml up --build
 API: http://localhost:8000
 
 #### 🟢 Banco MongoDB
+
 ```sh
 docker-compose -f devtools/docker-compose-mongo.yml up --build
 ```
 
 #### 🟢 IA Ollama PHI3
+
 ```sh
 docker-compose -f devtools/docker-compose-ia.yml up --build
 ```
 
 #### 🟢 Keycloak
+
 ```sh
 docker-compose -f devtools/docker-compose-keycloak.yml up --build
 ```
 
 #### 🟢 Redis
+
 ```sh
 docker-compose -f devtools/docker-compose-redis.yml up --build
 ```

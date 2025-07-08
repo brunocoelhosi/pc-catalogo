@@ -59,9 +59,8 @@ class KeycloakAdapter:
         async with httpx.AsyncClient() as http_client:
             jwks_response = await http_client.get(jwks_uri)
             jwks_response.raise_for_status()
-
-            keys = jwks_response.json()["keys"]
-
+            
+            keys = (jwks_response.json())["keys"]  # Adicione await aqui
             return keys
 
     @staticmethod

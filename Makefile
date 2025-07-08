@@ -23,8 +23,8 @@ load-env:
 	@./devtools/scripts/push-env "devtools/dotenv.$(env)"
 
 # Carregar a variável de testes
-load-test-env:
-	@env=test make $(MAKE_ARGS) load-env
+load-dev-env:
+	@env=dev make $(MAKE_ARGS) load-env
 
 # Docker completo de desenvolvimento
 docker-run-dev:
