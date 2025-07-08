@@ -30,12 +30,16 @@ Este projeto foi construído usando várias tecnologias chaves para garantir per
 
 - **Linguagem**: [Python 3.12](https://docs.python.org/3.12/) - Escolhido por sua simplicidade e poderosas capacidades de programação. A versão 3.13 é a mais recente, oferecendo melhorias
 - **Framework**: [FastAPI](https://fastapi.tiangolo.com/) - Uma moderna e rápida (altas performances) web framework para Python, que é ideal para a construção de APIs.
-- **Documentação da API**: Swagger (via FastAPI)
+- **Documentação da API**: [Swagger](https://swagger.io/) (via FastAPI)
 - **Banco de Dados**: [MongoDB](https://www.mongodb.com/)
-- **Docker**: [Docker](https://www.docker.com/)
+- **Orquestração**: [Docker](https://www.docker.com/) / [Docker-compose](https://docs.docker.com/compose/)
 - **Testes**: [Pytest](https://docs.pytest.org/)
 - **Code Quality**: [SonarQube](https://www.sonarsource.com/products/sonarqube/)
+- **Cache dos dados**: [Redis](https://redis.io/)
 - **Makefile**: Automação de tarefas
+- **Autenticação**: Keycloak (OpenID Connect)
+- **Gerenciamento de dependências**: requirements.txt (com separação por ambiente)
+- **Migração de dados**: mongodb-migrations
 
 ## 📁 Estrutura do projeto
 
@@ -406,6 +410,16 @@ Isso irá enviar os dados da sua aplicação para análise no SonarQube.
 
 A cobertura de código é uma métrica que indica a porcentagem do seu código-fonte que foi executada durante a execução da sua suíte de testes. Ela ajuda a identificar partes do seu código que não estão sendo testadas e que, portanto, podem conter bugs ocultos.
 
+### 📂 Estrutura dos testes
+
+```bash
+tests/
+└── unit/         # Testes unitários do service, model e repository
+└── integration/  # Testes de integração da API
+└── fixture/      # Fixtures
+└── conftest.py   # Fixtures globais do pytest
+```
+
 ### Medindo a Cobertura com pytest-cov
 
 O pytest-cov é um plugin para o pytest que integra a medição de cobertura de forma muito simples.
@@ -420,8 +434,14 @@ pip install pytest-cov
 
 Para executar seus testes e gerar um relatório de cobertura no terminal, use a flag `--cov`:
 
-```
+```bash
 pytest --cov=app
+# Windows
+```
+
+```bash
+make coverage
+# Linux
 ```
 
 ### Gerando Relatórios Detalhados:
