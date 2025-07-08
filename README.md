@@ -37,6 +37,37 @@ Este projeto foi construído usando várias tecnologias chaves para garantir per
 - **Code Quality**: [SonarQube](https://www.sonarsource.com/products/sonarqube/)
 - **Makefile**: Automação de tarefas
 
+## 📁 Estrutura do projeto
+
+```bash
+📁 pc-catalogo/
+├── 📁 app/                       # Código-fonte principal da aplicação
+│   ├── 📁 api/                   # Camada de apresentação (FastAPI)
+│   │   ├── 📁 common/            # Recursos compartilhados (auth, trace, handlers)
+│   │   ├── 📁 middlewares/       # Middlewares globais (CORS, trace, etc.)
+│   │   ├── 📁 v1/                # API versão 1 (dados em memória)
+│   │   └── 📁 v2/                # API versão 2 (MongoDB + IA)
+│   ├── 📁 common/                # Utilitários e funções auxiliares
+│   ├── 📁 integrations/          # Integrações externas (Keycloak, Redis, MongoDB)
+│   ├── 📁 models/                # Modelos de dados utilizados na aplicação
+│   ├── 📁 repositories/          # Camada de acesso a dados (repositórios)
+│   ├── 📁 services/              # Lógica de negócio e regras da aplicação
+│   ├── 📁 settings/              # Configurações da aplicação (env, API, worker)
+│   └── 📁 worker/                # Tarefas assíncronas e workers de background
+├── 📁 devtools/                  # Ferramentas auxiliares para desenvolvimento
+│   ├── 📁 api/                   # Testes manuais com arquivos .http
+│   └── 📁 scripts/               # Scripts de automação e utilitários
+├── 📁 tests/                     # Testes automatizados do projeto
+│   ├── 📁 unit/                  # Testes unitários
+│   └── 📁 integration/           # Testes de integração entre módulos
+├── 📁 venv/                      # Ambiente virtual Python (não versionado)
+├── 📄 .env                       # Arquivo de variáveis de ambiente
+├── 📄 Dockerfile                 # Imagem Docker para a aplicação
+├── 📄 Makefile                   # Comandos utilitários para desenvolvimento
+├── 📄 requirements.txt           # Lista de dependências Python
+└── 📄 README.md                  # Documentação principal do projeto
+```
+
 ## ✨ Configuração do ambiente local
 
 Confirme se o [Python 3.12](https://docs.python.org/3.12/) está instalado em sua máquina.
