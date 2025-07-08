@@ -42,7 +42,7 @@ class CreatingProductDescription:
 
         try:
             logger.info(
-                f"Enviando para análise da IA. Modelo: {self.ia_model}", extra={"Produto": catalogo}
+                f"🤖Enviando para análise da IA. Modelo: {self.ia_model}", extra={"Produto": catalogo.name}
             )
 
             async with httpx.AsyncClient(timeout=200) as http_client:
@@ -53,6 +53,10 @@ class CreatingProductDescription:
             # A resposta da API do Ollama com format: "json" já é um JSON
             response_data = response.json()
 
+            if "response" not in response_data:
+                logger.error(f"❌ Chave 'response' não encontrada em: {response_data}")
+                return None
+
             # O conteúdo do JSON está na chave 'response'
             ia_response = json.loads(response_data["response"])
 
@@ -62,8 +66,14 @@ class CreatingProductDescription:
             return ia_response
         
         except httpx.HTTPError as e:
-            logger.error(f"Erro ao chamar a API do Ollama: {e}", exc_info=True)
+            logger.error(f"❌ Erro HTTP: {e}", exc_info=True)
+            return None
+            
         except json.JSONDecodeError as e:
-            logger.error(f"Erro ao decodificar a resposta JSON da IA: {e}")
+            logger.error(f"❌ Erro JSON decode: {e}")
+            return None
+            
         except Exception as e:
-            logger.error(f"Erro inesperado na função de análise da IA: {e}")
+            logger.error(f"❌ Erro inesperado: {type(e).__name__}: {e}")
+            logger.error(f"❌ Traceback completo:", exc_info=True)
+            return None
