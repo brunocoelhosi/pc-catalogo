@@ -29,6 +29,7 @@ class AsyncCrudRepository(ABC, Generic[T, ID]):
         """
         Busca entidades no repositório, utilizando filtros e paginação.
         """
+        
 
     @abstractmethod
     async def update(self, entity_id: ID, entity: Any) -> T:

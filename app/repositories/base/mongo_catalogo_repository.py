@@ -66,7 +66,9 @@ class MongoCatalogoRepository(AsyncCrudRepository[T, ID], Generic[T, ID]):
         if sort:
             for field, order in sort.items():
                 cursor = cursor.sort(field, order)
-        cursor = cursor.skip(offset).limit(limit + 1)
+        cursor = cursor.skip(offset).limit(limit)
+
+        cursor = cursor.collation({"locale": "pt", "strength": 2})
 
         entities = []
         async for document in cursor:

@@ -40,6 +40,8 @@ Este projeto foi construído usando várias tecnologias chaves para garantir per
 - **Autenticação**: Keycloak (OpenID Connect)
 - **Gerenciamento de dependências**: requirements.txt (com separação por ambiente)
 - **Migração de dados**: mongodb-migrations
+- **Modelo de IA**: [Ollama Phi3-mini](https://ollama.com/library/phi3:mini)
+- **Front-End Integration**: [Streamlit](https://streamlit.io/)
 
 ## 📁 Estrutura do projeto
 
