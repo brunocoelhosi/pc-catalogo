@@ -27,6 +27,11 @@ O projeto tem como objetivo **fornecer as informações dos produtos** presentes
 
 Acesse a documentação: 📑[Docs](https://docs.google.com/document/d/1bWFO9-Ezh53dRTLAhQTsowW4LTuIBB_h1hCjEcQ-7-E)
 
+## Integração Front-End
+
+Acesse o repositório: [Front-End](https://github.com/projeto-carreira-luizalabs-2025/pc-catalogo-front)
+
+
 ## 💻 Tecnologias
 
 Este projeto foi construído usando várias tecnologias chaves para garantir performance, segurança e facilidade de uso:
