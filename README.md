@@ -22,7 +22,6 @@ O projeto tem como objetivo **fornecer as informações dos produtos** presentes
 - **Bruno Coelho Lopes**
 - **Carlos Eduardo Lima**
 - **Isabella Ramos Carvalho**
-- **João Pedro Pereira Porfírio**
 
 ## 💻 Tecnologias
 
