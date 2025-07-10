@@ -79,35 +79,40 @@ def add_error_handlers(app: FastAPI):
         )
 
     @app.exception_handler(ValidationError)
-    async def request_pydantic_validation_error_handler(_: Request, exc: ValidationError) -> JSONResponse:
-        logger.warning("⚠ Falha na validacao pelo pydantic", extra={"exception": str(exc)})
-        errors = exc.errors()
-        details: list[ErrorDetail] = []
-        for error in errors:
-            ctx = error.get("ctx", {})
+    async def request_pydantic_validation_error_handler(request: Request, exc: RequestValidationError):
+        """Handler para erros de validação do Pydantic"""
+        
+        errors = []
+        for error in exc.errors():
 
-            if isinstance(ctx.get("error", {}), ValueError):  # pragma: no cover
-                # Pydantic não trata direito erros como ValueError, retornando um padrão
-                # diferente do FastAPI.
-                ctx["error"] = str(ctx["error"])
+            # ✅ Debug: Mostrar valores
+            logger.error(f"🔍 Error location: {error.get('loc')}")
+            logger.error(f"🔍 Error type: {error.get('type')}")
+            logger.error(f"🔍 Error msg: {error.get('msg')}")
 
-            details.append(
-                ErrorDetail(
-                    **{
-                        "message": error["msg"],
-                        "location": error["loc"][0] if error["loc"] else "body",
-                        "slug": error["type"],
-                        "field": (", ".join(map(str, error["loc"][1:])) if error["loc"] else ""),
-                        "ctx": ctx,
-                    }
-                )
-            )
-
-        response = get_error_response(ErrorCodes.UNPROCESSABLE_ENTITY.value, details=details)
-
+            # ✅ CORREÇÃO: Criar dict diretamente sem validação Pydantic
+            try:
+                error_detail = {
+                    "location": "body",  # ✅ Valor fixo válido
+                    "message": error.get('msg', 'Validation error'),
+                    "type": error.get('type', 'validation_error'),
+                    "field": error.get('loc', [])
+                }
+                errors.append(error_detail)
+            except Exception as e:
+                logger.error(f"❌ Erro ao criar ErrorDetail: {e}")
+                # ✅ Fallback seguro
+                errors.append({
+                    "location": "body",
+                    "message": str(error.get('msg', 'Validation error')),
+                    "type": str(error.get('type', 'validation_error'))
+                })
+        
         return JSONResponse(
-            status_code=ErrorCodes.UNPROCESSABLE_ENTITY.http_code,
-            content=response.model_dump(mode="json", exclude_none=True, exclude_unset=True),
+            status_code=422,
+            content={
+                "detail": errors
+            }
         )
 
     @app.exception_handler(Exception)

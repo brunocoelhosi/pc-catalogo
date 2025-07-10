@@ -10,7 +10,7 @@ class CatalogoSchema(SchemaType):
     name: str = Field(..., min_length=2, max_length=200, description="Nome entre 2 e 200 caracteres, sem só espaços")
     description: Optional[str] = Field(
         default=None,
-        max_length=1000,
+        max_length=300,
         description="Descrição do produto (opcional, mas não pode ser vazia se fornecida)"
     )
 
@@ -34,6 +34,6 @@ class CatalogoUpdate(SchemaType):
     )
     description: Optional[str] = Field(
         None,
-        max_length=1000,
+        max_length=300,
         description="Descrição do produto (opcional, mas não pode ser vazia se fornecida)"
     )

@@ -5,17 +5,15 @@ from pydantic import BaseModel, ConfigDict, Field, TypeAdapter
 
 from app.common.datetime import utcnow
 
-
+"""
 class IdModel(BaseModel):
     id: UuidType | int | None = Field(None, description="Chave")
+"""
 
-
-class UuidModel(IdModel):
+"""class UuidModel(IdModel):
     id: UuidType | None = Field(None, alias="_id")
 
-
-class IntModel(IdModel):
-    id: int | None = Field(None, description="Identificador")
+"""
 
 class UserModel(BaseModel):
     name: str | None
@@ -29,7 +27,8 @@ class AuditModel(BaseModel):
     updated_by: UserModel | None = Field(None, description="Usuário alterou")
 
 
-class PersistableEntity(IdModel, AuditModel):
+
+class PersistableEntity(AuditModel):
     model_config = ConfigDict(populate_by_name=True, from_attributes=True)
 
     @classmethod
@@ -37,16 +36,12 @@ class PersistableEntity(IdModel, AuditModel):
         return TypeAdapter(cls).validate_json(json_data)
 
 
-class UuidPersistableEntity(PersistableEntity, UuidModel):
+class UuidPersistableEntity(PersistableEntity):
     """
     Entidade cuja chave é um uuid
     """
 
 
-class IntPersistableEntity(PersistableEntity, IntModel):
-    """
-    Entidiade cuja chave é um inteiro.
-    """
 
 
 class SellerSkuEntity(BaseModel):
@@ -62,9 +57,4 @@ class SelllerSkuUuidPersistableEntity(SellerSkuEntity, UuidPersistableEntity):
     Entidade com seller_id e sku e chave uuid.
     """
 
-
-class SelllerSkuIntPersistableEntity(SellerSkuEntity, IntPersistableEntity):
-    """
-    Entidade com seller_id e sku e chave int.
-    """
 
