@@ -23,6 +23,10 @@ O projeto tem como objetivo **fornecer as informações dos produtos** presentes
 - **Carlos Eduardo Lima**
 - **Isabella Ramos Carvalho**
 
+## Documentação
+
+Acesse a documentação: 📑[Docs](https://docs.google.com/document/d/1bWFO9-Ezh53dRTLAhQTsowW4LTuIBB_h1hCjEcQ-7-E)
+
 ## 💻 Tecnologias
 
 Este projeto foi construído usando várias tecnologias chaves para garantir performance, segurança e facilidade de uso:
