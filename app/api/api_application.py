@@ -7,7 +7,7 @@ from app.settings import ApiSettings
 from .common.error_handlers import add_error_handlers
 from .common.routers.health_check_routers import add_health_check_router
 from .middlewares.configure_middlewares import configure_middlewares
-
+from fastapi.middleware.cors import CORSMiddleware
 
 def create_app(settings: ApiSettings, router: APIRouter) -> FastAPI:
     @asynccontextmanager
@@ -18,6 +18,7 @@ def create_app(settings: ApiSettings, router: APIRouter) -> FastAPI:
         # Limpando a bagunça antes de terminar
         ...
 
+
     app = FastAPI(
         lifespan=_lifespan,
         title=settings.app_name,
@@ -25,6 +26,8 @@ def create_app(settings: ApiSettings, router: APIRouter) -> FastAPI:
         version=settings.version,
         docs_url="/api/docs",
     )
+
+
     # Para garantir compatibilidade com o kong não podemos usar recursos acima da versão 3.0.2
     app.openapi_version = "3.0.2"
 

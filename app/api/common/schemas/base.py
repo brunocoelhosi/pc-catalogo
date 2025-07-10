@@ -6,7 +6,9 @@ from pydantic import ConfigDict, Field
 
 from app.models.base import UserModel
 class UuidSchema(SchemaType):
-    id: UuidType | None = Field(None, description="Id único do objeto")
+    pass
+    """ id: UuidType | None = Field(None, description="Id único do objeto")"""
+
 
 
 class OwnershipSchema(SchemaType):

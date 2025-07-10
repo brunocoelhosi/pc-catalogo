@@ -22,7 +22,10 @@ O projeto tem como objetivo **fornecer as informações dos produtos** presentes
 - **Bruno Coelho Lopes**
 - **Carlos Eduardo Lima**
 - **Isabella Ramos Carvalho**
-- **João Pedro Pereira Porfírio**
+
+## Documentação
+
+Acesse a documentação: 📑[Docs](https://docs.google.com/document/d/1bWFO9-Ezh53dRTLAhQTsowW4LTuIBB_h1hCjEcQ-7-E)
 
 ## 💻 Tecnologias
 
@@ -30,12 +33,49 @@ Este projeto foi construído usando várias tecnologias chaves para garantir per
 
 - **Linguagem**: [Python 3.12](https://docs.python.org/3.12/) - Escolhido por sua simplicidade e poderosas capacidades de programação. A versão 3.13 é a mais recente, oferecendo melhorias
 - **Framework**: [FastAPI](https://fastapi.tiangolo.com/) - Uma moderna e rápida (altas performances) web framework para Python, que é ideal para a construção de APIs.
-- **Documentação da API**: Swagger (via FastAPI)
+- **Documentação da API**: [Swagger](https://swagger.io/) (via FastAPI)
 - **Banco de Dados**: [MongoDB](https://www.mongodb.com/)
-- **Docker**: [Docker](https://www.docker.com/)
+- **Orquestração**: [Docker](https://www.docker.com/) / [Docker-compose](https://docs.docker.com/compose/)
 - **Testes**: [Pytest](https://docs.pytest.org/)
 - **Code Quality**: [SonarQube](https://www.sonarsource.com/products/sonarqube/)
+- **Cache dos dados**: [Redis](https://redis.io/)
 - **Makefile**: Automação de tarefas
+- **Autenticação**: Keycloak (OpenID Connect)
+- **Gerenciamento de dependências**: requirements.txt (com separação por ambiente)
+- **Migração de dados**: mongodb-migrations
+- **Modelo de IA**: [Ollama Phi3-mini](https://ollama.com/library/phi3:mini)
+- **Front-End Integration**: [Streamlit](https://streamlit.io/)
+
+## 📁 Estrutura do projeto
+
+```bash
+📁 pc-catalogo/
+├── 📁 app/                       # Código-fonte principal da aplicação
+│   ├── 📁 api/                   # Camada de apresentação (FastAPI)
+│   │   ├── 📁 common/            # Recursos compartilhados (auth, trace, handlers)
+│   │   ├── 📁 middlewares/       # Middlewares globais (CORS, trace, etc.)
+│   │   ├── 📁 v1/                # API versão 1 (dados em memória)
+│   │   └── 📁 v2/                # API versão 2 (MongoDB + IA)
+│   ├── 📁 common/                # Utilitários e funções auxiliares
+│   ├── 📁 integrations/          # Integrações externas (Keycloak, Redis, MongoDB)
+│   ├── 📁 models/                # Modelos de dados utilizados na aplicação
+│   ├── 📁 repositories/          # Camada de acesso a dados (repositórios)
+│   ├── 📁 services/              # Lógica de negócio e regras da aplicação
+│   ├── 📁 settings/              # Configurações da aplicação (env, API, worker)
+│   └── 📁 worker/                # Tarefas assíncronas e workers de background
+├── 📁 devtools/                  # Ferramentas auxiliares para desenvolvimento
+│   ├── 📁 api/                   # Testes manuais com arquivos .http
+│   └── 📁 scripts/               # Scripts de automação e utilitários
+├── 📁 tests/                     # Testes automatizados do projeto
+│   ├── 📁 unit/                  # Testes unitários
+│   └── 📁 integration/           # Testes de integração entre módulos
+├── 📁 venv/                      # Ambiente virtual Python (não versionado)
+├── 📄 .env                       # Arquivo de variáveis de ambiente
+├── 📄 Dockerfile                 # Imagem Docker para a aplicação
+├── 📄 Makefile                   # Comandos utilitários para desenvolvimento
+├── 📄 requirements.txt           # Lista de dependências Python
+└── 📄 README.md                  # Documentação principal do projeto
+```
 
 ## ✨ Configuração do ambiente local
 
@@ -80,7 +120,7 @@ make requirements-test
 
 ## 🐳 Execução com Docker
 
-#### API CATÁLOGO + BANCO MONGODB
+#### API, Banco MongoDB, IA, Redis e Keycloak
 
 Gere um token do [GitHub](https://github.com/settings/tokens), crie um arquivo `.env` dentro da pasta `devtools` e cole seu token.
 
@@ -90,32 +130,17 @@ GITHUB_TOKEN=<SEU_TOKEN>
 
 ###### Obs.: Token necessário para instalação da [Biblioteca pc-logging](https://github.com/projeto-carreira-luizalabs-2025/pc-logging)
 
-🟢 Subir o Docker API + Banco
+🟢 Subir o Docker IA
 
 ```bash
-make docker-tests-up
-# Esse comando sobe o docker da aplicação + docker do banco para testes
+make docker-run-dev
+# Esse comando sobe os Dockers (API, Banco, IA, Redis e Keycloak )
 ```
 
 🛑 Parar e remover container
 
 ```bash
-make docker-tests-down
-```
-
-#### KEYCLOAK
-
-🟢 Subir o Docker Keycloak
-
-```bash
-make docker-tests-keycloak-up
-# Esse comando sobe o docker da aplicação + docker do banco para testes
-```
-
-🛑 Parar e remover container
-
-```bash
-make docker-tests-keycloak-down
+make docker-dev-down
 ```
 
 #
@@ -187,7 +212,7 @@ uvicorn app.api_main:app --reload
 
 ##
 
-## 🐳 Execução da API e Banco MongoDB no modo Teste usando Docker
+## 🐳 Execução da API, Banco MongoDB, IA, Redis e Keycloak usando Docker
 
 Gere um token do [GitHub](https://github.com/settings/tokens), crie um arquivo `.env` dentro da pasta `devtools` e cole seu token.
 
@@ -199,33 +224,20 @@ GITHUB_TOKEN=<SEU_TOKEN>
 
 Na raiz do projeto, execute o comando:
 
-🟢 Subir o Docker API + Banco
+🟢 Subir o pack de Dockers
 
 ```sh
-docker-compose -f devtools/docker-compose-tests.yml up --build
-# Esse comando sobe o docker da aplicação + docker do banco para testes
+docker-compose -f devtools/docker-compose.yml up --build
+# Esse comando sobe os dockers (API, Banco, IA, Redis e Keycloak)
 ```
 
 🛑 Parar e remover container
 
 ```bash
-docker-compose -f devtools/docker-compose-tests.yml down
+docker-compose -f devtools/docker-compose.yml down
 ```
 
-#### KEYCLOAK
-
-🟢 Subir o Docker Keycloak
-
-```sh
-docker-compose -f devtools/docker-compose-keycloak.yml up --build
-# Esse comando sobe o docker da aplicação + docker do banco para testes
-```
-
-🛑 Parar e remover container
-
-```bash
-docker-compose -f devtools/docker-compose-keycloak.yml down
-```
+#### Obs.: Para subir os dockers separadamente, os comandos estão presente no Makefile
 
 #
 
@@ -273,7 +285,43 @@ Sendo que a variável "APP_DB_URL_MONGO" contém a URL de conexão com o MongoDB
 
 ## ⚙️ Execução dos Containers separadamente
 
-### API Catálogo
+#### Todos os comandos devem ser executados na raiz do projeto
+
+### Linux
+
+#### 🟢 API
+
+```bash
+make docker-catalogo-up
+```
+
+#### 🟢 IA
+
+```bash
+make docker-ia-up
+```
+
+#### 🟢 Keycloak
+
+```bash
+make docker-tests-keycloak-up
+```
+
+#### 🟢 Redis
+
+```bash
+make docker-redis-up
+```
+
+#### 🟢 MongoDB Teste
+
+```bash
+make docker-mongo-test-up
+```
+
+### Windows
+
+#### 🟢 API Catálogo
 
 Gere um token do [GitHub](https://github.com/settings/tokens), crie um arquivo `.env` dentro da pasta `devtools` e cole seu token
 
@@ -281,34 +329,34 @@ Gere um token do [GitHub](https://github.com/settings/tokens), crie um arquivo `
 GITHUB_TOKEN=<SEU_TOKEN>
 ```
 
-🟢 Suba o container com o seguinte comando na raiz do projeto:
-
 ```sh
 docker-compose -f devtools/docker-compose-catalogo.yml up --build
 ```
 
-🛑 Parar e remover o container
-
-```sh
-docker-compose -f devtools/docker-compose-catalogo.yml down
-```
-
 API: http://localhost:8000
 
-##
-
-### Banco MongoDB
-
-🟢 Suba o container do banco com o seguinte comando na raiz do projeto:
+#### 🟢 Banco MongoDB
 
 ```sh
 docker-compose -f devtools/docker-compose-mongo.yml up --build
 ```
 
-🛑 Parar e remover o container
+#### 🟢 IA Ollama PHI3
 
 ```sh
-docker-compose -f devtools/docker-compose-mongo.yml down
+docker-compose -f devtools/docker-compose-ia.yml up --build
+```
+
+#### 🟢 Keycloak
+
+```sh
+docker-compose -f devtools/docker-compose-keycloak.yml up --build
+```
+
+#### 🟢 Redis
+
+```sh
+docker-compose -f devtools/docker-compose-redis.yml up --build
 ```
 
 ##
@@ -367,6 +415,16 @@ Isso irá enviar os dados da sua aplicação para análise no SonarQube.
 
 A cobertura de código é uma métrica que indica a porcentagem do seu código-fonte que foi executada durante a execução da sua suíte de testes. Ela ajuda a identificar partes do seu código que não estão sendo testadas e que, portanto, podem conter bugs ocultos.
 
+### 📂 Estrutura dos testes
+
+```bash
+tests/
+└── unit/         # Testes unitários do service, model e repository
+└── integration/  # Testes de integração da API
+└── fixture/      # Fixtures
+└── conftest.py   # Fixtures globais do pytest
+```
+
 ### Medindo a Cobertura com pytest-cov
 
 O pytest-cov é um plugin para o pytest que integra a medição de cobertura de forma muito simples.
@@ -381,8 +439,14 @@ pip install pytest-cov
 
 Para executar seus testes e gerar um relatório de cobertura no terminal, use a flag `--cov`:
 
-```
+```bash
 pytest --cov=app
+# Windows
+```
+
+```bash
+make coverage
+# Linux
 ```
 
 ### Gerando Relatórios Detalhados:

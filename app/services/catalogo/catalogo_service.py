@@ -10,27 +10,54 @@ from .catalogo_exceptions import (
     SellerIDException, 
     SKULengthException, 
     SellerIDNotExistException, 
-    LikeNotFoundException
+    LikeNotFoundException,
+    ProductNameNotFoundException
 )
-
+from dependency_injector.wiring import inject, Provide
 from app.api.v1.schemas.catalogo_schema import CatalogoUpdate
 from typing import TypeVar
+from app.integrations.cache.redis_asyncio_adapter import RedisAsyncioAdapter
+from app.worker.description.creating_product_description import CreatingProductDescription
 
 T = TypeVar("T")
 
+from pclogging import LoggingBuilder
+
+LoggingBuilder.init(log_level="DEBUG")
+
+logger = LoggingBuilder.get_logger(__name__)
+
 class CatalogoService(CrudService[CatalogoModel, int]):
-    def __init__(self, repository: CatalogoRepository):
+
+    redis_adapter: RedisAsyncioAdapter
+
+    def __init__(self, repository: CatalogoRepository, redis_adapter: RedisAsyncioAdapter):
         super().__init__(repository)
+        self.redis_adapter = redis_adapter
 
-
-    async def create(self, catalogo: CatalogoModel) -> CatalogoModel:
+    @inject
+    async def create(self,
+                    catalogo: CatalogoModel,
+                    creating_product_description: CreatingProductDescription = Provide["creating_product_description"],
+                    ) -> CatalogoModel:
         """
         Cria um novo produto no catálogo.
+        
+        :param catalogo: Produto a ser cadastrado.
+        :param product_description: Descrição do produto gerada pela IA.
+        :return: Instância de Produto criado.
         """
         await self.review(catalogo)
         await self.validate(catalogo)
+        # Gera a descrição usando IA
+        description_data = await creating_product_description.create_description(catalogo)
+        # Se a IA retornar um dicionário com a chave "description"
+        if description_data and "description" in description_data:
+            catalogo.description = description_data["description"]
+        else:
+            catalogo.description = ""
         return await self.save(catalogo)
-
+    
     async def validate(self, catalogo: CatalogoModel) -> None:
         
         await self.validate_len_seller_id(catalogo.seller_id)
@@ -48,22 +75,42 @@ class CatalogoService(CrudService[CatalogoModel, int]):
         return await super().create(catalogo)
     
     async def update_by_sellerid_sku(self, seller_id: str, sku: str, model: T) -> T:
+
+        if not model.name or not model.name.strip():
+            raise ProductNameNotFoundException()
+        
         model = await self.validate_update(seller_id, sku, model)
         model = await self.repository.update_by_sellerid_sku(seller_id, sku, model)
+        #Remove produto do cache após atualização
+        cache_key = f"produto:{seller_id}:{sku}"
+        await self.redis_adapter.delete(cache_key)
         return model
     
     async def delete_by_sellerid_sku(self, seller_id: str, sku: str, raises_exception: bool = True) -> bool:
         """ 
         Deleta um produto do catálogo com base no seller_id e SKU.
+        
+        :param seller_id: Identificador do vendedor.
+        :param sku: Código do produto.
+        :return: Confirmação deleção do produto.
+        :raises NotFoundException: Se não encontrar o produto.
         """
         await self.validate_delete(seller_id, sku)
         deleted = await self.repository.delete_by_sellerid_sku(seller_id, sku)
+        #Remove produto do cache após deleção
+        cache_key = f"produto:{seller_id}:{sku}"
+        await self.redis_adapter.delete(cache_key)
         return deleted
     
     async def patch_by_sellerid_sku(self, seller_id: str, sku: str, patch_model: dict) -> T:
+
         await self.find_by_seller_id(seller_id)
         patch_model = await self.validate_patch(seller_id, sku, patch_model)
         model = await self.repository.patch_by_sellerid_sku(seller_id, sku, patch_model)
+        #Remove produto do cache após atualização
+        cache_key = f"produto:{seller_id}:{sku}"
+        await self.redis_adapter.delete(cache_key)
+
         return model
     
     async def find_by_filter(self, seller_id: str, paginator: Paginator = None, name_like: str = None) -> list[CatalogoModel]:
@@ -153,6 +200,13 @@ class CatalogoService(CrudService[CatalogoModel, int]):
             raise ProductNotExistException()
         
     async def find_by_sellerid_sku(self, seller_id: str, sku: str, raises_exception: bool = True) -> T | None:
+        logger.debug(f"Buscando produto no CACHE -> seller_id: {seller_id}, sku: {sku}")
+        cache_key = f"produto:{seller_id}:{sku}"
+        cached = await self.find_product_in_cache(seller_id, sku, cache_key)
+
+        if cached is not None:
+            return cached
+        
         try:
             product_exist = await self.repository.find_by_sellerid_sku(seller_id, sku)
         except Exception:
@@ -162,7 +216,23 @@ class CatalogoService(CrudService[CatalogoModel, int]):
             if raises_exception:
                 raise ProductNotExistException()
             return None
+        try:
+            await self.redis_adapter.set_json(cache_key, product_exist.model_dump(mode="json"), expires_in_seconds=300)
+        except Exception as e:
+            logger.warning(f"Falha ao salvar produto no cache: {e}")
+
         return product_exist
 
+    async def find_product_in_cache(self, seller_id: str, sku: str, cache_key: str) -> dict:
+        """
+        Busca um preço pelo seller_id e sku, utilizando cache.
 
-   
+        :param seller_id: Identificador do vendedor.
+        :param sku: Código do produto.
+        :return: Instância de Preco encontrada.
+        :raises NotFoundException: Se não encontrar o preço.
+        """
+        cached = await self.redis_adapter.get_json(cache_key)
+        if cached is not None:
+            logger.debug(f"🔄 Produto encontrado no CACHE -> seller_id: {seller_id}, sku: {sku}")
+            return CatalogoModel.model_validate(cached)

@@ -140,6 +140,7 @@ async def create(
             - sku: Identificador do produto.
             - seller_id: Identificador do vendedor.
             - name: Nome do produto.
+            - description: Descrição do produto.
 
         Retorna:
 

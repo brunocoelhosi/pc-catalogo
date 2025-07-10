@@ -59,10 +59,18 @@ def repository_mock():
     mock.delete_by_sellerid_sku = AsyncMock(return_value=True)
     return mock
 
+@pytest.fixture
+def redis_mock():
+    mock = AsyncMock()
+    mock.get_json.return_value = None  # Simula cache vazio
+    mock.set_json.return_value = None
+    mock.exists.return_value = False
+    return mock
+
 
 @pytest.fixture
-def service_with_mock(repository_mock):
-    return CatalogoService(repository=repository_mock)
+def service_with_mock(repository_mock, redis_mock):
+    return CatalogoService(repository=repository_mock, redis_adapter=redis_mock)
 
 
 class TestCatalogoService:
@@ -72,12 +80,20 @@ class TestCatalogoService:
         catalogo_create = CatalogoModel(seller_id="magalu", sku="magatv", name="tv")
         repository_mock.create.return_value = catalogo_create
 
-        created_catalogo = await service_with_mock.create(catalogo_create)
+        # Mock da IA
+        mock_ia = MagicMock()
+        mock_ia.create_description = AsyncMock(return_value={"description": "desc gerada"})
+
+        created_catalogo = await service_with_mock.create(
+            catalogo_create,
+            creating_product_description=mock_ia 
+        )
 
         assert created_catalogo is not None
         assert created_catalogo.seller_id == "magalu"
         assert created_catalogo.sku == "magatv"
         assert created_catalogo.name == "tv"
+        assert created_catalogo.description == "desc gerada"
         repository_mock.create.assert_called_once_with(catalogo_create)
 
     @pytest.mark.asyncio
@@ -88,12 +104,6 @@ class TestCatalogoService:
 
         with pytest.raises(ProductAlreadyExistsException):
             await service_with_mock.create(catalogo_create)
-
-    """    @pytest.mark.asyncio
-    async def test_validate_product_exist_exception(self, service_with_mock, repository_mock):
-        repository_mock.find_product = AsyncMock(side_effect=Exception("Erro inesperado"))
-        with pytest.raises(ProductNotExistException):
-            await service_with_mock.validate_product_exist("qualquer", "coisa")"""
 
     @pytest.mark.asyncio
     async def test_validate_delete_success(self, service_with_mock, repository_mock):

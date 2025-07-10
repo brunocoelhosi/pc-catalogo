@@ -1,4 +1,5 @@
 services:
+  # Serviço principal da aplicação
   app:
     build:
       context: ..
@@ -16,6 +17,7 @@ services:
       - ../.env
     restart: unless-stopped
 
+  # Serviço do banco mongoDB para testes
   mongodb_tests:
     image: mongo:8.0
     container_name: mongodb-tests
@@ -26,3 +28,5 @@ services:
       MONGO_INITDB_ROOT_USERNAME: admin
       MONGO_INITDB_ROOT_PASSWORD: admin
       MONGO_INITDB_DATABASE: test_db
+
+ 

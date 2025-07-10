@@ -9,7 +9,6 @@ build-venv:
 requirements-test:
 	pip install --upgrade pip
 	pip install -r requirements/test.txt
-	
 
 # Verificar o código
 check-lint:
@@ -24,25 +23,57 @@ load-env:
 	@./devtools/scripts/push-env "devtools/dotenv.$(env)"
 
 # Carregar a variável de testes
-load-test-env:
-	@env=test make $(MAKE_ARGS) load-env
+load-dev-env:
+	@env=dev make $(MAKE_ARGS) load-env
 
-# Subir o docker (Mongo + API Catalogo) para os testes
-docker-tests-up:
-	docker-compose -f devtools/docker-compose-tests.yml up --build
+# Docker completo de desenvolvimento
+docker-run-dev:
+	docker-compose -f devtools/docker-compose.yml up --build
+docker-run-dev-down:
+	docker-compose -f devtools/docker-compose.yml down
 
-# Descer e remover o docker dos testes
-docker-tests-down:
-	docker-compose -f devtools/docker-compose-tests.yml down
+# Docker API Catalogo
+docker-catalogo-up:
+	docker-compose -f devtools/docker-compose-catalogo.yml up --build
+docker-catalogo-down:
+	docker-compose -f devtools/docker-compose-catalogo.yml down
 
-# Subir o docker (Keycloak) para os testes 
+# Docker IA
+docker-ia-up:
+	docker-compose -f devtools/docker-compose-ia.yml up --build
+docker-ia-down:
+	docker-compose -f devtools/docker-compose-ia.yml down
+
+# Docker Redis
+docker-redis-up:
+	docker-compose -f devtools/docker-compose-redis.yml up --build
+docker-redis-down:
+	docker-compose -f devtools/docker-compose-redis.yml down
+
+# Docker Keycloak 
 docker-tests-keycloak-up:
 	docker-compose -f devtools/docker-compose-keycloak.yml up --build
-
-# Descer e remover o docker do Keycloak
 docker-tests-keycloak-down:
 	docker-compose -f devtools/docker-compose-keycloak.yml down
-	
+
+# Docker MongoDB
+docker-mongo-up:
+	docker-compose -f devtools/docker-compose-mongo.yml up --build
+docker-mongo-down:
+	docker-compose -f devtools/docker-compose-mongo.yml down
+
+# Docker MongoDB Teste
+docker-mongo-test-up:
+	docker-compose -f devtools/docker-compose-mongo-test.yml up --build
+docker-mongo-test-down:
+	docker-compose -f devtools/docker-compose-mongo-test.yml down
+
+# Docker SonarQube
+docker-sonarqube-up:
+	docker-compose -f devtools/docker-compose-sonar.yml up --build
+docker-sonarqube-down:
+	docker-compose -f devtools/docker-compose-sonar.yml down
+
 # Realizar a migração do banco de dados
 migration:
 	mongodb-migrate --url "$(URL_MONGO_MIGRATION_TEST)"

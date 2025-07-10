@@ -18,9 +18,14 @@ if TYPE_CHECKING:
 
 from app.models.base import BaseModel, UserModel
 
+import traceback
+from logging import getLogger
 
+logger = getLogger(__name__)
 from app.container import Container
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="http://localhost:8080/realms/marketplace/protocol/openid-connect/token")
+oauth2_scheme = OAuth2PasswordBearer(
+    tokenUrl="http://localhost:8080/realms/marketplace/protocol/openid-connect/token"
+    )
 
 class UserAuthInfo(BaseModel):
     user: UserModel
@@ -46,8 +51,14 @@ async def do_auth(
     """
 
     try:
+        # Log da requisição
+        logger.info(f"Tentando autenticar: {request.url}")
+        logger.info(f"Headers: {dict(request.headers)}")
+
         info_token = await openid_adapter.validate_token(token)
     except OAuthException as exception:
+        logger.error(f"Erro na autenticação: {type(exception).__name__}: {str(exception)}")
+        logger.error(f"Traceback: {traceback.format_exc()}")
         # XXX Poderíamos especializar as exceções
         raise UnauthorizedException from exception
 

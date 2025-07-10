@@ -3,6 +3,9 @@ from fastapi import FastAPI
 from fastapi.testclient import TestClient
 import asyncio
 
+from pclogging import LoggingBuilder
+LoggingBuilder.init()
+
 #v1
 from app.api.api_application import create_app
 from app.api.router import routes
@@ -19,6 +22,7 @@ from httpx import AsyncClient, ASGITransport
 from typing import AsyncGenerator
 from app.api.common.auth_handler import do_auth, get_current_user
 from glob import glob
+from app.settings.worker import WorkerSettings
 
 def refactor_fixture_path(string: str) -> str:
     return string.replace("/", ".").replace("\\", ".").replace(".py", "")
@@ -86,10 +90,6 @@ def client_v1(app_v1: FastAPI) -> TestClient:
 
 # --------------------------- FIXTURE PARA V2 -------------------------
 
-"""
-auth_fixture.py
-clean_catalogo_fixture.py
-"""
 # --- FIXTURE DE MOCK PARA O REPOSITÓRIO DE CATÁLOGO ---
 from unittest.mock import AsyncMock
 
@@ -97,9 +97,6 @@ from unittest.mock import AsyncMock
 @pytest.fixture
 def mongo_clientv2():
     return AsyncIOMotorClient("mongodb://admin:admin@localhost:27018/test_db?authSource=admin")
-
-
-
 
 @pytest.fixture
 def repository(mongo_clientv2):
@@ -109,9 +106,18 @@ def repository(mongo_clientv2):
 def app_v2(mock_do_auth, container_v2: Container) -> FastAPI:
     import app.api.v2.routers.catalogo_seller_router as catalogo_seller_router_v2
     import app.api.common.auth_handler as auth_handler
-    container_v2.wire(modules=[catalogo_seller_router_v2, auth_handler])
+    import app.services.catalogo.catalogo_service as catalogo_service_module
+
+    # Carrega as configs do worker (ou defina manualmente para o teste)
+    worker_settings = WorkerSettings(
+        ia_api_url="http://localhost:11434/api/generate",  
+        ia_model="phi3"
+    )
+    container_v2.config.from_pydantic(worker_settings)
+
+    container_v2.wire(modules=[catalogo_seller_router_v2, auth_handler, catalogo_service_module])
     app_instance = create_app(api_settings, routes)
-    app_instance.container = container_v2  # type: ignore[attr-defined]
+    app_instance.container = container_v2  
     yield app_instance
     container_v2.unwire()
 
