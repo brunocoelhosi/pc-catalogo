@@ -4,7 +4,10 @@
 
 ## Introdução
 
-O projeto tem como objetivo **fornecer as informações dos produtos** presentes no catálogo, considerando suas características e especificações detalhadas..
+O projeto tem como objetivo **gerenciar eficientemente os produtos do Catálogo do Marketplace**, garantindo organização
+e controle centralizado. Além de **fornecer informações detalhadas e atualizadas dos produtos disponíveis no catálogo**,
+facilitando a vida dos sellers e consumidores.
+
 
 ## 🎯 Para que Serve um Catálogo de Produtos?
 
